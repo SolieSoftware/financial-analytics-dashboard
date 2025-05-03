@@ -1,0 +1,127 @@
+.App {
+  text-align: center;
+  font-family: Arial, sans-serif;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.App-header {
+  background-color: #282c34;
+  padding: 20px;
+  color: white;
+  border-radius: 8px 8px 0 0;
+}
+
+.App-header h1 {
+  margin-top: 0;
+}
+
+main {
+  background-color: #f5f5f5;
+  padding: 20px;
+  border-radius: 0 0 8px 8px;
+}
+
+.location-selector {
+  margin: 15px 0;
+}
+
+.location-selector select {
+  padding: 8px 12px;
+  font-size: 16px;
+  border-radius: 4px;
+  margin-left: 10px;
+}
+
+.weather-card {
+  background-color: white;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.current-conditions {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 10px 0;
+}
+
+.temperature {
+  display: flex;
+  flex-direction: column;
+}
+
+.temp-value {
+  font-size: 3rem;
+  font-weight: bold;
+}
+
+.condition {
+  font-size: 1.2rem;
+  color: #666;
+}
+
+.details {
+  text-align: left;
+}
+
+.detail-item {
+  margin: 10px 0;
+  font-size: 1.1rem;
+}
+
+.label {
+  color: #666;
+  margin-right: 5px;
+}
+
+.forecast-panel {
+  background-color: white;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.forecast-days {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.forecast-day-card {
+  flex: 1;
+  min-width: 100px;
+  background-color: #f9f9f9;
+  border-radius: 6px;
+  padding: 12px;
+  margin: 0 5px;
+}
+
+.forecast-day-card h4 {
+  margin-top: 0;
+  margin-bottom: 8px;
+}
+
+.high {
+  color: #d32f2f;
+  font-weight: bold;
+}
+
+.low {
+  color: #1976d2;
+  font-weight: bold;
+}
+
+.separator {
+  margin: 0 5px;
+  color: #666;
+}
+
+footer {
+  margin-top: 20px;
+  color: #666;
+  font-size: 0.9rem;
+}
