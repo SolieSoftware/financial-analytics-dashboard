@@ -9,6 +9,6 @@ export type TickerEntry = {
     "NextShares": string;
 };
 
-export type TickerListResponse ={
+export type TickerListResponse = {
     "nasdaq_ticker_list": TickerEntry[]
 };

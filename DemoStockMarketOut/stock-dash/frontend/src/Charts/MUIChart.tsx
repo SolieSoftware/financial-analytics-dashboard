@@ -1,22 +1,46 @@
 import { LineChart } from '@mui/x-charts';
-
-const data =[
-    {x: 1, y:1},
-    {x: 2, y:2},
-    {x: 3, y:3},
-    {x: 4, y:4},
-    {x: 5, y:5},
-    {x: 6, y:6},
-    {x: 7, y:7}
-]
+import { useSelector } from 'react-redux';
+import { useEffect, useState } from 'react';
+import { stockEntry, stockEntryCleaned, stockData } from './types';
+import dayjs from 'dayjs';
 
 const MUIChart = () => {
+  const selectedTicker = useSelector((state: any) => state.ticker.selectedTicker);
+  console.log(selectedTicker);
+  const [data, setData] = useState<stockEntryCleaned[]>([]);
+
+  useEffect(() => {
+    console.log("Selected Ticker:", selectedTicker); 
+    if (!selectedTicker) return; 
+
+    const fetchTickerData = async () => {
+      try {
+      console.log("Fetching data...")
+      const res = await fetch(`http://localhost:8000/api/tickers/${selectedTicker}/`);
+      const json: stockData = await res.json();
+      json.history.forEach((item: stockEntry) => {
+        console.log("Date: ", item.Close);  // Inspect the Date format
+      });
+      const cleanedData = json.history.map(item => ({
+        ...item,
+        Date: dayjs(item.Date).valueOf(), // Convert to timestamp
+      }));
+
+      setData(cleanedData);
+      } catch (err) {
+        console.log("Unable to fetch Ticker Historical Data: ", err)
+      }
+    }
+
+    fetchTickerData()
+  }, [selectedTicker])
+
   return (
     <LineChart
-      width={500}
-      height={300}
-      xAxis={[{ data: data.map(d => d.x), label:"X" }]}
-      series={[{ data: data.map(d => d.y), label:"Y" }]}
+      width={700}
+      height={500}
+      xAxis={[{ data: data.map(d => d.Date), label:"Date" }]}
+      series={[{ data: data.map(d => d.Close), label:"Close" }]}
     />
   );
 };

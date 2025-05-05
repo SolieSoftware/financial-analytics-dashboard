@@ -19,16 +19,21 @@ class TickerList(APIView):
         json_data = nasdaq.to_dict(orient='records')
         return Response({"nasdaq_ticker_list": json_data})
 
-class TickerData(APIView):
+class TickerHistoricalData(APIView):
     def get(self, request, ticker="GOOG"):
         ticker_obj = yf.Ticker(ticker)
-        ticker_info = ticker_obj.info
         hist_df = ticker_obj.history(period='1y')
-        hist_df.reset_index()
+        hist_df.index = hist_df.index.map(lambda x: x.isoformat())
+        hist_df = hist_df.reset_index()
         hist_json = hist_df.to_dict(orient="records")
-        return Response({"ticker_info": ticker_info, "history": hist_df})
+        return Response({"history": hist_json})
     
-
+class TickerInfoData(APIView):
+    def get(self, request):
+        ticker_obj = yf.Ticker(ticker)
+        info_data = ticker_obj.info
+        return Response({"info": info_data})
+        
 
     
     
