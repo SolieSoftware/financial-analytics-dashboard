@@ -1,7 +1,7 @@
 import { LineChart } from '@mui/x-charts';
 import { useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
-import { stockEntry, stockEntryCleaned, stockData } from './types';
+import { stockEntry, stockEntryCleaned, stockData } from '../types/chartTypes';
 import dayjs from 'dayjs';
 
 const MUIChart = () => {
@@ -37,7 +37,7 @@ const MUIChart = () => {
 
   return (
     <LineChart
-      width={700}
+      width={900}
       height={500}
       xAxis={[{ data: data.map(d => d.Date), label:"Date" }]}
       series={[{ data: data.map(d => d.Close), label:"Close" }]}

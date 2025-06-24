@@ -22,7 +22,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
 import ExpandIcon from '@mui/icons-material/ExpandMore';
 
-import { TickerListResponse, TickerEntry } from './types'
+import { TickerListResponse, TickerEntry } from '../types/tickerTypes'
 
 const SideBar = () => {
     const dispatch = useDispatch();
@@ -32,7 +32,6 @@ const SideBar = () => {
     const [selectedTicker, setSelectedTicker] = useState('')
 
     useEffect(() => {
-        console.log("Use Effect Triggered.")
         const fetchData = async () => {
             await handleTickerData()
         }
@@ -201,9 +200,6 @@ const SideBar = () => {
                         </FormControl>
                     </AccordionDetails>
                 </Accordion>
-
-                <p>This is a drawer</p>
-
             </Box>
         </Drawer>
         </>
