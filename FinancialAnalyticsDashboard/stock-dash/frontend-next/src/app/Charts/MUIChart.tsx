@@ -42,12 +42,24 @@ const MUIChart = () => {
   }, [selectedTicker]);
 
   return (
-    <LineChart
-      width={900}
-      height={500}
-      xAxis={[{ data: data.map((d) => d.Date), label: "Date" }]}
-      series={[{ data: data.map((d) => d.Close), label: "Close" }]}
-    />
+    <div style={{ width: "100%", height: "100%" }}>
+      <LineChart
+        width={400}
+        height={300}
+        xAxis={[{ data: data.map((d) => d.Date), label: "Date" }]}
+        series={[{ data: data.map((d) => d.Close), label: "Close" }]}
+        sx={{
+          width: "100%",
+          height: "100%",
+          "& .MuiChartsAxis-root": {
+            fontSize: "12px",
+          },
+          "& .MuiChartsAxis-label": {
+            fontSize: "14px",
+          },
+        }}
+      />
+    </div>
   );
 };
 
