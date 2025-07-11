@@ -1,8 +1,11 @@
 // import ChartSelector from './Charts/RechartChart.tsx'
 import MUIChart from "./Charts/MUIChart";
-import SideBar from "./Sidebar/sidebar";
+import SideBar from "./Sidebar/Sidebar";
+import LeftPanel from "./Info/LeftPanel";
+import BottomPanel from "./Info/BottomPanel";
 import "./App.css";
 import { useState } from "react";
+import { useSelector } from "react-redux";
 
 function App() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -10,6 +13,10 @@ function App() {
   const handleSidebarToggle = (isOpen: boolean) => {
     setSidebarOpen(isOpen);
   };
+
+  const selectedTicker = useSelector(
+    (state: any) => state.ticker.selectedTicker
+  );
 
   return (
     <div
@@ -25,8 +32,8 @@ function App() {
         <div className="chart-container">
           <div className="chart-header">
             <div>
-              <h2 className="chart-title">Stock Analytics Dashboard</h2>
-              <p className="chart-subtitle">Stock data visualization</p>
+              <h2 className="chart-title">Financial Analytics Dashboard</h2>
+              <p className="chart-subtitle">{selectedTicker}</p>
             </div>
           </div>
           <div className="chart-content">
@@ -36,44 +43,12 @@ function App() {
 
         {/* Left content area for additional information */}
         <div className="content-area-left">
-          <h3 style={{ color: "white", marginBottom: "1rem" }}>
-            Market Overview
-          </h3>
-          <div style={{ color: "rgba(255,255,255,0.8)" }}>
-            <p>
-              Add your market summary, key metrics, or other important
-              information here.
-            </p>
-            <br />
-            <p>This area can contain:</p>
-            <ul style={{ textAlign: "left", marginTop: "1rem" }}>
-              <li>Market indices</li>
-              <li>Top gainers/losers</li>
-              <li>News highlights</li>
-              <li>Portfolio summary</li>
-            </ul>
-          </div>
+          <LeftPanel />
         </div>
 
         {/* Bottom content area for additional information */}
         <div className="content-area-bottom">
-          <h3 style={{ color: "white", marginBottom: "1rem" }}>
-            Detailed Analytics
-          </h3>
-          <div style={{ color: "rgba(255,255,255,0.8)" }}>
-            <p>
-              Add detailed analytics, performance metrics, or additional charts
-              here.
-            </p>
-            <br />
-            <p>This area can contain:</p>
-            <ul style={{ textAlign: "left", marginTop: "1rem" }}>
-              <li>Technical indicators</li>
-              <li>Risk metrics</li>
-              <li>Historical comparisons</li>
-              <li>Forecast data</li>
-            </ul>
-          </div>
+          <BottomPanel />
         </div>
       </div>
     </div>

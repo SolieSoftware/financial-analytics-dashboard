@@ -15,6 +15,7 @@
     "@mui/material": "^7.2.0",
     "@mui/x-charts": "^8.6.0",
     "@reduxjs/toolkit": "^2.8.2",
+    "@tremor/react": "^3.18.7",
     "axios": "^1.10.0",
     "dayjs": "^1.11.13",
     "mui": "^0.0.1",

@@ -32,7 +32,6 @@ interface SideBarProps {
 
 const SideBar: React.FC<SideBarProps> = ({ onToggle }) => {
   const dispatch = useDispatch();
-  const [tickerMap, setTickerMap] = useState<Record<string, string>>();
   const [tickers, setTickers] = useState<Record<string, boolean>>({});
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedTicker, setSelectedTicker] = useState("");
@@ -57,14 +56,11 @@ const SideBar: React.FC<SideBarProps> = ({ onToggle }) => {
 
   async function handleTickerData() {
     const data = await fetch_current_tickers();
-    const nameMap: Record<string, boolean> = {};
-    const tickerMap: Record<string, string> = {};
+    const tickerSymbols: Record<string, boolean> = {};
     data?.nasdaq_ticker_list.forEach((ticker: TickerEntry) => {
-      tickerMap[ticker["Security Name"]] = ticker["Symbol"];
-      nameMap[ticker["Security Name"]] = false;
+      tickerSymbols[ticker["Symbol"]] = false;
     });
-    setTickerMap(tickerMap);
-    setTickers(nameMap);
+    setTickers(tickerSymbols);
   }
 
   interface ActiveFilter {
@@ -105,11 +101,12 @@ const SideBar: React.FC<SideBarProps> = ({ onToggle }) => {
     );
   };
 
+  useEffect(() => {
+    dispatch(setSelectedTickerState(selectedTicker));
+  }, [selectedTicker]);
+
   const handleRadioChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedTicker(event.target.value);
-    const selected: string = tickerMap ? tickerMap[selectedTicker] : "";
-    const displayValue = selected || "";
-    dispatch(setSelectedTickerState(displayValue));
     updateActiveFilters("ticker", event.target.value);
   };
 
@@ -152,22 +149,25 @@ const SideBar: React.FC<SideBarProps> = ({ onToggle }) => {
           top: 10,
           zIndex: 9999,
           transition: "left 0.3s ease",
-          bgcolor: "rgba(255, 255, 255, 0.95)",
-          backdropFilter: "blur(10px)",
-          border: "1px solid rgba(255, 255, 255, 0.2)",
-          boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
+          bgcolor: "rgba(26, 32, 44, 0.95)",
+          backdropFilter: "blur(20px)",
+          border: "1px solid rgba(74, 85, 104, 0.3)",
+          boxShadow: "0 8px 32px rgba(0, 0, 0, 0.3)",
           minWidth: "48px",
           minHeight: "48px",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
+          borderRadius: "8px",
           "&:hover": {
-            bgcolor: "rgba(255, 255, 255, 0.98)",
+            bgcolor: "rgba(26, 32, 44, 0.98)",
             transform: "scale(1.05)",
+            borderColor: "rgba(102, 126, 234, 0.5)",
+            boxShadow: "0 12px 40px rgba(0, 0, 0, 0.4)",
           },
           "& .MuiSvgIcon-root": {
-            fontSize: "24px",
-            color: "#667eea",
+            fontSize: "20px",
+            color: "#f7fafc",
           },
         }}
       >
@@ -202,15 +202,15 @@ const SideBar: React.FC<SideBarProps> = ({ onToggle }) => {
               alignItems: "center",
               mb: 2,
             }}
-          >
-            <Typography variant="h6" component="h2">
-              Filters
-            </Typography>
-          </Box>
+          ></Box>
           <Divider sx={{ mb: 2 }} />
           <Accordion defaultExpanded>
             <AccordionSummary expandIcon={<ExpandIcon />}>
-              <Typography>Ticker Name</Typography>
+              <Typography
+                sx={{ textAlign: "center", width: "100%", fontWeight: "bold" }}
+              >
+                TICKER
+              </Typography>
             </AccordionSummary>
             <AccordionDetails>
               <FormControl component="fieldset">
@@ -225,9 +225,9 @@ const SideBar: React.FC<SideBarProps> = ({ onToggle }) => {
                 />
                 <RadioGroup value={selectedTicker} onChange={handleRadioChange}>
                   <List
-                    height={300}
+                    height={100}
                     itemCount={filteredTickers.length}
-                    itemSize={100}
+                    itemSize={30}
                     width="100%"
                   >
                     {Row}
