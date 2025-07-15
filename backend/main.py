@@ -15,7 +15,7 @@ import uvicorn
 from models.dividend_top_picks import DividendAnalyzer, dividend_stock_to_dict
 from typing import List
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Global session for yfinance
@@ -156,39 +156,44 @@ async def get_top_dividend_picks(top_n: int = 10):
     try:
         # First get the list of available tickers
         tickers_response = await get_tickers()
-        if not tickers_response or 'nasdaq_ticker_list' not in tickers_response:
+        if not tickers_response or "nasdaq_ticker_list" not in tickers_response:
             raise HTTPException(status_code=500, detail="Failed to fetch ticker list")
-        
+
         # Extract ticker symbols
-        ticker_data = tickers_response['nasdaq_ticker_list']
-        ticker_symbols = [item['Symbol'] for item in ticker_data if item.get('Symbol')]
-        
+        ticker_data = tickers_response["nasdaq_ticker_list"]
+        ticker_symbols = [item["Symbol"] for item in ticker_data if item.get("Symbol")]
+
         # Limit to first 500 tickers for performance (can be adjusted)
         ticker_symbols = ticker_symbols[:500]
-        
+
         logger.info(f"Analyzing {len(ticker_symbols)} tickers for dividend picks")
-        
+
         # Create analyzer and get top picks
         analyzer = DividendAnalyzer()
+        logger.info(f"Starting dividend analysis with {len(ticker_symbols)} tickers")
         top_picks = analyzer.get_top_dividend_picks(ticker_symbols, top_n)
-        
+        logger.info(f"Found {len(top_picks)} dividend picks")
+
         # Convert to dictionary format for JSON response
         picks_data = [dividend_stock_to_dict(stock) for stock in top_picks]
-        
+        logger.info(f"Converted {len(picks_data)} picks to dictionary format")
+
         return {
             "top_picks": picks_data,
             "total_analyzed": len(ticker_symbols),
             "criteria": {
-                "min_market_cap": "1B",
-                "min_dividend_yield": "2%",
-                "max_payout_ratio": "80%",
-                "min_dividend_growth": "5%"
-            }
+                "min_market_cap": "100M",
+                "min_dividend_yield": "1%",
+                "max_payout_ratio": "90%",
+                "min_dividend_growth": "0%",
+            },
         }
-        
+
     except Exception as e:
         logger.error(f"Error in dividend analysis: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Dividend analysis failed: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Dividend analysis failed: {str(e)}"
+        )
 
 
 @app.get("/api/dividend/by-sector")
@@ -197,33 +202,35 @@ async def get_dividend_stocks_by_sector():
     try:
         # First get the list of available tickers
         tickers_response = await get_tickers()
-        if not tickers_response or 'nasdaq_ticker_list' not in tickers_response:
+        if not tickers_response or "nasdaq_ticker_list" not in tickers_response:
             raise HTTPException(status_code=500, detail="Failed to fetch ticker list")
-        
+
         # Extract ticker symbols
-        ticker_data = tickers_response['nasdaq_ticker_list']
-        ticker_symbols = [item['Symbol'] for item in ticker_data if item.get('Symbol')]
-        
+        ticker_data = tickers_response["nasdaq_ticker_list"]
+        ticker_symbols = [item["Symbol"] for item in ticker_data if item.get("Symbol")]
+
         # Limit to first 300 tickers for performance
         ticker_symbols = ticker_symbols[:300]
-        
+
         logger.info(f"Analyzing {len(ticker_symbols)} tickers by sector")
-        
+
         # Create analyzer and get stocks by sector
         analyzer = DividendAnalyzer()
         sector_groups = analyzer.get_dividend_stocks_by_sector(ticker_symbols)
-        
+
         # Convert to dictionary format for JSON response
         sector_data = {}
         for sector, stocks in sector_groups.items():
             sector_data[sector] = [dividend_stock_to_dict(stock) for stock in stocks]
-        
+
         return {
             "sectors": sector_data,
             "total_analyzed": len(ticker_symbols),
-            "total_dividend_stocks": sum(len(stocks) for stocks in sector_groups.values())
+            "total_dividend_stocks": sum(
+                len(stocks) for stocks in sector_groups.values()
+            ),
         }
-        
+
     except Exception as e:
         logger.error(f"Error in sector analysis: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Sector analysis failed: {str(e)}")

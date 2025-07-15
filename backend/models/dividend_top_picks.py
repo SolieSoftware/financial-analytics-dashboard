@@ -10,6 +10,7 @@ from concurrent.futures import ThreadPoolExecutor
 import time
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 
 @dataclass
@@ -42,10 +43,10 @@ class DividendAnalyzer:
     def __init__(self):
         self.dividend_stocks = []
         self.screening_criteria = {
-            "min_market_cap": 1e9,  # $1B minimum market cap
-            "min_dividend_yield": 0.02,  # 2% minimum yield
-            "max_payout_ratio": 0.8,  # 80% maximum payout ratio
-            "min_dividend_growth": 0.05,  # 5% minimum growth
+            "min_market_cap": 1e8,  # $100M minimum market cap (reduced from $1B)
+            "min_dividend_yield": 0.01,  # 1% minimum yield (reduced from 2%)
+            "max_payout_ratio": 0.9,  # 90% maximum payout ratio (increased from 80%)
+            "min_dividend_growth": 0.0,  # 0% minimum growth (reduced from 5%)
         }
 
     def get_dividend_stocks_from_tickers(
@@ -81,10 +82,12 @@ class DividendAnalyzer:
                 stock = self._analyze_single_ticker(ticker)
                 if stock:
                     dividend_stocks.append(stock)
+                    logger.info(f"Found dividend stock: {ticker}")
             except Exception as e:
                 logger.warning(f"Error analyzing {ticker}: {str(e)}")
                 continue
 
+        logger.info(f"Batch processed: {len(dividend_stocks)} dividend stocks found")
         return dividend_stocks
 
     def _analyze_single_ticker(self, ticker: str) -> Optional[DividendStock]:
@@ -95,10 +98,13 @@ class DividendAnalyzer:
 
             # Check if stock pays dividends
             dividend_yield = info.get("dividendYield", 0)
+            logging.info(f"Ticker: {ticker}; Dividend Yield: {dividend_yield}")
             if not dividend_yield or dividend_yield <= 0:
+                logging.info(f"Ticker {ticker} rejected: No dividend yield")
                 return None
 
             # Get dividend history for growth calculation
+            logging.info(f"Ticker: {ticker}; Dividends: {ticker_obj.dividends}")
             dividends = ticker_obj.dividends
             if dividends.empty:
                 return None
@@ -118,6 +124,7 @@ class DividendAnalyzer:
             if not self._passes_screening_criteria(
                 dividend_yield, payout_ratio, dividend_growth_rates, market_cap
             ):
+                logging.info(f"Ticker {ticker} rejected: Failed screening criteria")
                 return None
 
             # Calculate composite score
@@ -165,6 +172,10 @@ class DividendAnalyzer:
         # Sort by date and get recent dividends
         dividends = dividends.sort_index()
 
+        # Convert timezone-aware datetime to timezone-naive for comparison
+        if dividends.index.tz is not None:
+            dividends.index = dividends.index.tz_localize(None)
+
         # Calculate growth rates for different periods
         growth_rates = {}
 
@@ -204,7 +215,17 @@ class DividendAnalyzer:
         last_dividend = dividends.iloc[-1]
 
         # Calculate time period in years
-        time_period = (dividends.index[-1] - dividends.index[0]).days / 365.25
+        # Handle timezone-aware datetime objects
+        start_date = dividends.index[0]
+        end_date = dividends.index[-1]
+
+        # Convert to timezone-naive if needed
+        if start_date.tz is not None:
+            start_date = start_date.tz_localize(None)
+        if end_date.tz is not None:
+            end_date = end_date.tz_localize(None)
+
+        time_period = (end_date - start_date).days / 365.25
 
         if time_period <= 0 or first_dividend <= 0:
             return 0
@@ -221,13 +242,20 @@ class DividendAnalyzer:
         market_cap: float,
     ) -> bool:
         """Check if stock passes basic screening criteria"""
-        if dividend_yield < self.screening_criteria["min_dividend_yield"]:
-            return False
+        logging.info(
+            f"Screening criteria check - Yield: {dividend_yield:.2%}, Payout: {payout_ratio:.2%}, Market Cap: {market_cap / 1e9:.2f}B, Growth: {growth_rates}"
+        )
 
-        if payout_ratio > self.screening_criteria["max_payout_ratio"]:
-            return False
+        criteria_checks = [
+            dividend_yield >= self.screening_criteria["min_dividend_yield"],
+            payout_ratio <= self.screening_criteria["max_payout_ratio"],
+            market_cap >= self.screening_criteria["min_market_cap"],
+        ]
 
-        if market_cap < self.screening_criteria["min_market_cap"]:
+        if not all(criteria_checks):
+            logging.info(
+                f"Failed basic criteria: Yield check: {dividend_yield >= self.screening_criteria['min_dividend_yield']}, Payout check: {payout_ratio <= self.screening_criteria['max_payout_ratio']}, Market cap check: {market_cap >= self.screening_criteria['min_market_cap']}"
+            )
             return False
 
         # Check for positive dividend growth
@@ -237,8 +265,12 @@ class DividendAnalyzer:
             + growth_rates.get("5y", 0)
         ) / 3
         if avg_growth < self.screening_criteria["min_dividend_growth"]:
+            logging.info(
+                f"Failed growth criteria: Average growth {avg_growth:.2%} < {self.screening_criteria['min_dividend_growth']:.2%}"
+            )
             return False
 
+        logging.info("Passed all screening criteria")
         return True
 
     def _calculate_dividend_score(
