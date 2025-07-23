@@ -1,4 +1,4 @@
-#!C:\Users\SolomanShortland\Temp\StockDashboard\TypeScript-Projects\DemoStockMarketOut\stock-dash\backend\stockBackend\.venv\Scripts\python.exe
+#!C:\Users\SolomanShortland\Temp\Personal_Projects\financial-analytics-dashboard\backend\.venv\Scripts\python.exe
 
 import datetime
 import os
@@ -61,7 +61,7 @@ def print_models(introspector, tables=None, preserve_order=False,
     header = HEADER % (
         introspector.get_additional_imports(),
         introspector.get_database_class().__name__,
-        introspector.get_database_name(),
+        introspector.get_database_name().replace('\\', '\\\\'),
         ', **%s' % repr(db_kwargs) if db_kwargs else '')
     print_(header)
 
