@@ -8,7 +8,7 @@ if defined _OLD_CODEPAGE (
     "%SystemRoot%\System32\chcp.com" 65001 > nul
 )
 
-set VIRTUAL_ENV=C:\Users\SolomanShortland\Temp\StockDashboard\TypeScript-Projects\DemoStockMarketOut\stock-dash\backend\stockBackend\.venv
+set VIRTUAL_ENV=C:\Users\SolomanShortland\Temp\Personal_Projects\financial-analytics-dashboard\backend\.venv
 
 if not defined PROMPT set PROMPT=$P$G
 
