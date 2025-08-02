@@ -1,7 +1,7 @@
 import asyncio
 import json
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 from contextlib import asynccontextmanager
 from mcp.client.stdio import stdio_client
 from mcp import ClientSession, StdioServerParameters
@@ -10,8 +10,8 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 class FinancialAssistantService:
-    def __init__(self, mcp_server_path: str):
-        self.mcp_server_path = "../mcp_servers/financial_datasets_api_assistant.py"
+    def __init__(self, mcp_server_path: str = "../mcp_servers/financial_datasets_api_assistant.py"):
+        self.mcp_server_path = mcp_server_path
         self._server_params = StdioServerParameters(
             command="python",
             args=[self.mcp_server_path],
