@@ -4,7 +4,7 @@ from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
 import logging
 import os
-from huggingface_hub import InferenceClient
+from huggingface_hub import InferenceClient, HfApi, list_models
 from dotenv import load_dotenv
 
 logging.basicConfig(level=logging.INFO)
@@ -13,6 +13,7 @@ logger = logging.getLogger(__name__)
 HF_API_URL = "https://api-inference.huggingface.co/models/"
 
 load_dotenv()
+
 
 class YahooFinanceMCPClient:
     def __init__(self, mcp_server_path: str = "../mcp_servers/yahoo_mcp_server.py"):
@@ -25,11 +26,14 @@ class YahooFinanceMCPClient:
             "distilbart": "sshleifer/distilbart-cnn-12-6",  # 120MB - Fast summarization
             "bart_large": "facebook/bart-large-cnn",  # 400MB - High quality news/financial
             "pegasus": "google/pegasus-xsum",  # 570MB - Excellent summarization
-            # Text generation models
-            "flan_t5_small": "google/flan-t5-small",  # 80MB - Good instruction following
-            "flan_t5_base": "google/flan-t5-base",  # 250MB - Better quality
+            # Text generation models - use models that work with HF Inference API
+            "gpt2": "gpt2",  # Small, reliable text generation
+            "gpt2_medium": "gpt2-medium",  # Better quality
+            "microsoft_dialo": "microsoft/DialoGPT-medium",  # Good for conversations
             # Financial domain specific
             "finbert": "ProsusAI/finbert",
+            "zai-org":"zai-org/GLM-4.5",
+            "HuggingFaceH4":"HuggingFaceH4/zephyr-7b-beta"
         }
         self.hf_client = InferenceClient(token=self.hf_token)
 
@@ -86,17 +90,10 @@ class YahooFinanceMCPClient:
             return str(result)
         except Exception as e:
             print(f"Error calling MCP tool {tool_name}: {str(e)}")
-            import traceback
-
-            traceback.print_exc()
-            raise e
 
     async def analyze_stock(self, ticker: str) -> str:
         """Get stock data and provide AI summary"""
         try:
-            # Get basic quote
-            # quote_data = await self.call_mcp_tool("get_stock_quote", {"ticker": ticker})
-
             # Get detailed company info
             info_data = await self.call_mcp_tool("get_stock_quote", {"ticker": ticker})
 
@@ -133,46 +130,50 @@ class YahooFinanceMCPClient:
     def summarize_with_llm(self, data: str, context: str = "") -> str:
         """Use LLM to summarize the financial data"""
 
-        model_name = self.models.get("distilbart")
+        # Check if HF token is available
+        if not self.hf_token:
+            return f"Financial Analysis Summary:\n\n{context}\n\nKey Data Points:\n{data[:500]}...\n\nNote: Hugging Face token not configured for AI analysis."
 
-        prompt = f"""
-        You are a financial analyst. Please analyze and summarize the following financial data in a clear, 
-        professional manner. Focus on key insights, trends, and important metrics.
-        
-        {context}
-        
-        Financial Data:
-        {data}
-        
-        Please provide:
-        1. Key highlights and summary
-        2. Important financial metrics
-        3. Notable trends or changes
-        4. Any red flags or positive indicators
-        
-        Keep the summary concise but informative.
-        """
+        print(f"HF Token: {self.hf_token}")
+
+        api = HfApi()
+
+        model_name = self.models.get("HuggingFaceH4")  # Use GPT-2 which is reliable with HF API
+
+        model_info = api.model_info(model_name)
+        if hasattr(model_info, 'inference') and model_info.inference:
+            print("Inference API is available")
+        else:
+            print("Inference API is not available")
+
+        # Create a very simple prompt for GPT-2
+        prompt = f"Financial analysis: {data[:500]}"
+
+        print(f"Prompt: {prompt}")
         if model_name:
             try:
-                # Use summarization for distilbart model
-                # DISTILBART - Use summarization task
-                if "distilbart" in model_name.lower():
-                    response = self.hf_client.summarization(
-                        text=prompt,  # Use 'text', not 'inputs'
-                        model=model_name,
-                    )
-                    # Response is a string, not a list
-                    return response
-                else:
-                    # Use text generation for other models
-                    response = self.hf_client.text_generation(
-                        prompt=prompt,
-                        model=model_name,
-                    )
-                    return response
+                print(f"Using model: {model_name}")
+                print(f"Prompt length: {len(prompt)} characters")
+
+                # Use instruction based modle to generate a summary
+
+                messages = [{"role": "user", "content": prompt}]
+
+                response = self.hf_client.chat_completion(
+                            messages=messages,
+                            model=model_name,
+                            max_tokens=100,
+                            temperature=0.7
+                )
+                print(f"Response: {response}")
+                return response
 
             except Exception as e:
-                return f"Error generating summary: {str(e)}"
+                print(f"HF API Error: {str(e)}")
+                import traceback
+
+                traceback.print_exc()
+                return f"Financial Analysis Summary:\n\n{context}\n\nKey Data Points:\n{data[:500]}...\n\nNote: AI analysis failed - {str(e)}"
         else:
             return {"Error": "No model found"}
 
@@ -188,6 +189,22 @@ class YahooFinanceMCPClient:
 
         except Exception as e:
             return f"Error getting market overview: {str(e)}"
+        
+    async def generate_summary(self, data: str, context: str = "") -> str:
+        try:
+            await self.connect_to_mcp_server()
+
+            analysis = await self.analyze_stock("AAPL")
+
+            market_overview = await self.market_overview()
+
+            return analysis, market_overview
+
+        except Exception as e:
+            return f"Error generating summary: {str(e)}"
+        
+        finally:
+            await self.cleanup()
 
 
 # Example usage
@@ -204,18 +221,12 @@ async def main():
 
         # Analyze a single stock
         analysis = await client.analyze_stock("AAPL")
-        print(analysis)
-        print("\n" + "=" * 80 + "\n")
 
         # Market overview
         market = await client.market_overview()
-        print(market)
 
     except Exception as e:
         print(f"Error: {str(e)}")
-        import traceback
-
-        traceback.print_exc()
     finally:
         # Clean up connection
         await client.cleanup()
