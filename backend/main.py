@@ -14,6 +14,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 from models.dividend_top_picks import DividendAnalyzer, dividend_stock_to_dict
 from typing import List
+from services.yfinance_client import YahooFinanceClient
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -24,7 +25,7 @@ yf_session = None
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    global yf_session
+    global yf_session, yfinance_client
 
     # Configure session for yfinance
     yf_session = requests.Session()
@@ -39,6 +40,10 @@ async def lifespan(app: FastAPI):
 
     yf_session.mount("http://", adapter)
     yf_session.mount("https://", adapter)
+
+    logging.info("Starting up Yahoo Finance Client")
+    yfinance_client = YahooFinanceClient()
+
 
     yield
 
@@ -55,6 +60,13 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+
+# Optional: Add a root endpoint
+@app.get("/")
+async def root():
+    return {"message": "Trading API is running"}
 
 
 @app.get("/api/tickers/")
@@ -144,12 +156,6 @@ async def get_ticker_info_data(ticker: str):  # Fixed: Added ticker parameter
         )
 
 
-# Optional: Add a root endpoint
-@app.get("/")
-async def root():
-    return {"message": "Trading API is running"}
-
-
 @app.get("/api/dividend/top-picks")
 async def get_top_dividend_picks(top_n: int = 10):
     """Get top dividend picks from available tickers"""
@@ -234,6 +240,33 @@ async def get_dividend_stocks_by_sector():
     except Exception as e:
         logger.error(f"Error in sector analysis: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Sector analysis failed: {str(e)}")
+
+
+@app.get("/api/summary/{ticker}")
+async def get_summary(ticker: str):
+    """Get summary of a stock"""
+    try:
+        ticker_summary = await yfinance_client.analyze_stock(ticker)
+        
+        return {"ticker_summary": ticker_summary}
+    except Exception as e:
+        logger.error(f"Error in summary generation: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Summary generation failed: {str(e)}"
+        )
+
+
+@app.get("/api/summary/market")
+async def get_market_summary():
+    """Get market summary"""
+    try:
+        market_summary = await yfinance_client.market_overview()
+        return {"market_summary": market_summary}
+    except Exception as e:
+        logger.error(f"Error in market summary generation: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Market summary generation failed: {str(e)}"
+        )
 
 
 if __name__ == "__main__":
