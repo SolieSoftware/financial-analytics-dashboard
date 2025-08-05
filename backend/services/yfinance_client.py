@@ -209,7 +209,7 @@ class YahooFinanceClient:
             context = "Overall market conditions and major indices analysis"
             summary = self.summarize_with_llm(market_data, context)
 
-            return f"=== Market Overview ===\n\n{summary}\n\n=== Raw Data ===\n{market_data}"
+            return f"=== Market Overview ===\n\n{summary}"
 
         except Exception as e:
             logger.error(f"Error getting market overview: {str(e)}")
@@ -224,16 +224,13 @@ class YahooFinanceClient:
 
         model_name = self.models.get(
             "HuggingFaceH4"
-        )  # Use GPT-2 which is reliable with HF API
+        ) 
 
-        # Create a very simple prompt for GPT-2
         prompt = f"Financial analysis: {data[:500]}"
 
         print(f"Prompt: {prompt}")
         if model_name:
             try:
-                print(f"Using model: {model_name}")
-                print(f"Prompt length: {len(prompt)} characters")
 
                 # Use instruction based model to generate a summary
                 messages = [{"role": "user", "content": prompt}]
@@ -241,7 +238,6 @@ class YahooFinanceClient:
                 response = self.hf_client.chat_completion(
                     messages=messages, model=model_name, max_tokens=100, temperature=0.7
                 )
-                print(f"Response: {response}")
 
                 # Extract the text content from the ChatCompletionOutput object
                 if hasattr(response, "choices") and len(response.choices) > 0:
@@ -257,10 +253,7 @@ class YahooFinanceClient:
                 return str(response)
 
             except Exception as e:
-                print(f"HF API Error: {str(e)}")
-                import traceback
-
-                traceback.print_exc()
+                logger.error(f"HF API Error: {str(e)}")
                 return f"Financial Analysis Summary:\n\n{context}\n\nKey Data Points:\n{data[:500]}...\n\nNote: AI analysis failed - {str(e)}"
         else:
             return {"Error": "No model found"}

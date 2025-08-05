@@ -126,120 +126,16 @@ def get_ticker_info_sync(ticker: str):
         raise ValueError(f"No info found for ticker {ticker}")
 
     return info_data
-
-
-@app.get("/api/tickers/{ticker}/history")
-async def get_ticker_historical_data(ticker: str):  # Fixed: Added ticker parameter
-    try:
-        history_data = await run_in_threadpool(get_ticker_history_sync, ticker)
-        return {"history": history_data}
-
-    except ValueError as e:
-        raise HTTPException(status_code=404, detail=str(e))
-    except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"Failed to fetch history for {ticker}: {str(e)}"
-        )
-
-
-@app.get("/api/tickers/{ticker}/info")
-async def get_ticker_info_data(ticker: str):  # Fixed: Added ticker parameter
+    
+@app.get("/api/tickers/{ticker}/data")
+async def get_ticker_data(ticker: str):
     try:
         info_data = await run_in_threadpool(get_ticker_info_sync, ticker)
-        return {"info": info_data}
-
-    except ValueError as e:
-        raise HTTPException(status_code=404, detail=str(e))
+        history_data = await run_in_threadpool(get_ticker_history_sync, ticker)
+        return {"info_data": info_data, "history_data": history_data}
+    
     except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"Failed to fetch info for {ticker}: {str(e)}"
-        )
-
-
-@app.get("/api/dividend/top-picks")
-async def get_top_dividend_picks(top_n: int = 10):
-    """Get top dividend picks from available tickers"""
-    try:
-        # First get the list of available tickers
-        tickers_response = await get_tickers()
-        if not tickers_response or "nasdaq_ticker_list" not in tickers_response:
-            raise HTTPException(status_code=500, detail="Failed to fetch ticker list")
-
-        # Extract ticker symbols
-        ticker_data = tickers_response["nasdaq_ticker_list"]
-        ticker_symbols = [item["Symbol"] for item in ticker_data if item.get("Symbol")]
-
-        # Limit to first 500 tickers for performance (can be adjusted)
-        ticker_symbols = ticker_symbols[:500]
-
-        logger.info(f"Analyzing {len(ticker_symbols)} tickers for dividend picks")
-
-        # Create analyzer and get top picks
-        analyzer = DividendAnalyzer()
-        logger.info(f"Starting dividend analysis with {len(ticker_symbols)} tickers")
-        top_picks = analyzer.get_top_dividend_picks(ticker_symbols, top_n)
-        logger.info(f"Found {len(top_picks)} dividend picks")
-
-        # Convert to dictionary format for JSON response
-        picks_data = [dividend_stock_to_dict(stock) for stock in top_picks]
-        logger.info(f"Converted {len(picks_data)} picks to dictionary format")
-
-        return {
-            "top_picks": picks_data,
-            "total_analyzed": len(ticker_symbols),
-            "criteria": {
-                "min_market_cap": "100M",
-                "min_dividend_yield": "1%",
-                "max_payout_ratio": "90%",
-                "min_dividend_growth": "0%",
-            },
-        }
-
-    except Exception as e:
-        logger.error(f"Error in dividend analysis: {str(e)}")
-        raise HTTPException(
-            status_code=500, detail=f"Dividend analysis failed: {str(e)}"
-        )
-
-
-@app.get("/api/dividend/by-sector")
-async def get_dividend_stocks_by_sector():
-    """Get dividend stocks grouped by sector"""
-    try:
-        # First get the list of available tickers
-        tickers_response = await get_tickers()
-        if not tickers_response or "nasdaq_ticker_list" not in tickers_response:
-            raise HTTPException(status_code=500, detail="Failed to fetch ticker list")
-
-        # Extract ticker symbols
-        ticker_data = tickers_response["nasdaq_ticker_list"]
-        ticker_symbols = [item["Symbol"] for item in ticker_data if item.get("Symbol")]
-
-        # Limit to first 300 tickers for performance
-        ticker_symbols = ticker_symbols[:300]
-
-        logger.info(f"Analyzing {len(ticker_symbols)} tickers by sector")
-
-        # Create analyzer and get stocks by sector
-        analyzer = DividendAnalyzer()
-        sector_groups = analyzer.get_dividend_stocks_by_sector(ticker_symbols)
-
-        # Convert to dictionary format for JSON response
-        sector_data = {}
-        for sector, stocks in sector_groups.items():
-            sector_data[sector] = [dividend_stock_to_dict(stock) for stock in stocks]
-
-        return {
-            "sectors": sector_data,
-            "total_analyzed": len(ticker_symbols),
-            "total_dividend_stocks": sum(
-                len(stocks) for stocks in sector_groups.values()
-            ),
-        }
-
-    except Exception as e:
-        logger.error(f"Error in sector analysis: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Sector analysis failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to fetch data for {ticker}: {str(e)}")
 
 
 @app.get("/api/summary/{ticker}")
