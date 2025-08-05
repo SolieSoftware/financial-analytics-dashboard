@@ -18,33 +18,38 @@ import {
   Radio,
 } from "@mui/material";
 
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch } from "../redux/store";
-import { setSelectedTickerState } from "../redux/tickerSlice";
-import { fetchTickerList } from "../redux/tickerListSlice";
+import { useAppDispatch, useAppSelector } from "../redux/store";
+import { setSelectedTickerState } from "../redux/slices/tickerSlice";
+import { fetchTickerList } from "../redux/slices/tickerListSlice";
+import { fetchStockData } from "../redux/slices/stockSlice";
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
 import ExpandIcon from "@mui/icons-material/ExpandMore";
-
-import { TickerListResponse, TickerEntry } from "../types/tickerTypes";
+  
+import { TickerListResponse, TickerEntry } from "@/app/utils/types/tickerTypes";
 
 interface SideBarProps {
   onToggle?: (isOpen: boolean) => void;
 }
 
 const SideBar: React.FC<SideBarProps> = ({ onToggle }) => {
-  const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useAppDispatch();
   const [searchTerm, setSearchTerm] = useState("");
 
   // Get tickers from Redux store
-  const { tickers, isLoading, error } = useSelector(
-    (state: any) => state.tickerList
+  const { tickers, isLoading, error } = useAppSelector(
+    (state) => state.tickerList
   );
 
   // Get selected ticker from Redux store
-  const selectedTicker = useSelector(
-    (state: any) => state.ticker.selectedTicker
+  const selectedTicker = useAppSelector(
+    (state) => state.ticker.selectedTicker
   );
+
+  useEffect(() => {
+    if (!selectedTicker) return;
+    dispatch(fetchStockData(selectedTicker) as any);
+  }, [selectedTicker, dispatch]);
 
   useEffect(() => {
     // Fetch ticker list if not already loaded

@@ -1,14 +1,14 @@
-import SideBar from "../Sidebar/sidebar";
+import SideBar from "../sidebar/sidebar";
 import "../App.css";
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { AppDispatch } from "../redux/store";
-import { fetchTickerList } from "../redux/tickerListSlice";
+import { fetchTickerList } from "../redux/slices/tickerListSlice";
 import {
   fetchTopDividendPicks,
   setSelectedStock,
   DividendStock,
-} from "../redux/dividendSlice";
+} from "../redux/slices/dividendSlice";
 
 function DividendApp() {
   const dispatch = useDispatch<AppDispatch>();

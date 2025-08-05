@@ -1,28 +1,17 @@
 "use client";
 
-import { useSelector, useDispatch } from "react-redux";
-import { useEffect } from "react";
-import { fetchStockData } from "../redux/stockSlice";
+import { useAppSelector, useAppDispatch } from "../redux/store";
 import {
   Typography,
   Card,
   CardContent,
   Box,
-  Grid,
-  Container,
 } from "@mui/material";
 
 const BottomPanel = () => {
-  const dispatch = useDispatch();
-  const selectedTicker = useSelector(
-    (state: any) => state.ticker.selectedTicker
-  );
-  const { stockInfo, status, error } = useSelector((state: any) => state.stock);
 
-  useEffect(() => {
-    if (!selectedTicker) return;
-    dispatch(fetchStockData(selectedTicker) as any);
-  }, [selectedTicker, dispatch]);
+  const { selectedTicker } = useAppSelector((state) => state.ticker);
+  const { stockData, status, error } = useAppSelector((state) => state.stock);
 
   if (status === "loading") {
     return (
@@ -48,7 +37,7 @@ const BottomPanel = () => {
     );
   }
 
-  if (!stockInfo) {
+  if (!stockData) {
     return (
       <div style={{ color: "#a0aec0", fontSize: "1rem" }}>
         No company information available
@@ -182,15 +171,15 @@ const BottomPanel = () => {
         >
           <MetricCard
             title="Current Price"
-            value={stockInfo.info?.regularMarketPrice || "N/A"}
-            change={stockInfo.info?.regularMarketChange || "N/A"}
-            changePercent={stockInfo.info?.regularMarketChangePercent || 0}
+            value={stockData.info_data?.currentPrice || "N/A"}
+            change={stockData.info_data?.regularMarketChange || "N/A"}
+            changePercent={stockData.info_data?.regularMarketChangePercent || 0}
           />
           <MetricCard
             title="Market Cap"
             value={
-              stockInfo.info?.marketCap
-                ? `${(stockInfo.info.marketCap / 1e9).toFixed(2)}B`
+                stockData.info_data?.marketCap
+                ? `${(stockData.info_data.marketCap / 1e9).toFixed(2)}B`
                 : "N/A"
             }
             change={0}
@@ -199,8 +188,8 @@ const BottomPanel = () => {
           <MetricCard
             title="Volume"
             value={
-              stockInfo.info?.volume
-                ? `${(stockInfo.info.volume / 1e6).toFixed(2)}M`
+              stockData.info_data?.volume
+                ? `${(stockData.info_data.volume / 1e6).toFixed(2)}M`
                 : "N/A"
             }
             change={0}
@@ -208,7 +197,7 @@ const BottomPanel = () => {
           />
           <MetricCard
             title="52W High"
-            value={stockInfo.info?.fiftyTwoWeekHigh || "N/A"}
+            value={stockData.info_data?.fiftyTwoWeekHigh || "N/A"}
             change={0}
             changePercent={0}
           />
