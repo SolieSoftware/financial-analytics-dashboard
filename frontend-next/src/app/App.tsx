@@ -1,22 +1,27 @@
 // import ChartSelector from './Charts/RechartChart.tsx'
-import MUIChart from "./Charts/MUIChart";
-import SideBar from "./Sidebar/sidebar";
-import LeftPanel from "./Info/LeftPanel";
-import BottomPanel from "./Info/BottomPanel";
+import MUIChart from "./components/charts/MUIChart";
+import SideBar from "./components/sidebar/sidebar";
+import LeftPanel from "./components/info/LeftPanel";
+import BottomPanel from "./components/info/BottomPanel";
+import { fetchMarketSummary } from "./components/redux/slices/marketSummarySlice";
+import { useEffect } from "react";
 import "./App.css";
 import { useState } from "react";
-import { useSelector } from "react-redux";
+import { useAppSelector, useAppDispatch } from "./components/redux/store";
 
 function App() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const appDispatch = useAppDispatch();
 
   const handleSidebarToggle = (isOpen: boolean) => {
     setSidebarOpen(isOpen);
   };
 
-  const selectedTicker = useSelector(
-    (state: any) => state.ticker.selectedTicker
-  );
+  const selectedTicker = useAppSelector((state) => state.ticker.selectedTicker);
+
+  useEffect(() => {
+    appDispatch(fetchMarketSummary());
+  }, []);
 
   return (
     <div

@@ -1,4 +1,4 @@
-import SideBar from "../Sidebar/sidebar";
+import SideBar from "../sidebar/sidebar";
 import "../App.css";
 import { useState } from "react";
 import { useSelector } from "react-redux";

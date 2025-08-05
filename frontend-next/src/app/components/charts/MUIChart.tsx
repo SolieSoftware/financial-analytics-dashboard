@@ -1,48 +1,27 @@
 "use client";
 
 import { LineChart } from "@mui/x-charts";
-import { useSelector, useDispatch } from "react-redux";
 import { useEffect, useState } from "react";
-import { stockEntry, stockEntryCleaned, stockData } from "../types/chartTypes";
-import { fetchStockData } from "../redux/stockSlice";
+import { useAppSelector } from "../redux/store";
+import { stockEntryCleaned, stockEntry } from "@/app/utils/types/stockData";
 import dayjs from "dayjs";
 
 const MUIChart = () => {
-  const dispatch = useDispatch();
-  const selectedTicker = useSelector(
-    (state: any) => state.ticker.selectedTicker
+  const selectedTicker = useAppSelector(
+    (state) => state.ticker.selectedTicker
   );
-  const { stockData, status, error } = useSelector((state: any) => state.stock);
+
+  const { stockData, status, error } = useAppSelector((state) => state.stock);
+
+  useEffect(() => { 
+    // You can add any logic here that needs to run when selectedTicker changes
+  }, [selectedTicker]);
+
   const [data, setData] = useState<stockEntryCleaned[]>([]);
 
-  console.log(
-    "MUIChart: Current state - status:",
-    status,
-    "error:",
-    error,
-    "stockData:",
-    stockData
-  );
-
   useEffect(() => {
-    console.log("MUIChart: selectedTicker changed to:", selectedTicker);
-    if (!selectedTicker) {
-      console.log("MUIChart: No ticker selected, skipping API call");
-      return;
-    }
-    console.log("MUIChart: Dispatching fetchStockData for:", selectedTicker);
-    dispatch(fetchStockData(selectedTicker) as any);
-  }, [selectedTicker, dispatch]);
-
-  useEffect(() => {
-    console.log("MUIChart: stockData changed:", stockData);
-    if (stockData?.history) {
-      console.log(
-        "MUIChart: Processing stock data history:",
-        stockData.history.length,
-        "items"
-      );
-      const cleanedData = stockData.history.map((item: stockEntry) => ({
+    if (stockData?.history_data) {
+      const cleanedData = stockData.history_data.map((item: stockEntry) => ({
         ...item,
         Date: dayjs(item.Date).toDate(), // Convert to Date object instead of timestamp
       }));
@@ -53,7 +32,7 @@ const MUIChart = () => {
         "items"
       );
     } else {
-      console.log("MUIChart: No stock data history available");
+      console.log("MUIChart: No stock data history available", stockData);
     }
   }, [stockData]);
 
