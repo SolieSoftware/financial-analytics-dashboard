@@ -44,7 +44,7 @@ const LeftPanel = () => {
 
   if (status === "loading") {
     return (
-      <Box sx={{ p: 3, spaceY: 3 }}>
+      <Box sx={{ spaceY: 3 }}>
         <Card sx={{ backgroundColor: "rgba(26, 32, 44, 0.9)", border: "1px solid rgba(74, 85, 104, 0.3)" }}>
           <CardHeader>
             <Skeleton variant="text" width={200} height={32} />
@@ -64,7 +64,7 @@ const LeftPanel = () => {
 
   if (status === "failed") {
     return (
-      <Box sx={{ p: 3 }}>
+      <Box>
         <Alert severity="error" sx={{ backgroundColor: "rgba(239, 68, 68, 0.1)", border: "1px solid rgba(239, 68, 68, 0.3)" }}>
           <AlertTitle>Error</AlertTitle>
           Error loading company info: {error}
@@ -75,7 +75,7 @@ const LeftPanel = () => {
 
   if (!selectedTicker) {
     return (
-      <Box sx={{ p: 3 }}>
+      <Box>
         <Card sx={{ 
           backgroundColor: "rgba(26, 32, 44, 0.9)", 
           border: "1px solid rgba(74, 85, 104, 0.3)",
@@ -95,7 +95,7 @@ const LeftPanel = () => {
 
   if (!stockData) {
     return (
-      <Box sx={{ p: 3 }}>
+      <Box>
         <Alert severity="info" sx={{ backgroundColor: "rgba(59, 130, 246, 0.1)", border: "1px solid rgba(59, 130, 246, 0.3)" }}>
           <Info sx={{ mr: 1 }} />
           No company information available
@@ -107,7 +107,7 @@ const LeftPanel = () => {
   const companyInfo = stockData.info_data;
 
   return (
-    <Box sx={{ p: 3, maxWidth: "md" }}>
+    <Box sx={{ maxWidth: "md" }}>
       {/* Company Overview */}
       <Card sx={{ 
         mb: 3, 

@@ -16,16 +16,34 @@ import {
   TextField,
   RadioGroup,
   Radio,
+  Chip,
+  Badge,
+  LinearProgress,
+  Alert,
+  InputAdornment,
 } from "@mui/material";
+import {
+  Menu,
+  Close,
+  ExpandMore,
+  Search,
+  BarChart,
+  AttachMoney,
+  TrendingUp,
+  Star,
+  FilterList,
+  Speed,
+  Business,
+  PieChart,
+  CalendarToday,
+  Settings,
+  Flag,
+} from "@mui/icons-material";
 
 import { useAppDispatch, useAppSelector } from "../redux/store";
 import { setSelectedTickerState } from "../redux/slices/tickerSlice";
 import { fetchTickerList } from "../redux/slices/tickerListSlice";
 import { fetchStockData } from "../redux/slices/stockSlice";
-import MenuIcon from "@mui/icons-material/Menu";
-import CloseIcon from "@mui/icons-material/Close";
-import ExpandIcon from "@mui/icons-material/ExpandMore";
-  
 import { TickerListResponse, TickerEntry } from "@/app/utils/types/tickerTypes";
 
 interface SideBarProps {
@@ -42,9 +60,7 @@ const SideBar: React.FC<SideBarProps> = ({ onToggle }) => {
   );
 
   // Get selected ticker from Redux store
-  const selectedTicker = useAppSelector(
-    (state) => state.ticker.selectedTicker
-  );
+  const selectedTicker = useAppSelector((state) => state.ticker.selectedTicker);
 
   useEffect(() => {
     if (!selectedTicker) return;
@@ -81,7 +97,6 @@ const SideBar: React.FC<SideBarProps> = ({ onToggle }) => {
       (filter) =>
         !(filter.type == type && (type !== "index" || filter.value === value))
     );
-
     setActiveFilters([...filtered, { type, value }]);
   };
 
@@ -112,7 +127,7 @@ const SideBar: React.FC<SideBarProps> = ({ onToggle }) => {
           display: "flex",
           alignItems: "center",
           height: "100%",
-          padding: "0 8px",
+          padding: "0 4px",
         }}
         key={ticker}
       >
@@ -124,42 +139,54 @@ const SideBar: React.FC<SideBarProps> = ({ onToggle }) => {
               value={ticker}
               name={ticker}
               sx={{
-                color: "#a0aec0",
+                color: "#64748b",
+                padding: "6px",
                 "&.Mui-checked": {
-                  color: "#667eea",
+                  color: "#3b82f6",
+                },
+                "& .MuiSvgIcon-root": {
+                  fontSize: "18px",
                 },
               }}
             />
           }
           label={
-            <Typography
-              sx={{
-                fontSize: "0.85rem",
-                fontWeight: isSelected ? "bold" : "normal",
-                color: isSelected ? "#f7fafc" : "#a0aec0",
-                textTransform: "uppercase",
-                letterSpacing: "0.5px",
-              }}
-            >
-              {ticker}
-            </Typography>
+            <Box sx={{ display: "flex", alignItems: "center", flex: 1 }}>
+              <Typography
+                sx={{
+                  fontSize: "0.875rem",
+                  fontWeight: isSelected ? 600 : 500,
+                  color: isSelected ? "#f8fafc" : "#94a3b8",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.05em",
+                  flex: 1,
+                }}
+              >
+                {ticker}
+              </Typography>
+              {isSelected && (
+                <Star sx={{ fontSize: 12, color: "#3b82f6", ml: 1 }} />
+              )}
+            </Box>
           }
           sx={{
             width: "100%",
             margin: 0,
-            padding: "4px 8px",
-            borderRadius: "4px",
+            padding: "6px 12px",
+            borderRadius: "8px",
             backgroundColor: isSelected
-              ? "rgba(102, 126, 234, 0.1)"
+              ? "rgba(59, 130, 246, 0.1)"
               : "transparent",
             border: isSelected
-              ? "1px solid rgba(102, 126, 234, 0.3)"
+              ? "1px solid rgba(59, 130, 246, 0.2)"
               : "1px solid transparent",
-            transition: "all 0.2s ease",
+            transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
             "&:hover": {
               backgroundColor: isSelected
-                ? "rgba(102, 126, 234, 0.15)"
-                : "rgba(102, 126, 234, 0.05)",
+                ? "rgba(59, 130, 246, 0.15)"
+                : "rgba(59, 130, 246, 0.05)",
+              borderColor: "rgba(59, 130, 246, 0.2)",
+              transform: "translateX(2px)",
             },
           }}
         />
@@ -167,42 +194,85 @@ const SideBar: React.FC<SideBarProps> = ({ onToggle }) => {
     );
   };
 
+  const navigationItems = [
+    {
+      label: "Dashboard",
+      href: "/",
+      icon: BarChart,
+      active: true,
+      badge: null,
+    },
+    {
+      label: "Portfolio",
+      href: "/portfolio",
+      icon: Business,
+      active: false,
+      badge: "3",
+    },
+    {
+      label: "Dividend Picks",
+      href: "/dividend",
+      icon: AttachMoney,
+      active: false,
+      badge: "New",
+    },
+    {
+      label: "Market Analysis",
+      href: "/analysis",
+      icon: TrendingUp,
+      active: false,
+      badge: null,
+    },
+    {
+      label: "Watchlist",
+      href: "/watchlist",
+      icon: Star,
+      active: false,
+      badge: "12",
+    },
+    {
+      label: "Reports",
+      href: "/reports",
+      icon: PieChart,
+      active: false,
+      badge: null,
+    },
+  ];
+
   return (
     <>
+      {/* Toggle Button */}
       <IconButton
         onClick={toggleDrawer}
-        color="primary"
-        aria-label="toggle-sidebar"
         sx={{
           position: "fixed",
-          left: openDrawer ? 290 : 300,
-          top: 10,
+          left: openDrawer ? 320 : 20,
+          top: 20,
           zIndex: 9999,
-          transition: "left 0.3s ease",
-          bgcolor: "rgba(26, 32, 44, 0.95)",
+          transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+          background: "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)",
           backdropFilter: "blur(20px)",
-          border: "1px solid rgba(74, 85, 104, 0.3)",
+          border: "1px solid rgba(148, 163, 184, 0.2)",
           boxShadow: "0 8px 32px rgba(0, 0, 0, 0.3)",
-          minWidth: "48px",
-          minHeight: "48px",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          borderRadius: "8px",
+          width: "48px",
+          height: "48px",
+          borderRadius: "12px",
           "&:hover": {
-            bgcolor: "rgba(26, 32, 44, 0.98)",
+            background: "linear-gradient(135deg, #1e293b 0%, #334155 100%)",
             transform: "scale(1.05)",
-            borderColor: "rgba(102, 126, 234, 0.5)",
+            borderColor: "rgba(59, 130, 246, 0.4)",
             boxShadow: "0 12px 40px rgba(0, 0, 0, 0.4)",
           },
           "& .MuiSvgIcon-root": {
+            color: "#f8fafc",
             fontSize: "20px",
-            color: "#f7fafc",
           },
         }}
       >
-        {openDrawer ? <CloseIcon /> : <MenuIcon />}
+        {openDrawer ? <Close /> : <Menu />}
       </IconButton>
+
+      {/* Sidebar Drawer */}
       <Drawer
         open={openDrawer}
         anchor="left"
@@ -211,277 +281,535 @@ const SideBar: React.FC<SideBarProps> = ({ onToggle }) => {
           keepMounted: false,
         }}
         sx={{
-          width: 280,
+          width: 320,
           flexShrink: 0,
           "& .MuiDrawer-paper": {
-            width: 280,
+            width: 320,
             boxSizing: "border-box",
             position: "fixed",
             height: "100vh",
             top: 0,
             left: 0,
             zIndex: 1200,
+            background:
+              "linear-gradient(180deg, #020617 0%, #0f172a 50%, #1e293b 100%)",
+            border: "none",
+            borderRight: "1px solid rgba(148, 163, 184, 0.1)",
+            backdropFilter: "blur(20px)",
           },
         }}
       >
-        <Box sx={{ width: 250, p: 2 }}>
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              mb: 2,
-            }}
-          >
-            <Typography
-              variant="h6"
-              sx={{
-                color: "#f7fafc",
-                fontWeight: "bold",
-                fontSize: "1.1rem",
-              }}
-            >
-              Navigation
-            </Typography>
-          </Box>
-
-          {/* Navigation Links */}
-          <Box sx={{ mb: 3 }}>
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                gap: 1,
-              }}
-            >
+        <Box sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
+          {/* Header */}
+          <Box sx={{ p: 3, pb: 2 }}>
+            <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
               <Box
-                component="a"
-                href="/"
                 sx={{
                   display: "flex",
                   alignItems: "center",
-                  padding: "8px 12px",
-                  borderRadius: "6px",
-                  color: "#f7fafc",
-                  textDecoration: "none",
-                  backgroundColor: "rgba(102, 126, 234, 0.1)",
-                  border: "1px solid rgba(102, 126, 234, 0.2)",
-                  transition: "all 0.2s ease",
-                  "&:hover": {
-                    backgroundColor: "rgba(102, 126, 234, 0.2)",
-                    borderColor: "rgba(102, 126, 234, 0.4)",
-                  },
+                  justifyContent: "center",
+                  width: "40px",
+                  height: "40px",
+                  borderRadius: "12px",
+                  background: "linear-gradient(135deg, #3b82f6, #8b5cf6)",
+                  mr: 2,
                 }}
               >
-                <Typography sx={{ fontSize: "0.9rem", fontWeight: "500" }}>
-                  📊 Dashboard
+                <Speed sx={{ color: "#ffffff", fontSize: "20px" }} />
+              </Box>
+              <Box>
+                <Typography
+                  variant="h6"
+                  sx={{
+                    color: "#f8fafc",
+                    fontWeight: 700,
+                    fontSize: "1.125rem",
+                    lineHeight: 1.2,
+                  }}
+                >
+                  Financial Analytics
+                </Typography>
+                <Typography
+                  variant="caption"
+                  sx={{
+                    color: "#64748b",
+                    fontSize: "0.75rem",
+                    fontWeight: 500,
+                  }}
+                >
+                  Dashboard v2.0
                 </Typography>
               </Box>
+            </Box>
 
+            {/* Quick Stats */}
+            <Box
+              sx={{
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr",
+                gap: 1.5,
+                mb: 3,
+              }}
+            >
               <Box
-                component="a"
-                href="/dividend"
                 sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  padding: "8px 12px",
-                  borderRadius: "6px",
-                  color: "#a0aec0",
-                  textDecoration: "none",
-                  border: "1px solid rgba(74, 85, 104, 0.2)",
-                  transition: "all 0.2s ease",
-                  "&:hover": {
-                    backgroundColor: "rgba(102, 126, 234, 0.1)",
-                    borderColor: "rgba(102, 126, 234, 0.3)",
-                    color: "#f7fafc",
-                  },
+                  p: 1.5,
+                  borderRadius: "8px",
+                  background: "rgba(34, 197, 94, 0.1)",
+                  border: "1px solid rgba(34, 197, 94, 0.2)",
                 }}
               >
-                <Typography sx={{ fontSize: "0.9rem", fontWeight: "500" }}>
-                  💰 Dividend Picks
+                <Typography
+                  sx={{
+                    fontSize: "0.625rem",
+                    color: "#64748b",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.1em",
+                    mb: 0.5,
+                  }}
+                >
+                  Market
+                </Typography>
+                <Typography
+                  sx={{
+                    fontSize: "0.875rem",
+                    color: "#22c55e",
+                    fontWeight: 600,
+                  }}
+                >
+                  +2.4%
+                </Typography>
+              </Box>
+              <Box
+                sx={{
+                  p: 1.5,
+                  borderRadius: "8px",
+                  background: "rgba(59, 130, 246, 0.1)",
+                  border: "1px solid rgba(59, 130, 246, 0.2)",
+                }}
+              >
+                <Typography
+                  sx={{
+                    fontSize: "0.625rem",
+                    color: "#64748b",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.1em",
+                    mb: 0.5,
+                  }}
+                >
+                  Volume
+                </Typography>
+                <Typography
+                  sx={{
+                    fontSize: "0.875rem",
+                    color: "#3b82f6",
+                    fontWeight: 600,
+                  }}
+                >
+                  High
                 </Typography>
               </Box>
             </Box>
           </Box>
 
-          <Divider sx={{ mb: 2 }} />
+          <Divider sx={{ borderColor: "rgba(148, 163, 184, 0.1)" }} />
 
-          {/* Ticker Selection Section */}
-          <Accordion
-            defaultExpanded
+          {/* Navigation */}
+          <Box sx={{ p: 3, pb: 2 }}>
+            <Typography
+              sx={{
+                fontSize: "0.75rem",
+                color: "#64748b",
+                textTransform: "uppercase",
+                letterSpacing: "0.1em",
+                fontWeight: 600,
+                mb: 2,
+              }}
+            >
+              Navigation
+            </Typography>
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+              {navigationItems.map((item) => {
+                const IconComponent = item.icon;
+                return (
+                  <Box
+                    key={item.label}
+                    component="a"
+                    href={item.href}
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      padding: "12px 16px",
+                      borderRadius: "12px",
+                      color: item.active ? "#f8fafc" : "#94a3b8",
+                      textDecoration: "none",
+                      backgroundColor: item.active
+                        ? "rgba(59, 130, 246, 0.1)"
+                        : "transparent",
+                      border: item.active
+                        ? "1px solid rgba(59, 130, 246, 0.2)"
+                        : "1px solid transparent",
+                      transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+                      position: "relative",
+                      "&:hover": {
+                        backgroundColor: item.active
+                          ? "rgba(59, 130, 246, 0.15)"
+                          : "rgba(59, 130, 246, 0.05)",
+                        borderColor: "rgba(59, 130, 246, 0.2)",
+                        color: "#f8fafc",
+                        transform: "translateX(2px)",
+                      },
+                    }}
+                  >
+                    <IconComponent sx={{ fontSize: 16, mr: 1.5 }} />
+                    <Typography
+                      sx={{
+                        fontSize: "0.875rem",
+                        fontWeight: item.active ? 600 : 500,
+                        flex: 1,
+                      }}
+                    >
+                      {item.label}
+                    </Typography>
+                    {item.badge && (
+                      <Chip
+                        label={item.badge}
+                        size="small"
+                        sx={{
+                          height: "20px",
+                          fontSize: "0.625rem",
+                          fontWeight: 600,
+                          backgroundColor:
+                            item.badge === "New"
+                              ? "rgba(34, 197, 94, 0.2)"
+                              : "rgba(148, 163, 184, 0.2)",
+                          color: item.badge === "New" ? "#22c55e" : "#94a3b8",
+                          border: `1px solid ${
+                            item.badge === "New"
+                              ? "rgba(34, 197, 94, 0.3)"
+                              : "rgba(148, 163, 184, 0.3)"
+                          }`,
+                        }}
+                      />
+                    )}
+                  </Box>
+                );
+              })}
+            </Box>
+          </Box>
+
+          <Divider sx={{ borderColor: "rgba(148, 163, 184, 0.1)" }} />
+
+          {/* Ticker Selection */}
+          <Box
             sx={{
-              backgroundColor: "rgba(26, 32, 44, 0.5)",
-              borderRadius: "8px",
-              "& .MuiAccordionSummary-root": {
-                backgroundColor: "rgba(102, 126, 234, 0.1)",
-                borderRadius: "8px 8px 0 0",
-              },
-              "& .MuiAccordionDetails-root": {
-                backgroundColor: "rgba(26, 32, 44, 0.3)",
-                borderRadius: "0 0 8px 8px",
-              },
+              flex: 1,
+              overflow: "hidden",
+              display: "flex",
+              flexDirection: "column",
             }}
           >
-            <AccordionSummary
-              expandIcon={<ExpandIcon />}
+            <Accordion
+              defaultExpanded
               sx={{
-                "& .MuiAccordionSummary-content": {
-                  margin: "8px 0",
-                },
+                backgroundColor: "transparent",
+                boxShadow: "none",
+                "&:before": { display: "none" },
+                flex: 1,
+                display: "flex",
+                flexDirection: "column",
+              }}
+            >
+              <AccordionSummary
+                expandIcon={
+                  <ExpandMore sx={{ color: "#94a3b8", fontSize: 16 }} />
+                }
+                sx={{
+                  px: 3,
+                  py: 2,
+                  minHeight: "auto",
+                  "& .MuiAccordionSummary-content": {
+                    margin: "0",
+                    alignItems: "center",
+                  },
+                }}
+              >
+                <Box sx={{ display: "flex", alignItems: "center", flex: 1 }}>
+                  <Flag sx={{ color: "#3b82f6", fontSize: 16, mr: 1 }} />
+                  <Typography
+                    sx={{
+                      fontSize: "0.75rem",
+                      color: "#64748b",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.1em",
+                      fontWeight: 600,
+                      flex: 1,
+                    }}
+                  >
+                    Stock Tickers
+                  </Typography>
+                  <Badge
+                    badgeContent={filteredTickers.length}
+                    sx={{
+                      "& .MuiBadge-badge": {
+                        backgroundColor: "rgba(59, 130, 246, 0.2)",
+                        color: "#3b82f6",
+                        fontSize: "0.625rem",
+                        fontWeight: 600,
+                        border: "1px solid rgba(59, 130, 246, 0.3)",
+                      },
+                    }}
+                  >
+                    <FilterList sx={{ color: "#64748b", fontSize: 12 }} />
+                  </Badge>
+                </Box>
+              </AccordionSummary>
+
+              <AccordionDetails
+                sx={{
+                  px: 3,
+                  pb: 3,
+                  pt: 0,
+                  flex: 1,
+                  display: "flex",
+                  flexDirection: "column",
+                  overflow: "hidden",
+                }}
+              >
+                <FormControl
+                  component="fieldset"
+                  sx={{ flex: 1, display: "flex", flexDirection: "column" }}
+                >
+                  {/* Search Field */}
+                  <TextField
+                    placeholder="Search tickers..."
+                    variant="outlined"
+                    size="small"
+                    fullWidth
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <Search sx={{ color: "#64748b", fontSize: 16 }} />
+                        </InputAdornment>
+                      ),
+                    }}
+                    sx={{
+                      mb: 2,
+                      "& .MuiOutlinedInput-root": {
+                        backgroundColor: "rgba(15, 23, 42, 0.5)",
+                        borderRadius: "8px",
+                        color: "#f8fafc",
+                        fontSize: "0.875rem",
+                        "& fieldset": {
+                          borderColor: "rgba(148, 163, 184, 0.2)",
+                        },
+                        "&:hover fieldset": {
+                          borderColor: "rgba(59, 130, 246, 0.4)",
+                        },
+                        "&.Mui-focused fieldset": {
+                          borderColor: "rgba(59, 130, 246, 0.6)",
+                        },
+                      },
+                      "& .MuiInputBase-input": {
+                        color: "#f8fafc",
+                        "&::placeholder": {
+                          color: "#64748b",
+                          opacity: 1,
+                        },
+                      },
+                    }}
+                  />
+
+                  {/* Selected Ticker Display */}
+                  {selectedTicker && (
+                    <Box
+                      sx={{
+                        mb: 2,
+                        p: 2,
+                        background:
+                          "linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1))",
+                        borderRadius: "12px",
+                        border: "1px solid rgba(59, 130, 246, 0.2)",
+                      }}
+                    >
+                      <Box
+                        sx={{ display: "flex", alignItems: "center", mb: 1 }}
+                      >
+                        <Star sx={{ color: "#3b82f6", fontSize: 16, mr: 1 }} />
+                        <Typography
+                          sx={{
+                            fontSize: "0.625rem",
+                            color: "#64748b",
+                            textTransform: "uppercase",
+                            letterSpacing: "0.1em",
+                            fontWeight: 600,
+                          }}
+                        >
+                          Selected Ticker
+                        </Typography>
+                      </Box>
+                      <Typography
+                        sx={{
+                          fontSize: "1.125rem",
+                          fontWeight: 700,
+                          color: "#f8fafc",
+                          textTransform: "uppercase",
+                          letterSpacing: "0.05em",
+                        }}
+                      >
+                        {selectedTicker}
+                      </Typography>
+                    </Box>
+                  )}
+
+                  {/* Loading State */}
+                  {isLoading && (
+                    <Box
+                      sx={{
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        py: 4,
+                      }}
+                    >
+                      <LinearProgress
+                        sx={{
+                          width: "100%",
+                          mb: 2,
+                          height: "4px",
+                          borderRadius: "2px",
+                          backgroundColor: "rgba(148, 163, 184, 0.1)",
+                          "& .MuiLinearProgress-bar": {
+                            background:
+                              "linear-gradient(90deg, #3b82f6, #8b5cf6)",
+                            borderRadius: "2px",
+                          },
+                        }}
+                      />
+                      <Typography
+                        sx={{ color: "#64748b", fontSize: "0.875rem" }}
+                      >
+                        Loading tickers...
+                      </Typography>
+                    </Box>
+                  )}
+
+                  {/* Error State */}
+                  {error && (
+                    <Alert
+                      severity="error"
+                      sx={{
+                        backgroundColor: "rgba(239, 68, 68, 0.1)",
+                        border: "1px solid rgba(239, 68, 68, 0.2)",
+                        borderRadius: "8px",
+                        color: "#fca5a5",
+                        "& .MuiAlert-icon": {
+                          color: "#ef4444",
+                        },
+                      }}
+                    >
+                      <Typography sx={{ fontSize: "0.875rem" }}>
+                        Error: {error}
+                      </Typography>
+                    </Alert>
+                  )}
+
+                  {/* Ticker List */}
+                  {!isLoading && !error && (
+                    <Box sx={{ flex: 1, minHeight: 0 }}>
+                      <RadioGroup
+                        value={selectedTicker}
+                        onChange={handleRadioChange}
+                      >
+                        <Box
+                          sx={{
+                            height: "300px",
+                            borderRadius: "8px",
+                            border: "1px solid rgba(148, 163, 184, 0.1)",
+                            backgroundColor: "rgba(15, 23, 42, 0.3)",
+                            overflow: "hidden",
+                            "&::-webkit-scrollbar": {
+                              width: "6px",
+                            },
+                            "&::-webkit-scrollbar-track": {
+                              backgroundColor: "rgba(15, 23, 42, 0.5)",
+                            },
+                            "&::-webkit-scrollbar-thumb": {
+                              backgroundColor: "rgba(59, 130, 246, 0.5)",
+                              borderRadius: "3px",
+                            },
+                            "&::-webkit-scrollbar-thumb:hover": {
+                              backgroundColor: "rgba(59, 130, 246, 0.7)",
+                            },
+                          }}
+                        >
+                          <List
+                            height={300}
+                            itemCount={filteredTickers.length}
+                            itemSize={44}
+                            width="100%"
+                          >
+                            {Row}
+                          </List>
+                        </Box>
+                      </RadioGroup>
+
+                      {/* Results Count */}
+                      <Typography
+                        sx={{
+                          fontSize: "0.75rem",
+                          color: "#64748b",
+                          mt: 2,
+                          textAlign: "center",
+                          fontWeight: 500,
+                        }}
+                      >
+                        {filteredTickers.length} of{" "}
+                        {Object.keys(tickers ?? {}).length} tickers
+                      </Typography>
+                    </Box>
+                  )}
+                </FormControl>
+              </AccordionDetails>
+            </Accordion>
+          </Box>
+
+          {/* Footer */}
+          <Box sx={{ p: 3, pt: 2 }}>
+            <Divider sx={{ mb: 2, borderColor: "rgba(148, 163, 184, 0.1)" }} />
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
               }}
             >
               <Typography
                 sx={{
-                  textAlign: "center",
-                  width: "100%",
-                  fontWeight: "bold",
-                  color: "#f7fafc",
-                  fontSize: "0.9rem",
+                  fontSize: "0.75rem",
+                  color: "#64748b",
+                  fontWeight: 500,
                 }}
               >
-                📈 Stock Tickers
+                © 2024 Analytics Pro
               </Typography>
-            </AccordionSummary>
-            <AccordionDetails sx={{ p: 2 }}>
-              <FormControl component="fieldset" fullWidth>
-                {/* Search Field */}
-                <TextField
-                  label="Search Tickers"
-                  variant="outlined"
-                  size="small"
-                  fullWidth
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  sx={{
-                    mb: 2,
-                    "& .MuiOutlinedInput-root": {
-                      backgroundColor: "rgba(26, 32, 44, 0.8)",
-                      color: "#f7fafc",
-                      "& fieldset": {
-                        borderColor: "rgba(74, 85, 104, 0.3)",
-                      },
-                      "&:hover fieldset": {
-                        borderColor: "rgba(102, 126, 234, 0.5)",
-                      },
-                      "&.Mui-focused fieldset": {
-                        borderColor: "rgba(102, 126, 234, 0.8)",
-                      },
-                    },
-                    "& .MuiInputLabel-root": {
-                      color: "#a0aec0",
-                    },
-                    "& .MuiInputBase-input": {
-                      color: "#f7fafc",
-                    },
-                  }}
-                />
-
-                {/* Selected Ticker Display */}
-                {selectedTicker && (
-                  <Box
-                    sx={{
-                      mb: 2,
-                      p: 1,
-                      backgroundColor: "rgba(102, 126, 234, 0.1)",
-                      borderRadius: "6px",
-                      border: "1px solid rgba(102, 126, 234, 0.3)",
-                    }}
-                  >
-                    <Typography
-                      sx={{ fontSize: "0.8rem", color: "#a0aec0", mb: 0.5 }}
-                    >
-                      Selected:
-                    </Typography>
-                    <Typography
-                      sx={{
-                        fontSize: "1rem",
-                        fontWeight: "bold",
-                        color: "#f7fafc",
-                      }}
-                    >
-                      {selectedTicker.toUpperCase()}
-                    </Typography>
-                  </Box>
-                )}
-
-                {/* Ticker List */}
-                {isLoading ? (
-                  <Box
-                    sx={{
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      height: "200px",
-                      color: "#a0aec0",
-                    }}
-                  >
-                    <Typography>Loading tickers...</Typography>
-                  </Box>
-                ) : error ? (
-                  <Box
-                    sx={{
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      height: "200px",
-                      color: "#fc8181",
-                    }}
-                  >
-                    <Typography>Error: {error}</Typography>
-                  </Box>
-                ) : (
-                  <RadioGroup
-                    value={selectedTicker}
-                    onChange={handleRadioChange}
-                  >
-                    <Box
-                      sx={{
-                        maxHeight: "200px",
-                        overflow: "auto",
-                        "&::-webkit-scrollbar": {
-                          width: "6px",
-                        },
-                        "&::-webkit-scrollbar-track": {
-                          backgroundColor: "rgba(26, 32, 44, 0.3)",
-                          borderRadius: "3px",
-                        },
-                        "&::-webkit-scrollbar-thumb": {
-                          backgroundColor: "rgba(102, 126, 234, 0.5)",
-                          borderRadius: "3px",
-                        },
-                        "&::-webkit-scrollbar-thumb:hover": {
-                          backgroundColor: "rgba(102, 126, 234, 0.7)",
-                        },
-                      }}
-                    >
-                      <List
-                        height={200}
-                        itemCount={filteredTickers.length}
-                        itemSize={40}
-                        width="100%"
-                      >
-                        {Row}
-                      </List>
-                    </Box>
-                  </RadioGroup>
-                )}
-
-                {/* Results Count */}
-                {!isLoading && !error && (
-                  <Typography
-                    sx={{
-                      fontSize: "0.75rem",
-                      color: "#a0aec0",
-                      mt: 1,
-                      textAlign: "center",
-                    }}
-                  >
-                    {filteredTickers.length} tickers found
-                  </Typography>
-                )}
-              </FormControl>
-            </AccordionDetails>
-          </Accordion>
+              <IconButton
+                size="small"
+                sx={{
+                  color: "#64748b",
+                  "&:hover": {
+                    color: "#3b82f6",
+                    backgroundColor: "rgba(59, 130, 246, 0.1)",
+                  },
+                }}
+              >
+                <Settings sx={{ fontSize: 16 }} />
+              </IconButton>
+            </Box>
+          </Box>
         </Box>
       </Drawer>
     </>
