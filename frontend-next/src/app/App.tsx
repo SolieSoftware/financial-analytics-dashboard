@@ -35,23 +35,15 @@ function App() {
       <div className="main-content">
         {/* Chart positioned top-right */}
         <div className="chart-container">
-          <div className="chart-header">
-            <div>
-              <h2 className="chart-title">Financial Analytics Dashboard</h2>
-              <p className="chart-subtitle">{selectedTicker}</p>
-            </div>
-          </div>
-          <div className="chart-content">
-            <MUIChart />
-          </div>
+          <MUIChart />
         </div>
 
-        {/* Left content area for additional information */}
+        {/* Left content area for company information */}
         <div className="content-area-left">
           <LeftPanel />
         </div>
 
-        {/* Bottom content area for additional information */}
+        {/* Bottom content area for performance analytics */}
         <div className="content-area-bottom">
           <BottomPanel />
         </div>

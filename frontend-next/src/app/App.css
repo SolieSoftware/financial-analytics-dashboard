@@ -95,7 +95,7 @@
   width: 100%;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  grid-template-rows: 500px auto;
+  grid-template-rows: auto auto;
   gap: 2rem;
   padding: 1rem;
   box-sizing: border-box;
@@ -107,7 +107,6 @@
   grid-column: 2;
   grid-row: 1;
   width: 100%;
-  max-width: 100%;
   height: 500px;
   background: rgba(26, 32, 44, 0.95);
   backdrop-filter: blur(20px);
@@ -116,6 +115,7 @@
   border: 1px solid rgba(74, 85, 104, 0.3);
   transition: all 0.3s ease;
   z-index: 5;
+  overflow: hidden;
 }
 
 .chart-container:hover {
@@ -157,18 +157,20 @@
   justify-content: center;
 }
 
-/* Space for additional content areas */
+/* Left content area - spans full height */
 .content-area-left {
   grid-column: 1;
   grid-row: 1 / span 2;
   background: rgba(26, 32, 44, 0.8);
   border-radius: 12px;
-  padding: 2rem;
+  padding: 1rem;
   backdrop-filter: blur(20px);
   border: 1px solid rgba(74, 85, 104, 0.3);
   width: 100%;
   box-sizing: border-box;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  overflow-y: auto;
+  max-height: calc(100vh - 4rem);
 }
 
 .content-area-left h3 {
@@ -196,18 +198,22 @@
   color: #cbd5e0;
 }
 
+/* Bottom content area - positioned below chart */
 .content-area-bottom {
   grid-column: 2;
   grid-row: 2;
   background: rgba(26, 32, 44, 0.8);
   border-radius: 12px;
-  padding: 2rem;
+  padding: 1rem;
   backdrop-filter: blur(20px);
   border: 1px solid rgba(74, 85, 104, 0.3);
   width: 100%;
   box-sizing: border-box;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
-  margin-top: 0;
+  overflow-y: auto;
+  max-height: calc(
+    100vh - 4rem - 500px - 2rem
+  ); /* Account for chart height and gaps */
 }
 
 .content-area-bottom h3 {
@@ -238,23 +244,21 @@
 /* Responsive design */
 @media (max-width: 1400px) {
   .chart-container {
-    width: 100%;
-    height: 350px;
+    height: 400px;
   }
 
   .content-area-bottom {
-    margin-top: 370px;
+    max-height: calc(100vh - 4rem - 400px - 2rem);
   }
 }
 
 @media (max-width: 1200px) {
   .chart-container {
-    width: 100%;
     height: 350px;
   }
 
   .content-area-bottom {
-    margin-top: 370px;
+    max-height: calc(100vh - 4rem - 350px - 2rem);
   }
 }
 
@@ -276,12 +280,25 @@
     width: 100%;
     grid-template-columns: 1fr;
     grid-template-rows: auto auto auto;
+    gap: 1rem;
+  }
+
+  .chart-container {
+    grid-column: 1;
+    grid-row: 1;
+    height: 300px;
+  }
+
+  .content-area-left {
+    grid-column: 1;
+    grid-row: 2;
+    max-height: none;
   }
 
   .content-area-bottom {
     grid-column: 1;
     grid-row: 3;
-    margin-top: 0;
+    max-height: none;
   }
 }
 
