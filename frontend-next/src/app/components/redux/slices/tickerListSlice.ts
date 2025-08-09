@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import { TickerListResponse, TickerEntry } from "../../../types/tickerTypes";
+import { TickerListResponse, TickerEntry } from "@/app/utils/types/tickerTypes";
 
 interface TickerListState {
   tickers: Record<string, boolean>;
