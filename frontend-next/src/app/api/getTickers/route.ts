@@ -3,15 +3,31 @@ import { createClient } from "@/app/utils/supabase/serverClient";
 import { cookies } from "next/headers";
 
 export async function GET(request: NextRequest) {
-  const supabase = await createClient(cookies());
+  try {
 
-  const { data, error } = await supabase.from("listings").select("*");
+    const supabase = await createClient(cookies());
 
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    const { data, error } = await supabase.from("listings").select("Symbol").gt("Market Cap", 10000000000);
+
+    if (error) {
+      console.error("Error fetching tickers:", error);
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
+    const tickers: { [key: string]: boolean } = {};
+
+    data.forEach((item: { Symbol: string }) => {
+      tickers[item.Symbol] = false;
+    });
+
+    return NextResponse.json({data: tickers});
+  } catch (error) {
+    console.error("Unexpected error:", error);
+    return NextResponse.json(
+      {
+        error: "Internal server error",
+      },
+      { status: 500 }
+    );
   }
-
-  console.log(data);
-
-  return NextResponse.json(data);
 }

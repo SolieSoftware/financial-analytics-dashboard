@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { fetchTickerList } from "../redux/slices/tickerListSlice";
+import { fetchStockData } from "../redux/slices/stockSlice";
 import { FixedSizeList as List, ListChildComponentProps } from "react-window";
 import {
   Drawer,
@@ -16,7 +18,6 @@ import {
   TextField,
   RadioGroup,
   Radio,
-  Chip,
   Badge,
   LinearProgress,
   Alert,
@@ -27,24 +28,17 @@ import {
   Close,
   ExpandMore,
   Search,
-  BarChart,
-  AttachMoney,
-  TrendingUp,
   Star,
   FilterList,
   Speed,
-  Business,
-  PieChart,
-  CalendarToday,
   Settings,
   Flag,
 } from "@mui/icons-material";
 
+import { Navigation } from "../sidebar/navigation";
+
 import { useAppDispatch, useAppSelector } from "../redux/store";
 import { setSelectedTickerState } from "../redux/slices/tickerSlice";
-import { fetchTickerList } from "../redux/slices/tickerListSlice";
-import { fetchStockData } from "../redux/slices/stockSlice";
-import { TickerListResponse, TickerEntry } from "@/app/utils/types/tickerTypes";
 
 interface SideBarProps {
   onToggle?: (isOpen: boolean) => void;
@@ -55,24 +49,18 @@ const SideBar: React.FC<SideBarProps> = ({ onToggle }) => {
   const [searchTerm, setSearchTerm] = useState("");
 
   // Get tickers from Redux store
-  const { tickers, isLoading, error } = useAppSelector(
+  const { tickerList, isLoading, error } = useAppSelector(
     (state) => state.tickerList
   );
 
-  // Get selected ticker from Redux store
-  const selectedTicker = useAppSelector((state) => state.ticker.selectedTicker);
-
   useEffect(() => {
-    if (!selectedTicker) return;
-    dispatch(fetchStockData(selectedTicker) as any);
-  }, [selectedTicker, dispatch]);
-
-  useEffect(() => {
-    // Fetch ticker list if not already loaded
-    if (Object.keys(tickers).length === 0) {
+    if (!tickerList) {
       dispatch(fetchTickerList());
     }
-  }, [dispatch, tickers]);
+  }, [tickerList, dispatch]);
+
+  // Get selected ticker from Redux store
+  const selectedTicker = useAppSelector((state) => state.ticker.selectedTicker);
 
   interface ActiveFilter {
     type: string;
@@ -88,7 +76,7 @@ const SideBar: React.FC<SideBarProps> = ({ onToggle }) => {
     onToggle?.(newState);
   };
 
-  const filteredTickers = Object.keys(tickers ?? {}).filter((ticker) =>
+  const filteredTickers = Object?.keys(tickerList ?? {})?.filter((ticker) =>
     ticker.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -113,6 +101,7 @@ const SideBar: React.FC<SideBarProps> = ({ onToggle }) => {
 
   const handleRadioChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     dispatch(setSelectedTickerState(event.target.value));
+    dispatch(fetchStockData(event.target.value));
     updateActiveFilters("ticker", event.target.value);
   };
 
@@ -122,6 +111,7 @@ const SideBar: React.FC<SideBarProps> = ({ onToggle }) => {
 
     return (
       <div
+        key={ticker}
         style={{
           ...style,
           display: "flex",
@@ -129,7 +119,6 @@ const SideBar: React.FC<SideBarProps> = ({ onToggle }) => {
           height: "100%",
           padding: "0 4px",
         }}
-        key={ticker}
       >
         <FormControlLabel
           control={
@@ -193,51 +182,6 @@ const SideBar: React.FC<SideBarProps> = ({ onToggle }) => {
       </div>
     );
   };
-
-  const navigationItems = [
-    {
-      label: "Dashboard",
-      href: "/",
-      icon: BarChart,
-      active: true,
-      badge: null,
-    },
-    {
-      label: "Portfolio",
-      href: "/portfolio",
-      icon: Business,
-      active: false,
-      badge: "3",
-    },
-    {
-      label: "Dividend Picks",
-      href: "/dividend",
-      icon: AttachMoney,
-      active: false,
-      badge: "New",
-    },
-    {
-      label: "Market Analysis",
-      href: "/analysis",
-      icon: TrendingUp,
-      active: false,
-      badge: null,
-    },
-    {
-      label: "Watchlist",
-      href: "/watchlist",
-      icon: Star,
-      active: false,
-      badge: "12",
-    },
-    {
-      label: "Reports",
-      href: "/reports",
-      icon: PieChart,
-      active: false,
-      badge: null,
-    },
-  ];
 
   return (
     <>
@@ -337,7 +281,7 @@ const SideBar: React.FC<SideBarProps> = ({ onToggle }) => {
                     fontWeight: 500,
                   }}
                 >
-                  Dashboard v2.0
+                  Dashboard
                 </Typography>
               </Box>
             </Box>
@@ -414,91 +358,9 @@ const SideBar: React.FC<SideBarProps> = ({ onToggle }) => {
 
           <Divider sx={{ borderColor: "rgba(148, 163, 184, 0.1)" }} />
 
-          {/* Navigation */}
           <Box sx={{ p: 3, pb: 2 }}>
-            <Typography
-              sx={{
-                fontSize: "0.75rem",
-                color: "#64748b",
-                textTransform: "uppercase",
-                letterSpacing: "0.1em",
-                fontWeight: 600,
-                mb: 2,
-              }}
-            >
-              Navigation
-            </Typography>
-            <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-              {navigationItems.map((item) => {
-                const IconComponent = item.icon;
-                return (
-                  <Box
-                    key={item.label}
-                    component="a"
-                    href={item.href}
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      padding: "12px 16px",
-                      borderRadius: "12px",
-                      color: item.active ? "#f8fafc" : "#94a3b8",
-                      textDecoration: "none",
-                      backgroundColor: item.active
-                        ? "rgba(59, 130, 246, 0.1)"
-                        : "transparent",
-                      border: item.active
-                        ? "1px solid rgba(59, 130, 246, 0.2)"
-                        : "1px solid transparent",
-                      transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
-                      position: "relative",
-                      "&:hover": {
-                        backgroundColor: item.active
-                          ? "rgba(59, 130, 246, 0.15)"
-                          : "rgba(59, 130, 246, 0.05)",
-                        borderColor: "rgba(59, 130, 246, 0.2)",
-                        color: "#f8fafc",
-                        transform: "translateX(2px)",
-                      },
-                    }}
-                  >
-                    <IconComponent sx={{ fontSize: 16, mr: 1.5 }} />
-                    <Typography
-                      sx={{
-                        fontSize: "0.875rem",
-                        fontWeight: item.active ? 600 : 500,
-                        flex: 1,
-                      }}
-                    >
-                      {item.label}
-                    </Typography>
-                    {item.badge && (
-                      <Chip
-                        label={item.badge}
-                        size="small"
-                        sx={{
-                          height: "20px",
-                          fontSize: "0.625rem",
-                          fontWeight: 600,
-                          backgroundColor:
-                            item.badge === "New"
-                              ? "rgba(34, 197, 94, 0.2)"
-                              : "rgba(148, 163, 184, 0.2)",
-                          color: item.badge === "New" ? "#22c55e" : "#94a3b8",
-                          border: `1px solid ${
-                            item.badge === "New"
-                              ? "rgba(34, 197, 94, 0.3)"
-                              : "rgba(148, 163, 184, 0.3)"
-                          }`,
-                        }}
-                      />
-                    )}
-                  </Box>
-                );
-              })}
-            </Box>
+            <Navigation />
           </Box>
-
-          <Divider sx={{ borderColor: "rgba(148, 163, 184, 0.1)" }} />
 
           {/* Ticker Selection */}
           <Box
@@ -604,9 +466,6 @@ const SideBar: React.FC<SideBarProps> = ({ onToggle }) => {
                         fontSize: "0.875rem",
                         "& fieldset": {
                           borderColor: "rgba(148, 163, 184, 0.2)",
-                        },
-                        "&:hover fieldset": {
-                          borderColor: "rgba(59, 130, 246, 0.4)",
                         },
                         "&.Mui-focused fieldset": {
                           borderColor: "rgba(59, 130, 246, 0.6)",
@@ -768,7 +627,7 @@ const SideBar: React.FC<SideBarProps> = ({ onToggle }) => {
                         }}
                       >
                         {filteredTickers.length} of{" "}
-                        {Object.keys(tickers ?? {}).length} tickers
+                        {Object.keys(tickerList ?? {}).length} tickers
                       </Typography>
                     </Box>
                   )}

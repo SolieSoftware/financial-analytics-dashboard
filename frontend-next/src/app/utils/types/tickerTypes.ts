@@ -1,14 +1,12 @@
-export type TickerEntry = {
-    "Symbol": string
-    "Security Name": string;
-    "Market Category": string;
-    "Test Issue": string;
-    "Financial Status": string;
-    "Round Lot Size": number;
-    "ETF": string;
-    "NextShares": string;
-};
+interface TickerListResponse {
+    tickerList: { [key: string]: boolean };
+    isLoading: boolean;
+    error: string | null;
+  }
 
-export type TickerListResponse = {
-    "nasdaq_ticker_list": TickerEntry[]
-};
+  interface TickerEntry {
+    Symbol: string;
+    Selected: boolean;
+  }
+
+  export type { TickerListResponse, TickerEntry };

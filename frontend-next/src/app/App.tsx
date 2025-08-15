@@ -4,6 +4,7 @@ import SideBar from "./components/sidebar/sidebar";
 import LeftPanel from "./components/info/LeftPanel";
 import BottomPanel from "./components/info/BottomPanel";
 import { fetchMarketSummary } from "./components/redux/slices/marketSummarySlice";
+import { fetchTickerList } from "./components/redux/slices/tickerListSlice";
 import { useEffect } from "react";
 import "./App.css";
 import { useState } from "react";
@@ -21,6 +22,7 @@ function App() {
 
   useEffect(() => {
     appDispatch(fetchMarketSummary());
+    appDispatch(fetchTickerList());
   }, []);
 
   return (
