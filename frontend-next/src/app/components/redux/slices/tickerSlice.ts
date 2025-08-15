@@ -4,7 +4,7 @@ interface TickerState {
     selectedTicker: string
 };
 
-const initialState: TickerState = {
+const initialState: TickerState = { 
     selectedTicker: ''
 };
 
