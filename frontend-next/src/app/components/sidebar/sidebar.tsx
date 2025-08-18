@@ -54,10 +54,10 @@ const SideBar: React.FC<SideBarProps> = ({ onToggle }) => {
   );
 
   useEffect(() => {
-    if (!tickerList) {
-      dispatch(fetchTickerList());
+    if (Object.keys(tickerList).length === 0) {
+      dispatch(fetchTickerList(searchTerm));
     }
-  }, [tickerList, dispatch]);
+  }, [dispatch]);
 
   // Get selected ticker from Redux store
   const selectedTicker = useAppSelector((state) => state.ticker.selectedTicker);
@@ -577,60 +577,14 @@ const SideBar: React.FC<SideBarProps> = ({ onToggle }) => {
                   )}
 
                   {/* Ticker List */}
-                  {!isLoading && !error && (
-                    <Box sx={{ flex: 1, minHeight: 0 }}>
-                      <RadioGroup
-                        value={selectedTicker}
-                        onChange={handleRadioChange}
-                      >
-                        <Box
-                          sx={{
-                            height: "300px",
-                            borderRadius: "8px",
-                            border: "1px solid rgba(148, 163, 184, 0.1)",
-                            backgroundColor: "rgba(15, 23, 42, 0.3)",
-                            overflow: "hidden",
-                            "&::-webkit-scrollbar": {
-                              width: "6px",
-                            },
-                            "&::-webkit-scrollbar-track": {
-                              backgroundColor: "rgba(15, 23, 42, 0.5)",
-                            },
-                            "&::-webkit-scrollbar-thumb": {
-                              backgroundColor: "rgba(59, 130, 246, 0.5)",
-                              borderRadius: "3px",
-                            },
-                            "&::-webkit-scrollbar-thumb:hover": {
-                              backgroundColor: "rgba(59, 130, 246, 0.7)",
-                            },
-                          }}
-                        >
-                          <List
-                            height={300}
-                            itemCount={filteredTickers.length}
-                            itemSize={44}
-                            width="100%"
-                          >
-                            {Row}
-                          </List>
-                        </Box>
-                      </RadioGroup>
-
-                      {/* Results Count */}
-                      <Typography
-                        sx={{
-                          fontSize: "0.75rem",
-                          color: "#64748b",
-                          mt: 2,
-                          textAlign: "center",
-                          fontWeight: 500,
-                        }}
-                      >
-                        {filteredTickers.length} of{" "}
-                        {Object.keys(tickerList ?? {}).length} tickers
-                      </Typography>
-                    </Box>
-                  )}
+                  <List
+                    height={300}
+                    itemCount={filteredTickers.length}
+                    itemSize={40}
+                    width="100%"
+                  >
+                    {Row}
+                  </List>
                 </FormControl>
               </AccordionDetails>
             </Accordion>

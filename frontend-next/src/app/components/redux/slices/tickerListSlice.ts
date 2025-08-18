@@ -2,24 +2,22 @@ import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { endpoints } from "@/app/utils/endpoints";
 import { TickerListResponse } from "@/app/utils/types/tickerTypes";
 
-// Async thunk for fetching ticker list
 export const fetchTickerList = createAsyncThunk(
   "tickerList/fetchTickerList",
-  async (_, { rejectWithValue }) => {
+  async (searchQuery: string = "", { rejectWithValue }) => {
     try {
       const response = await fetch(endpoints.getTickers, {
-        method: "GET",
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
+        body: JSON.stringify({ query: searchQuery }),
       });
 
       if (!response.ok) {
         throw new Error("Failed to fetch ticker list");
       }
       const { data: tickerList } = await response.json();
-
-      console.log("This is the data", tickerList);
 
       return { tickerList, isLoading: false, error: null };
     } catch (error) {

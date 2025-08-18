@@ -22,7 +22,7 @@ function App() {
 
   useEffect(() => {
     appDispatch(fetchMarketSummary());
-    appDispatch(fetchTickerList());
+    appDispatch(fetchTickerList(""));
   }, []);
 
   return (
