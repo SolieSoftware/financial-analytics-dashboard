@@ -1,13 +1,6 @@
 import { BarChart, Business, AttachMoney, TrendingUp, Star, PieChart } from "@mui/icons-material";
 import { Box, Typography, Chip, Divider } from "@mui/material";
 
-
-
-
-
-
-
-
 export const Navigation = () => {
     const navigationItems = [
         {
