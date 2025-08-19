@@ -18,7 +18,6 @@ export const fetchMarketSummary = createAsyncThunk(
             }
 
             const data = await response.json();
-            console.log("Market summary data:", data);
             return { data };
 
         } catch (error) {

@@ -5,14 +5,16 @@ import stockReducer from "./slices/stockSlice";
 import tickerListReducer from "./slices/tickerListSlice";
 import dividendReducer from "./slices/dividendSlice";
 import marketSummaryReducer from "./slices/marketSummarySlice";
+import sidebarReducer from "./slices/sidebarSlice";
 
 const store = configureStore({
   reducer: {
     ticker: tickerReducer,
-    stock: stockReducer,
+    stock: stockReducer,  
     tickerList: tickerListReducer,
     dividend: dividendReducer,
     marketSummary: marketSummaryReducer,
+    sidebar: sidebarReducer,
   },
 });
 

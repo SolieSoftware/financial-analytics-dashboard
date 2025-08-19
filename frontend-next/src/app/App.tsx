@@ -8,31 +8,25 @@ import { fetchTickerList } from "./components/redux/slices/tickerListSlice";
 import { useEffect } from "react";
 import "./App.css";
 import { useState } from "react";
-import { useAppSelector, useAppDispatch } from "./components/redux/store";
+import { useAppDispatch, useAppSelector } from "./components/redux/store";
 
 function App() {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
   const appDispatch = useAppDispatch();
-
-  const handleSidebarToggle = (isOpen: boolean) => {
-    setSidebarOpen(isOpen);
-  };
-
-  const selectedTicker = useAppSelector((state) => state.ticker.selectedTicker);
+  const isOpen = useAppSelector((state) => state.sidebar.isOpen);
 
   useEffect(() => {
     appDispatch(fetchMarketSummary());
-    appDispatch(fetchTickerList());
+    appDispatch(fetchTickerList(""));
   }, []);
 
   return (
     <div
       className={`dashboard-container ${
-        sidebarOpen ? "sidebar-open" : "sidebar-closed"
+        isOpen ? "sidebar-open" : "sidebar-closed"
       }`}
     >
-      <div className={`sidebar ${!sidebarOpen ? "closed" : ""}`}>
-        <SideBar onToggle={handleSidebarToggle} />
+      <div className={`sidebar ${!isOpen ? "closed" : ""}`}>
+        <SideBar />
       </div>
       <div className="main-content">
         {/* Chart positioned top-right */}

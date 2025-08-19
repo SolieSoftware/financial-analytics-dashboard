@@ -67,10 +67,7 @@ const MUIChart: React.FC = () => {
           currentPrice: lastPrice,
         });
       }
-      
-      console.log("MUIChart: Data cleaned and set:", cleanedData.length, "items");
     } else {
-      console.log("MUIChart: No stock data history available", stockData);
       setData([]);
     }
   }, [stockData]);
