@@ -37,7 +37,7 @@ export const TickerSelector = () => {
 
   const handleTickerSelect = (ticker: string) => {
     dispatch(setSelectedTickerState(ticker));
-    dispatch(fetchStockData(ticker));
+    dispatch(fetchStockData( { ticker: ticker } ));
   };
 
   return (
