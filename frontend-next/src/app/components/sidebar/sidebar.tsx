@@ -17,20 +17,18 @@ import {
 import { Navigation } from "../sidebar/navigation";
 import { TickerSelector } from "../sidebar/tickerSelector";
 import { QuickStats } from "../sidebar/quickStats";
+import { useAppDispatch, useAppSelector } from "../redux/store";
+import { setSidebarOpen } from "../redux/slices/sidebarSlice";
 
-interface SideBarProps {
-  onToggle?: (isOpen: boolean) => void;
-}
-
-const SideBar: React.FC<SideBarProps> = ({ onToggle }) => {
-
-  const [openDrawer, setOpenDrawer] = useState(true);
+function SideBar() {
+  const dispatch = useAppDispatch();
+  const isOpen = useAppSelector((state) => state.sidebar.isOpen);
 
   const toggleDrawer = () => {
-    const newState = !openDrawer;
-    setOpenDrawer(newState);
-    onToggle?.(newState);
+    dispatch(setSidebarOpen(!isOpen));
   };
+
+
 
   return (
     <>
@@ -39,7 +37,7 @@ const SideBar: React.FC<SideBarProps> = ({ onToggle }) => {
         onClick={toggleDrawer}
         sx={{
           position: "fixed",
-          left: openDrawer ? 320 : 290,
+          left: isOpen ? 320 : 290,
           top: 20,
           zIndex: 9999,
           transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
@@ -62,11 +60,11 @@ const SideBar: React.FC<SideBarProps> = ({ onToggle }) => {
           },
         }}
       >
-        {openDrawer ? <Close /> : <Menu />}
+        {isOpen ? <Close /> : <Menu />}
       </IconButton>
 
       <Drawer
-        open={openDrawer}
+        open={isOpen ? true : false}
         anchor="left"
         variant="persistent"
         ModalProps={{
