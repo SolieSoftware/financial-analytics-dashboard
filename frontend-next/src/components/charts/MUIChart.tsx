@@ -4,7 +4,7 @@ import React from "react";
 import { LineChart } from "@mui/x-charts";
 import { useEffect, useState } from "react";
 import { useAppSelector } from "../redux/store";
-import { stockEntryCleaned, stockEntry } from "@/app/utils/types/stockData";
+import { stockEntryCleaned, stockEntry } from "@/utils/types/stockData";
 import dayjs from "dayjs";
 import {
   Box,
@@ -28,9 +28,7 @@ import {
 } from "@mui/icons-material";
 
 const MUIChart: React.FC = () => {
-  const selectedTicker = useAppSelector(
-    (state) => state.ticker.selectedTicker
-  );
+  const selectedTicker = useAppSelector((state) => state.ticker.selectedTicker);
   const { stockData, status, error } = useAppSelector((state) => state.stock);
 
   const [data, setData] = useState<stockEntryCleaned[]>([]);
@@ -48,17 +46,17 @@ const MUIChart: React.FC = () => {
         ...item,
         Date: dayjs(item.Date).toDate(),
       }));
-      
+
       setData(cleanedData);
-      
+
       // Calculate chart statistics
       if (cleanedData.length > 0) {
-        const prices = cleanedData.map(d => d.Close);
+        const prices = cleanedData.map((d) => d.Close);
         const firstPrice = prices[0];
         const lastPrice = prices[prices.length - 1];
         const priceChange = lastPrice - firstPrice;
         const priceChangePercent = (priceChange / firstPrice) * 100;
-        
+
         setChartStats({
           priceChange,
           priceChangePercent,
@@ -236,7 +234,8 @@ const MUIChart: React.FC = () => {
               maxWidth: "300px",
             }}
           >
-            Select a ticker from the dashboard to view historical price data and trends
+            Select a ticker from the dashboard to view historical price data and
+            trends
           </Typography>
         </CardContent>
       </Card>
@@ -298,7 +297,7 @@ const MUIChart: React.FC = () => {
                     ? "#22c55e"
                     : isNegative
                     ? "#ef4444"
-                    : "#3b82f6"
+                    : "#3b82f6",
                 }}
               />
             </Box>
@@ -357,7 +356,9 @@ const MUIChart: React.FC = () => {
                   <TrendingDown sx={{ fontSize: 12 }} />
                 )
               }
-              label={`${isPositive ? "+" : ""}${chartStats.priceChange.toFixed(2)} (${chartStats.priceChangePercent.toFixed(2)}%)`}
+              label={`${isPositive ? "+" : ""}${chartStats.priceChange.toFixed(
+                2
+              )} (${chartStats.priceChangePercent.toFixed(2)}%)`}
               size="small"
               sx={{
                 backgroundColor: isPositive
@@ -365,7 +366,9 @@ const MUIChart: React.FC = () => {
                   : "rgba(239, 68, 68, 0.15)",
                 color: isPositive ? "#22c55e" : "#ef4444",
                 border: `1px solid ${
-                  isPositive ? "rgba(34, 197, 94, 0.3)" : "rgba(239, 68, 68, 0.3)"
+                  isPositive
+                    ? "rgba(34, 197, 94, 0.3)"
+                    : "rgba(239, 68, 68, 0.3)"
                 }`,
                 fontWeight: 600,
                 fontSize: "0.75rem",
@@ -379,13 +382,21 @@ const MUIChart: React.FC = () => {
               <Box sx={{ textAlign: "center" }}>
                 <Typography
                   variant="caption"
-                  sx={{ color: "#64748b", fontSize: "0.625rem", display: "block" }}
+                  sx={{
+                    color: "#64748b",
+                    fontSize: "0.625rem",
+                    display: "block",
+                  }}
                 >
                   HIGH
                 </Typography>
                 <Typography
                   variant="body2"
-                  sx={{ color: "#22c55e", fontWeight: 600, fontSize: "0.75rem" }}
+                  sx={{
+                    color: "#22c55e",
+                    fontWeight: 600,
+                    fontSize: "0.75rem",
+                  }}
                 >
                   ${chartStats.highPrice.toFixed(2)}
                 </Typography>
@@ -393,13 +404,21 @@ const MUIChart: React.FC = () => {
               <Box sx={{ textAlign: "center" }}>
                 <Typography
                   variant="caption"
-                  sx={{ color: "#64748b", fontSize: "0.625rem", display: "block" }}
+                  sx={{
+                    color: "#64748b",
+                    fontSize: "0.625rem",
+                    display: "block",
+                  }}
                 >
                   LOW
                 </Typography>
                 <Typography
                   variant="body2"
-                  sx={{ color: "#ef4444", fontWeight: 600, fontSize: "0.75rem" }}
+                  sx={{
+                    color: "#ef4444",
+                    fontWeight: 600,
+                    fontSize: "0.75rem",
+                  }}
                 >
                   ${chartStats.lowPrice.toFixed(2)}
                 </Typography>
@@ -447,7 +466,11 @@ const MUIChart: React.FC = () => {
                 data: data.map((d) => d.Close),
                 label: `${selectedTicker} Close Price`,
                 showMark: false,
-                color: isPositive ? "#22c55e" : isNegative ? "#ef4444" : "#3b82f6",
+                color: isPositive
+                  ? "#22c55e"
+                  : isNegative
+                  ? "#ef4444"
+                  : "#3b82f6",
                 curve: "linear",
               },
             ]}

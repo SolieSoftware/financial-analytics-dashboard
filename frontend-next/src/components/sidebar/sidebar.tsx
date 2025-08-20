@@ -1,22 +1,11 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import {
-  Drawer,
-  Box,
-  IconButton,
-  Typography,
-  Divider
-} from "@mui/material";
-import {
-  Menu,
-  Close,
-  Speed,
-  Settings
-} from "@mui/icons-material";
-import { Navigation } from "../sidebar/navigation";
-import { TickerSelector } from "../sidebar/tickerSelector";
-import { QuickStats } from "../sidebar/quickStats";
+import { Drawer, Box, IconButton, Typography, Divider } from "@mui/material";
+import { Menu, Close, Speed, Settings } from "@mui/icons-material";
+import { Navigation } from "./navigation";
+import { TickerSelector } from "./tickerSelector";
+import { QuickStats } from "./quickStats";
 import { useAppDispatch, useAppSelector } from "../redux/store";
 import { setSidebarOpen } from "../redux/slices/sidebarSlice";
 
@@ -28,12 +17,10 @@ function SideBar() {
     dispatch(setSidebarOpen(!isOpen));
   };
 
-
-
   return (
     <>
-       <IconButton
-        aria-label="Toggle Sidebar" 
+      <IconButton
+        aria-label="Toggle Sidebar"
         onClick={toggleDrawer}
         sx={{
           position: "fixed",
@@ -184,6 +171,6 @@ function SideBar() {
       </Drawer>
     </>
   );
-};
+}
 
 export default SideBar;

@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { stockDataResponse } from "@/app/utils/types/stockData";
-import { endpoints } from "@/app/utils/endpoints";
+import { stockDataResponse } from "@/utils/types/stockData";
+import { endpoints } from "@/utils/endpoints";
 
 interface QueryParams {
   ticker: string;

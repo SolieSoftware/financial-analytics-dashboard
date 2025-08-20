@@ -1,8 +1,5 @@
-
-export const metadata = {
-  title: "My App",
-  description: "A Next.js App",
-};
+import { Providers } from "./providers/providers";
+import "./global.css";
 
 export default function RootLayout({
   children,
@@ -12,7 +9,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head />
-      <body>{children}</body>
+      <body>
+        <Providers>{children}</Providers>
+      </body>
     </html>
   );
 }

@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import { endpoints } from "@/app/utils/endpoints";
-import { TickerListResponse } from "@/app/utils/types/tickerTypes";
+import { endpoints } from "@/utils/endpoints";
+import { TickerListResponse } from "@/utils/types/tickerTypes";
 
 export const fetchTickerList = createAsyncThunk(
   "tickerList/fetchTickerList",
@@ -29,9 +29,9 @@ export const fetchTickerList = createAsyncThunk(
 );
 
 const initialState: TickerListResponse = {
-  tickerList: {}, 
+  tickerList: {},
   isLoading: false,
-  error: null
+  error: null,
 };
 
 const tickerListSlice = createSlice({

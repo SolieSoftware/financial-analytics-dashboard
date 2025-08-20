@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Box,
   TextField,
@@ -10,12 +12,13 @@ import { debounce } from "lodash";
 import { useAppSelector, useAppDispatch } from "../redux/store";
 import { setSelectedTickerState } from "../redux/slices/tickerSlice";
 import { useState, useEffect } from "react";
-import { fetchStockData } from "@/app/components/redux/slices/stockSlice";
-import { fetchTickerList } from "@/app/components/redux/slices/tickerListSlice";
-
+import { fetchStockData } from "@/components/redux/slices/stockSlice";
+import { fetchTickerList } from "@/components/redux/slices/tickerListSlice";
+import { useRouter } from "next/navigation";
 
 export const TickerSelector = () => {
   const dispatch = useAppDispatch();
+  const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
 
   // Get data from Redux
@@ -37,7 +40,8 @@ export const TickerSelector = () => {
 
   const handleTickerSelect = (ticker: string) => {
     dispatch(setSelectedTickerState(ticker));
-    dispatch(fetchStockData( { ticker: ticker } ));
+    dispatch(fetchStockData({ ticker: ticker }));
+    router.push(`/stock-profile/${ticker}`);
   };
 
   return (
