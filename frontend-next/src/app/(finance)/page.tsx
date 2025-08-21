@@ -12,7 +12,6 @@ export default function Finance() {
   };
 
   return (
-    <Layout>
       <Box
         sx={{
           minHeight: "100vh",
@@ -23,6 +22,7 @@ export default function Finance() {
           justifyContent: "center",
           alignItems: "center",
           textAlign: "center",
+          width: "100%",
           px: 4,
         }}
       >
@@ -58,6 +58,5 @@ export default function Finance() {
           Get Started
         </Button>
       </Box>
-    </Layout>
   );
 }

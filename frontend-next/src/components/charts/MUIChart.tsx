@@ -1,5 +1,4 @@
 "use client";
-
 import React from "react";
 import { LineChart } from "@mui/x-charts";
 import { useEffect, useState } from "react";

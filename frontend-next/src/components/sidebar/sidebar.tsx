@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { Drawer, Box, IconButton, Typography, Divider } from "@mui/material";
 import { Menu, Close, Speed, Settings } from "@mui/icons-material";
 import { Navigation } from "./navigation";
-import { TickerSelector } from "./tickerSelector";
+import { TickerSelector } from "../selectors/tickerSelector";
 import { QuickStats } from "./quickStats";
 import { useAppDispatch, useAppSelector } from "../redux/store";
 import { setSidebarOpen } from "../redux/slices/sidebarSlice";
@@ -124,10 +124,6 @@ function SideBar() {
 
           <Box sx={{ p: 3, pb: 2 }}>
             <Navigation />
-          </Box>
-
-          <Box sx={{ p: 3, pb: 2 }}>
-            <TickerSelector />
           </Box>
 
           <Box sx={{ p: 3, pb: 2 }}>

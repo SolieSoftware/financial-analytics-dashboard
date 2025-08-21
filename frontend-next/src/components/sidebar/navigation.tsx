@@ -17,7 +17,7 @@ export const Navigation = () => {
 
   const navigationItems = [
     {
-      label: "Dashboard",
+      label: "Stock Profile",
       href: selectedTicker
         ? `/stock-profile/${selectedTicker}`
         : "/stock-profile",
