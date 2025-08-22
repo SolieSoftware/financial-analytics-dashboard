@@ -73,34 +73,7 @@ app.add_middleware(
 async def root():
     return {"message": "Trading API is running"}
 
-
-@app.get("/api/tickers/")
-async def get_tickers():
-    url = "https://www.nasdaqtrader.com/dynamic/SymDir/nasdaqlisted.txt"
-
-    async with httpx.AsyncClient(verify=False) as client:
-        logger.info("Starting get_tickers endpoint")
-        try:
-            logger.info("Hitting endpoint...")
-            response = await client.get(url, timeout=30.0)
-            logger.info("Processing response...")
-            response.raise_for_status()
-
-            nasdaq = pd.read_csv(StringIO(response.text), sep="|")
-            nasdaq = nasdaq[
-                ~nasdaq["Symbol"].str.contains("File Creation Time", na=False)
-            ]
-            nasdaq = nasdaq.where(pd.notnull(nasdaq), None)
-            nasdaq = nasdaq.replace([float("inf"), float("-inf")], None)
-            logger.info("Tranformation to dicitinary post process")
-            json_data = nasdaq.to_dict(orient="records")
-            return {"nasdaq_ticker_list": json_data}
-
-        except httpx.RequestError as e:
-            raise HTTPException(status_code=500, detail=f"Request failed: {str(e)}")
-        except Exception as e:
-            raise HTTPException(status_code=500, detail=f"Processing failed: {str(e)}")
-
+"""Yahoo Finance API Endpoints"""
 
 # Helper function to run sync code in thread pool
 async def run_in_threadpool(func, *args, **kwargs):
@@ -173,6 +146,7 @@ async def get_market_summary():
             status_code=500, detail=f"Market summary generation failed: {str(e)}"
         )
 
+"""Alpha Vantage API Endpoints"""
 
 @app.get("/api/market-daily/{symbol}/data")
 async def get_market_data(symbol: str):
@@ -238,6 +212,21 @@ async def get_market_news(symbol: str):
     except Exception as e:
         raise HTTPException(
             status_code=500, detail=f"Failed to fetch market news: {str(e)}"
+        )
+
+@app.get("/api/general-market-news")
+async def get_general_market_news():
+    """Get general market news"""
+    url = f"https://www.alphavantage.co/query?function=NEWS_SENTIMENT&apikey={ALPHA_VANTAGE_API_KEY}"
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.get(url)
+            response.raise_for_status()
+            general_market_news = response.json()
+            return {"general_market_news": general_market_news}
+    except Exception as e:
+        raise HTTPException(
+            status_code=500, detail=f"Failed to fetch general market news: {str(e)}"
         )
 
 if __name__ == "__main__":
