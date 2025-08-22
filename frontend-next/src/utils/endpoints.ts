@@ -3,4 +3,7 @@ export const endpoints = {
   getMarketSummary: "/api/getMarketSummary",
   getTickerData: "/api/getTickerData",
   getTickerSummary: "/api/getTickerSummary",
+  getCompanyOverview: "/api/getCompanyOverview",
+  getStockMarketNews: "/api/getStockMarketNews",
+  getGeneralMarketNews: "/api/getGeneralMarketNews",
 };

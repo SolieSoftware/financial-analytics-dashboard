@@ -9,13 +9,23 @@ interface QueryParams {
 export const useStockProfile = (queryParams: QueryParams) => {
 
   const url = `${endpoints.getTickerData}?ticker=${queryParams.ticker}`;
-  console.log("url", url);
   const { data, error, isLoading } = useSWR(
     url,
     fetcher
   );
 
-  console.log("data", data);
+  const companyOverviewUrl = `${endpoints.getCompanyOverview}?symbol=${queryParams.ticker}`;
+  const { data: companyOverviewData, error: companyOverviewError, isLoading: companyOverviewLoading } = useSWR(
+    companyOverviewUrl,
+    fetcher
+  );
+  
+  const stockMarketNewsUrl = `${endpoints.getStockMarketNews}?symbol=${queryParams.ticker}`;
+  const { data: stockMarketNewsData, error: stockMarketNewsError, isLoading: stockMarketNewsLoading } = useSWR(
+    stockMarketNewsUrl,
+    fetcher
+  );
+  
 
-  return { data, error, isLoading };
+  return { data, error, isLoading, companyOverviewData, companyOverviewError, companyOverviewLoading, stockMarketNewsData, stockMarketNewsError, stockMarketNewsLoading };
 };
