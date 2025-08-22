@@ -11,7 +11,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const isOpen = useAppSelector((state) => state.sidebar.isOpen);
 
   useEffect(() => {
-    appDispatch(fetchMarketSummary());
     appDispatch(fetchTickerList(""));
   }, []);
 
