@@ -1,8 +1,6 @@
-
-export const metadata = {
-  title: "My App",
-  description: "A Next.js App",
-};
+import { Providers } from "./providers/providers";
+import { SWRConfig } from "swr";
+import "./global.css";
 
 export default function RootLayout({
   children,
@@ -12,7 +10,19 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head />
-      <body>{children}</body>
+      <body>
+        <SWRConfig
+          value={{
+            revalidateOnFocus: false,
+            revalidateOnReconnect: true,
+            keepPreviousData: true,
+          }}
+          >
+          <Providers>
+            {children}
+          </Providers>
+        </SWRConfig>
+      </body>
     </html>
   );
 }
