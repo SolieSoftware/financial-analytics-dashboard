@@ -21,12 +21,13 @@ import {
   Info, 
   Public 
 } from "@mui/icons-material";
+import { useStockProfile } from "@/utils/hooks/useStockProfile";
 
 const LeftPanel = () => {
   const selectedTicker = useAppSelector(
     (state) => state.ticker.selectedTicker
   );
-  const { stockData, status, error } = useAppSelector((state) => state.stock);
+const { data: stockData, isLoading, error } = useStockProfile({ ticker: selectedTicker });
 
   const formatNumber = (num?: number) => {
     if (!num) return "N/A";
@@ -41,7 +42,7 @@ const LeftPanel = () => {
     return `${(num * 100).toFixed(2)}%`;
   };
 
-  if (status === "loading") {
+  if (isLoading) {
     return (
       <Box sx={{ spaceY: 3 }}>
         <Card sx={{ backgroundColor: "rgba(26, 32, 44, 0.9)", border: "1px solid rgba(74, 85, 104, 0.3)" }}>
@@ -61,12 +62,12 @@ const LeftPanel = () => {
     );
   }
 
-  if (status === "failed") {
+  if (error) {
     return (
       <Box>
         <Alert severity="error" sx={{ backgroundColor: "rgba(239, 68, 68, 0.1)", border: "1px solid rgba(239, 68, 68, 0.3)" }}>
           <AlertTitle>Error</AlertTitle>
-          Error loading company info: {error}
+          Error loading company info: {error?.message || error?.toString()}
         </Alert>
       </Box>
     );

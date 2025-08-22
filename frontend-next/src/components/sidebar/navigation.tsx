@@ -85,7 +85,6 @@ export const Navigation = () => {
               <Link href={item.href} key={item.label}>
                 <Box
                   key={item.label}
-                  component="a"
                   sx={{
                     display: "flex",
                     alignItems: "center",

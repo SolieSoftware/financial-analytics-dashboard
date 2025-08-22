@@ -1,4 +1,5 @@
 import { Providers } from "./providers/providers";
+import { SWRConfig } from "swr";
 import "./global.css";
 
 export default function RootLayout({
@@ -10,7 +11,17 @@ export default function RootLayout({
     <html lang="en">
       <head />
       <body>
-        <Providers>{children}</Providers>
+        <SWRConfig
+          value={{
+            revalidateOnFocus: false,
+            revalidateOnReconnect: true,
+            keepPreviousData: true,
+          }}
+          >
+          <Providers>
+            {children}
+          </Providers>
+        </SWRConfig>
       </body>
     </html>
   );

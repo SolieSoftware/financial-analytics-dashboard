@@ -1,15 +1,15 @@
 
-export const fetcher = async (url: string, queryParams: object) => {
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(queryParams),
-    });
+export const fetcher = async (url: string) => {
+  console.log("url", url);
+    const response = await fetch(url);
   
     if (!response.ok) {
-      throw new Error("Failed to fetch data");
+      throw new Error(`
+        HTTP error
+        Status: ${response.status}
+        Message: ${response.statusText}
+        URL: ${url}
+    `);
     }
   
     return response.json();

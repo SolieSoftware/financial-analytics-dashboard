@@ -130,6 +130,7 @@ def get_ticker_info_sync(ticker: str):
 @app.get("/api/tickers/{ticker}/data")
 async def get_ticker_data(ticker: str):
     try:
+        print("ticker", ticker)
         info_data = await run_in_threadpool(get_ticker_info_sync, ticker)
         history_data = await run_in_threadpool(get_ticker_history_sync, ticker)
         return {"info_data": info_data, "history_data": history_data}

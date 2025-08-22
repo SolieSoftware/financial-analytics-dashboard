@@ -13,7 +13,6 @@ import { debounce } from "lodash";
 import { useAppSelector, useAppDispatch } from "../redux/store";
 import { setSelectedTickerState } from "../redux/slices/tickerSlice";
 import { useState, useEffect } from "react";
-import { fetchStockData } from "@/components/redux/slices/stockSlice";
 import { fetchTickerList } from "@/components/redux/slices/tickerListSlice";
 import { useRouter } from "next/navigation";
 
@@ -42,7 +41,6 @@ export const TickerSelector = () => {
 
   const handleTickerSelect = (ticker: string) => {
     dispatch(setSelectedTickerState(ticker));
-    dispatch(fetchStockData({ ticker: ticker }));
     router.push(`/stock-profile/${ticker}`);
     setIsFocused(false);
     setSearchTerm("");
