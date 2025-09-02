@@ -13,7 +13,7 @@ export const useStockProfile = (queryParams: QueryParams) => {
     url,
     fetcher
   );
-
+  
   const companyOverviewUrl = `${endpoints.getCompanyOverview}?symbol=${queryParams.ticker}`;
   const { data: companyOverviewData, error: companyOverviewError, isLoading: companyOverviewLoading } = useSWR(
     companyOverviewUrl,
