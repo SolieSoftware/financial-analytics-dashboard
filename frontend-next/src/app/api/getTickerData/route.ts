@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 const FASTAPI_URL = "http://localhost:8000";
 
 export async function GET(request: NextRequest) {
+
   try {
     if (!FASTAPI_URL) {
       return NextResponse.json(
@@ -20,8 +21,6 @@ export async function GET(request: NextRequest) {
         { status: 400 }
       );
     }
-
-    console.log("ticker", ticker);
 
     const response = await fetch(`${FASTAPI_URL}/api/tickers/${ticker}/data`, {
       method: "GET",

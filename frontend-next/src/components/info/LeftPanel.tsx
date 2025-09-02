@@ -310,35 +310,6 @@ const { data: stockData, isLoading, error } = useStockProfile({ ticker: selected
         </CardContent>
       </Card>
 
-      {/* Market Summary */}
-      <Card sx={{ 
-        backgroundColor: "rgba(26, 32, 44, 0.9)", 
-        border: "1px solid rgba(74, 85, 104, 0.3)",
-        backdropFilter: "blur(20px)",
-        boxShadow: "0 8px 32px rgba(0, 0, 0, 0.2)"
-      }}>
-        <CardHeader
-          title={
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-              <Public sx={{ color: "#667eea" }} />
-              <Typography variant="h6" sx={{ color: "#f7fafc", fontWeight: 600 }}>
-                Market Summary
-              </Typography>
-            </Box>
-          }
-          sx={{ 
-            backgroundColor: "rgba(102, 126, 234, 0.1)",
-            borderBottom: "1px solid rgba(74, 85, 104, 0.3)"
-          }}
-        />
-        <CardContent>
-          <Typography variant="body2" sx={{ color: "#cbd5e0", lineHeight: 1.6 }}>
-            Markets are showing positive momentum with tech stocks leading the rally. 
-            The overall market sentiment remains optimistic as investors continue to 
-            focus on growth opportunities and innovation-driven companies.
-          </Typography>
-        </CardContent>
-      </Card>
     </Box>
   );
 };

@@ -30,6 +30,7 @@ const BottomPanel: React.FC = () => {
 
   const formatNumber = (num?: number): string => {
     if (!num) return "N/A";
+    if (num >= 1e12) return `$${(num / 1e12).toFixed(2)}T`;
     if (num >= 1e9) return `$${(num / 1e9).toFixed(2)}B`;
     if (num >= 1e6) return `$${(num / 1e6).toFixed(2)}M`;
     if (num >= 1e3) return `$${(num / 1e3).toFixed(2)}K`;
@@ -147,24 +148,24 @@ const BottomPanel: React.FC = () => {
     changePercent,
     icon,
     subtitle,
-    showChange = true
+    showChange
   }: {
     title: string;
     value: string | number;
-    change: string | number;
-    changePercent: number;
+    change?: string | number;
+    changePercent?: number;
     icon: React.ReactNode;
     subtitle?: string;
     showChange?: boolean;
   }) {
-    const isPositive: boolean = changePercent > 0;
-    const isNegative: boolean = changePercent < 0;
-    const hasChange: boolean = showChange && (change !== 0 || changePercent !== 0);
+    const isPositive: boolean = (changePercent ?? 0) > 0;
+    const isNegative: boolean = (changePercent ?? 0) < 0;
+    const hasChange: boolean = changePercent !== undefined && changePercent !== null;
 
     return (
       <Card
         sx={{
-          backgroundColor: "rgba(26, 32, 44, 0.9)",
+          backgroundColor: "rgba(8, 10, 15, 0.9)",
           border: "1px solid rgba(74, 85, 104, 0.3)",
           borderRadius: "12px",
           backdropFilter: "blur(20px)",
@@ -189,11 +190,11 @@ const BottomPanel: React.FC = () => {
               {icon}
             </Box>
             <Typography
-              variant="body2"
+              variant="body1"
               sx={{
                 color: "#a0aec0",
-                fontWeight: 500,
-                fontSize: "0.75rem",
+                fontWeight: 650,
+                fontSize: "1.25rem",
                 textTransform: "uppercase",
                 letterSpacing: "0.05em",
               }}
@@ -208,7 +209,7 @@ const BottomPanel: React.FC = () => {
               color: "#f7fafc",
               fontWeight: 700,
               mb: 1,
-              fontSize: "1.75rem",
+              fontSize: "1.5rem",
               fontFamily: "monospace"
             }}
           >
@@ -285,7 +286,7 @@ const BottomPanel: React.FC = () => {
             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
               <Assessment sx={{ color: "#667eea" }} />
               <Typography variant="h6" sx={{ color: "#f7fafc", fontWeight: 600 }}>
-                Performance Analytics
+                Financial Profile
               </Typography>
             </Box>
           }
@@ -301,26 +302,64 @@ const BottomPanel: React.FC = () => {
             gap: 3
           }}>
             <MetricCard
-              title="Current Price"
-              value={companyInfo?.currentPrice || "N/A"}
-              change={companyInfo?.regularMarketChange || "N/A"}
-              changePercent={companyInfo?.regularMarketChangePercent || 0}
+              title="Prev Close"
+              value={companyInfo?.previousClose ?? "N/A"}
               icon={<AttachMoney />}
-              subtitle="Latest trading price"
             />
             
+            <MetricCard
+              title="52W Range"
+              value={
+                companyInfo?.fiftyTwoWeekRange
+                  ? `${companyInfo.fiftyTwoWeekRange} ${companyInfo.currency}`
+                  : "N/A"
+              }
+              icon={<ShowChart />}
+            />
+
             <MetricCard
               title="Market Cap"
               value={
                 companyInfo?.marketCap
-                  ? `${(companyInfo.marketCap / 1e9).toFixed(2)}B`
+                  ? `${(formatNumber(companyInfo.marketCap))}`
                   : "N/A"
               }
-              change={0}
-              changePercent={0}
               icon={<ShowChart />}
               subtitle="Total market value"
               showChange={false}
+            />
+
+          <MetricCard
+              title="Open"
+              value={companyInfo?.open ?? "N/A"}
+              icon={<AttachMoney />}
+            />
+
+          <MetricCard
+              title="P/E Ratio"
+              value={companyInfo?.trailingPE || "N/A"}
+              icon={<Assessment />}
+              subtitle="Trailing P/E Ratio"
+            />
+
+          <MetricCard
+                title="Dividend Yield"
+                value={
+                  companyInfo?.dividendYield 
+                    ? `${(companyInfo.dividendYield * 100).toFixed(2)}%`
+                    : "N/A"
+                }
+                icon={<AttachMoney />}
+              />
+
+          <MetricCard
+              title="Day Range"
+              value={
+                companyInfo?.regularMarketDayRange
+                  ? `${companyInfo.regularMarketDayRange} ${companyInfo.currency}`
+                  : "N/A"
+              }
+              icon={<ShowChart />}
             />
             
             <MetricCard
@@ -330,75 +369,18 @@ const BottomPanel: React.FC = () => {
                   ? formatVolume(companyInfo.volume)
                   : "N/A"
               }
-              change={0}
-              changePercent={0}
               icon={<VolumeUp />}
-              subtitle="Shares traded today"
-              showChange={false}
             />
-            
-            <MetricCard
-              title="52W High"
-              value={companyInfo?.fiftyTwoWeekHigh || "N/A"}
-              change={0}
-              changePercent={0}
-              icon={<Height />}
-              subtitle="52-week peak"
-              showChange={false}
-            />
-          </Box>
 
-          {/* Additional Metrics Row */}
-          <Box sx={{ mt: 3 }}>
-            <Box sx={{ 
-              display: "grid", 
-              gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
-              gap: 3
-            }}>
-              <MetricCard
-                title="52W Low"
-                value={companyInfo?.fiftyTwoWeekLow || "N/A"}
-                change={0}
-                changePercent={0}
-                icon={<Speed />}
-                subtitle="52-week low"
-                showChange={false}
-              />
-              
-              <MetricCard
-                title="Beta"
-                value={companyInfo?.beta?.toFixed(2) || "N/A"}
-                change={0}
-                changePercent={0}
-                icon={<TrendingUp />}
-                subtitle="Volatility vs market"
-                showChange={false}
-              />
-              
-              <MetricCard
-                title="P/E Ratio"
-                value={companyInfo?.trailingPE?.toFixed(2) || "N/A"}
-                change={0}
-                changePercent={0}
-                icon={<Assessment />}
-                subtitle="Price to earnings"
-                showChange={false}
-              />
-              
-              <MetricCard
-                title="Dividend Yield"
-                value={
-                  companyInfo?.dividendYield 
-                    ? `${(companyInfo.dividendYield * 100).toFixed(2)}%`
-                    : "N/A"
-                }
-                change={0}
-                changePercent={0}
-                icon={<AttachMoney />}
-                subtitle="Annual dividend rate"
-                showChange={false}
-              />
-            </Box>
+            <MetricCard
+              title="EPS"
+              value={companyInfo?.trailingEps || "N/A"}
+              icon={<TrendingUp />}
+              subtitle="Trailing EPS"
+            />
+
+            
+          
           </Box>
         </CardContent>
       </Card>
