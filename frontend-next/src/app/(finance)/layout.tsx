@@ -3,7 +3,7 @@
 import { fetchMarketSummary } from "@/components/redux/slices/marketSummarySlice";
 import { fetchTickerList } from "@/components/redux/slices/tickerListSlice";
 import { useAppDispatch, useAppSelector } from "@/components/redux/store";
-import SideBar from "@/components/sidebar/sidebar";
+import SideBar from "@/components/sidebar/Sidebar";
 import { useEffect } from "react";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
