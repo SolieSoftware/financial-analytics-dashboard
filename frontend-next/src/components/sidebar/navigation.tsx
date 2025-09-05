@@ -7,6 +7,7 @@ import {
   TrendingUp,
   Star,
   PieChart,
+  ShowChart,
 } from "@mui/icons-material";
 import { Box, Typography, Chip, Divider } from "@mui/material";
 import Link from "next/link";
@@ -24,6 +25,13 @@ export const Navigation = () => {
       icon: BarChart,
       active: true,
       badge: null,
+    },
+    {
+      label: "Market Overview",
+      href: "/market-overview",
+      icon: ShowChart,
+      active: false,
+      badge: null,  
     },
     {
       label: "Portfolio",

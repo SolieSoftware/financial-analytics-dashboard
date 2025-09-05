@@ -45,6 +45,26 @@ const BottomPanel: React.FC = () => {
     return volume.toLocaleString();
   };
 
+  if (!selectedTicker) {
+    return (
+      <Box>
+        <Card sx={{ 
+          backgroundColor: "rgba(26, 32, 44, 0.9)", 
+          border: "1px solid rgba(74, 85, 104, 0.3)",
+          textAlign: "center",
+          py: 6
+        }}>
+          <CardContent>
+            <ShowChart sx={{ fontSize: 48, color: "#a0aec0", mb: 2 }} />
+            <Typography variant="body1" sx={{ color: "#a0aec0" }}>
+              Select a ticker to view performance analytics
+            </Typography>
+          </CardContent>
+        </Card>
+      </Box>
+    );
+  }
+
   if (isLoading) {
     return (
       <Box>
@@ -104,26 +124,6 @@ const BottomPanel: React.FC = () => {
           <AlertTitle>Error</AlertTitle>
           Error loading performance data: {error?.message || error?.toString()}
         </Alert>
-      </Box>
-    );
-  }
-
-  if (!selectedTicker) {
-    return (
-      <Box>
-        <Card sx={{ 
-          backgroundColor: "rgba(26, 32, 44, 0.9)", 
-          border: "1px solid rgba(74, 85, 104, 0.3)",
-          textAlign: "center",
-          py: 6
-        }}>
-          <CardContent>
-            <ShowChart sx={{ fontSize: 48, color: "#a0aec0", mb: 2 }} />
-            <Typography variant="body1" sx={{ color: "#a0aec0" }}>
-              Select a ticker to view performance analytics
-            </Typography>
-          </CardContent>
-        </Card>
       </Box>
     );
   }
@@ -194,7 +194,7 @@ const BottomPanel: React.FC = () => {
               sx={{
                 color: "#a0aec0",
                 fontWeight: 650,
-                fontSize: "1.25rem",
+                fontSize: "1rem",
                 textTransform: "uppercase",
                 letterSpacing: "0.05em",
               }}
@@ -299,7 +299,7 @@ const BottomPanel: React.FC = () => {
           <Box sx={{ 
             display: "grid", 
             gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
-            gap: 3
+            gap: 2
           }}>
             <MetricCard
               title="Prev Close"

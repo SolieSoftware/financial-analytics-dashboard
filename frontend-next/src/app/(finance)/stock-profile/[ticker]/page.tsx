@@ -2,7 +2,7 @@ import MUIChart from "@/components/charts/MUIChart";
 import LeftPanel from "@/components/info/LeftPanel";
 import BottomPanel from "@/components/info/BottomPanel";
 import Layout from "../../layout";
-import { TickerSelector } from "@/components/selectors/tickerSelector";
+import { TickerSelector } from "@/components/selectors/TickerSelector";
 
 function StockProfilePage() {
   return (

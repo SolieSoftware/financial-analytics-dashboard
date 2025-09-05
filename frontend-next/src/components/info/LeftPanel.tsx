@@ -19,15 +19,21 @@ import {
   TrendingUp, 
   BarChart, 
   Info, 
-  Public 
+  CorporateFare,
+  ShowChart,
+  Percent,
+  Newspaper,
 } from "@mui/icons-material";
+import Link from "next/link";
 import { useStockProfile } from "@/utils/hooks/useStockProfile";
 
 const LeftPanel = () => {
   const selectedTicker = useAppSelector(
     (state) => state.ticker.selectedTicker
   );
-const { data: stockData, isLoading, error } = useStockProfile({ ticker: selectedTicker });
+  const { data: stockData, isLoading, error, stockMarketNewsData, stockMarketNewsError, stockMarketNewsLoading } = useStockProfile({ ticker: selectedTicker });
+
+  console.log(stockMarketNewsData);
 
   const formatNumber = (num?: number) => {
     if (!num) return "N/A";
@@ -41,6 +47,57 @@ const { data: stockData, isLoading, error } = useStockProfile({ ticker: selected
     if (!num) return "N/A";
     return `${(num * 100).toFixed(2)}%`;
   };
+
+  const formatSentiment = (sentimentScore?: number) => {
+    if (!sentimentScore) return { label: "N/A", color: "#a0aec0" };
+
+    switch (true) {
+      case  sentimentScore > 0.35:
+        return { label: "Bullish", color: "#68d391" };
+      case sentimentScore < 0.15:
+        return { label: "Somewhat Bullish", color: "#68d3c7" };
+      case sentimentScore > -0.15:
+        return { label: "Neutral", color: "#a0aec0" };
+      case sentimentScore > -0.35:
+        return { label: "Somewhat Bearish", color: "#fcbf81" };
+      case sentimentScore < -0.35:
+        return { label: "Bearish", color: "#fc8181" };
+      default:
+        return { label: "Neutral", color: "#a0aec0" };
+    }
+  };
+
+  const parseCustomTimestamp = (timestamp: number) => {
+    const year = timestamp.slice(0, 4)
+    const month = timestamp.slice(4, 6)
+    const day = timestamp.slice(6, 8)
+    const hour = timestamp.slice(9, 11)
+    const minute = timestamp.slice(11, 13)
+    const second = timestamp.slice(13, 15)
+    
+    const isoString = `${year}-${month}-${day}T${hour}:${minute}:${second}`
+    return new Date(isoString)
+  }
+
+  if (!selectedTicker) {
+    return (
+      <Box>
+        <Card sx={{ 
+          backgroundColor: "rgba(26, 32, 44, 0.9)", 
+          border: "1px solid rgba(74, 85, 104, 0.3)",
+          textAlign: "center",
+          py: 6
+        }}>
+          <CardContent>
+            <Business sx={{ fontSize: 48, color: "#a0aec0", mb: 2 }} />
+            <Typography variant="body1" sx={{ color: "#a0aec0" }}>
+              Select a ticker to view company information
+            </Typography>
+          </CardContent>
+        </Card>
+      </Box>
+    );
+  }
 
   if (isLoading) {
     return (
@@ -69,26 +126,6 @@ const { data: stockData, isLoading, error } = useStockProfile({ ticker: selected
           <AlertTitle>Error</AlertTitle>
           Error loading company info: {error?.message || error?.toString()}
         </Alert>
-      </Box>
-    );
-  }
-
-  if (!selectedTicker) {
-    return (
-      <Box>
-        <Card sx={{ 
-          backgroundColor: "rgba(26, 32, 44, 0.9)", 
-          border: "1px solid rgba(74, 85, 104, 0.3)",
-          textAlign: "center",
-          py: 6
-        }}>
-          <CardContent>
-            <Business sx={{ fontSize: 48, color: "#a0aec0", mb: 2 }} />
-            <Typography variant="body1" sx={{ color: "#a0aec0" }}>
-              Select a ticker to view company information
-            </Typography>
-          </CardContent>
-        </Card>
       </Box>
     );
   }
@@ -242,11 +279,41 @@ const { data: stockData, isLoading, error } = useStockProfile({ ticker: selected
               </Typography>
             </Box>
           </Box>
+
+          <Divider sx={{ my: 2, borderColor: "rgba(74, 85, 104, 0.3)" }} />
+          <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+              <CorporateFare sx={{ color: "#a0aec0", fontSize: 20 }} />
+              <Typography variant="body2" sx={{ color: "#e2e8f0", fontWeight: 500 }}>
+                Enterprise Value
+              </Typography>
+            </Box>
+            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              <Typography variant="body2" sx={{ color: "#f7fafc", fontFamily: "monospace" }}>
+                {formatNumber(companyInfo?.enterpriseValue)}
+              </Typography>
+            </Box>
+          </Box>
+
+          <Divider sx={{ my: 2, borderColor: "rgba(74, 85, 104, 0.3)" }} />
+          <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1, justifyContent: "center" }}>
+              <Percent sx={{ color: "#a0aec0", fontSize: 20 }} />
+              <Typography variant="body2" sx={{ color: "#e2e8f0", fontWeight: 500 }}>
+                Profit Margins
+              </Typography>
+            </Box>
+            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              <Typography variant="body2" sx={{ color: "#f7fafc", fontFamily: "monospace" }}>
+                {formatPercentage(companyInfo?.profitMargins)}
+              </Typography>
+            </Box>
+          </Box>
         </CardContent>
       </Card>
 
-      {/* Valuation Metrics */}
-      <Card sx={{ 
+      {/* Latest News */}
+      {stockMarketNewsData && <Card sx={{ 
         mb: 3, 
         backgroundColor: "rgba(26, 32, 44, 0.9)", 
         border: "1px solid rgba(74, 85, 104, 0.3)",
@@ -256,9 +323,9 @@ const { data: stockData, isLoading, error } = useStockProfile({ ticker: selected
         <CardHeader
           title={
             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-              <BarChart sx={{ color: "#667eea" }} />
+              <Newspaper sx={{ color: "#667eea" }} />
               <Typography variant="h6" sx={{ color: "#f7fafc", fontWeight: 600 }}>
-                Valuation
+                News
               </Typography>
             </Box>
           }
@@ -268,47 +335,34 @@ const { data: stockData, isLoading, error } = useStockProfile({ ticker: selected
           }}
         />
         <CardContent>
-          <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 3, mb: 3 }}>
-            <Box>
-              <Typography variant="caption" sx={{ color: "#a0aec0", display: "block", mb: 0.5 }}>
-                Trailing P/E
-              </Typography>
-              <Typography variant="h5" sx={{ color: "#f7fafc", fontWeight: 600 }}>
-                {companyInfo?.trailingPE?.toFixed(2) || "N/A"}
-              </Typography>
-            </Box>
-            <Box>
-              <Typography variant="caption" sx={{ color: "#a0aec0", display: "block", mb: 0.5 }}>
-                Forward P/E
-              </Typography>
-              <Typography variant="h5" sx={{ color: "#f7fafc", fontWeight: 600 }}>
-                {companyInfo?.forwardPE?.toFixed(2) || "N/A"}
-              </Typography>
-            </Box>
+          <Box sx={{ display: "grid", gridTemplateColumns: "1fr", gap: 3, mt:  1}}>
+            {stockMarketNewsData["market_news"]["feed"]?.map((news: any) => (
+              <>
+              <Link href={news.url} target="news_link" className="block transform transition-all duration-300 hover:scale-101 hover:-translate-y-1">
+              <Box key={news.title}>
+                <Typography variant="body2" sx={{ color: "#e2e8f0", fontWeight: 500 }}>
+                  {(() => {
+                    const sentiment = formatSentiment(news.overall_sentiment_score);
+                    return (
+                      <>
+                        {news.title} - <strong style={{ color: sentiment.color }}>{sentiment.label}</strong> - {parseCustomTimestamp(news.time_published).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                      </>
+                    );
+                  })()}
+                </Typography>
+                <Typography variant="body2" sx={{ color: "#e2e8f0", fontWeight: 500 }}>
+                  {news.summary}
+                </Typography>
+              </Box>
+              </Link>
+              <Divider sx={{ my: 2, borderColor: "rgba(74, 85, 104, 0.3)" }} />
+              </>
+            ))}
           </Box>
 
           <Divider sx={{ my: 2, borderColor: "rgba(74, 85, 104, 0.3)" }} />
-
-          <Box sx={{ spaceY: 1 }}>
-            <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
-              <Typography variant="body2" sx={{ color: "#e2e8f0", fontWeight: 500 }}>
-                Enterprise Value
-              </Typography>
-              <Typography variant="body2" sx={{ color: "#f7fafc", fontFamily: "monospace" }}>
-                {formatNumber(companyInfo?.enterpriseValue)}
-              </Typography>
-            </Box>
-            <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-              <Typography variant="body2" sx={{ color: "#e2e8f0", fontWeight: 500 }}>
-                Profit Margins
-              </Typography>
-              <Typography variant="body2" sx={{ color: "#f7fafc", fontFamily: "monospace" }}>
-                {formatPercentage(companyInfo?.profitMargins)}
-              </Typography>
-            </Box>
-          </Box>
         </CardContent>
-      </Card>
+      </Card>}
 
     </Box>
   );

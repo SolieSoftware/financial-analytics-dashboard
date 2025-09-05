@@ -24,6 +24,7 @@ import {
   AttachMoney,
   Speed,
   Warning,
+  ShowChart,
 } from "@mui/icons-material";
 
 const MUIChart: React.FC = () => {
@@ -73,6 +74,28 @@ const MUIChart: React.FC = () => {
       setData([]);
     }
   }, [stockData]);
+
+
+ // Ticker not selected
+  if (!selectedTicker) {
+    return (
+      <Box>
+        <Card sx={{ 
+          backgroundColor: "rgba(26, 32, 44, 0.9)", 
+          border: "1px solid rgba(74, 85, 104, 0.3)",
+          textAlign: "center",
+          py: 6
+        }}>
+          <CardContent>
+            <ShowChart sx={{ fontSize: 48, color: "#a0aec0", mb: 2 }} />
+            <Typography variant="body1" sx={{ color: "#a0aec0" }}>
+              Select a ticker to view the price chart
+            </Typography>
+          </CardContent>
+        </Card>
+      </Box>
+    );
+  }
 
   // Loading State
   if (isLoading) {
