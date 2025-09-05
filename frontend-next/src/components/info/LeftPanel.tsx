@@ -67,6 +67,18 @@ const LeftPanel = () => {
     }
   };
 
+  const parseCustomTimestamp = (timestamp: number) => {
+    const year = timestamp.slice(0, 4)
+    const month = timestamp.slice(4, 6)
+    const day = timestamp.slice(6, 8)
+    const hour = timestamp.slice(9, 11)
+    const minute = timestamp.slice(11, 13)
+    const second = timestamp.slice(13, 15)
+    
+    const isoString = `${year}-${month}-${day}T${hour}:${minute}:${second}`
+    return new Date(isoString)
+  }
+
   if (!selectedTicker) {
     return (
       <Box>
@@ -269,26 +281,34 @@ const LeftPanel = () => {
           </Box>
 
           <Divider sx={{ my: 2, borderColor: "rgba(74, 85, 104, 0.3)" }} />
-
-            <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
+          <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
               <CorporateFare sx={{ color: "#a0aec0", fontSize: 20 }} />
               <Typography variant="body2" sx={{ color: "#e2e8f0", fontWeight: 500 }}>
                 Enterprise Value
               </Typography>
+            </Box>
+            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
               <Typography variant="body2" sx={{ color: "#f7fafc", fontFamily: "monospace" }}>
                 {formatNumber(companyInfo?.enterpriseValue)}
               </Typography>
             </Box>
+          </Box>
+
           <Divider sx={{ my: 2, borderColor: "rgba(74, 85, 104, 0.3)" }} />
-            <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+          <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1, justifyContent: "center" }}>
               <Percent sx={{ color: "#a0aec0", fontSize: 20 }} />
               <Typography variant="body2" sx={{ color: "#e2e8f0", fontWeight: 500 }}>
                 Profit Margins
               </Typography>
+            </Box>
+            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
               <Typography variant="body2" sx={{ color: "#f7fafc", fontFamily: "monospace" }}>
                 {formatPercentage(companyInfo?.profitMargins)}
               </Typography>
             </Box>
+          </Box>
         </CardContent>
       </Card>
 
@@ -315,16 +335,17 @@ const LeftPanel = () => {
           }}
         />
         <CardContent>
-          <Box sx={{ display: "grid", gridTemplateColumns: "1fr", gap: 3, mb: 3 }}>
-            {stockMarketNewsData["market_news"]["feed"]?.map((news) => (
+          <Box sx={{ display: "grid", gridTemplateColumns: "1fr", gap: 3, mt:  1}}>
+            {stockMarketNewsData["market_news"]["feed"]?.map((news: any) => (
               <>
+              <Link href={news.url} target="news_link" className="block transform transition-all duration-300 hover:scale-101 hover:-translate-y-1">
               <Box key={news.title}>
                 <Typography variant="body2" sx={{ color: "#e2e8f0", fontWeight: 500 }}>
                   {(() => {
                     const sentiment = formatSentiment(news.overall_sentiment_score);
                     return (
                       <>
-                        {news.title} - <strong style={{ color: sentiment.color }}>{sentiment.label}</strong>
+                        {news.title} - <strong style={{ color: sentiment.color }}>{sentiment.label}</strong> - {parseCustomTimestamp(news.time_published).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
                       </>
                     );
                   })()}
@@ -332,10 +353,8 @@ const LeftPanel = () => {
                 <Typography variant="body2" sx={{ color: "#e2e8f0", fontWeight: 500 }}>
                   {news.summary}
                 </Typography>
-                <Typography variant="body2" sx={{ color: "#e2e8f0", fontWeight: 500 }}>
-                  <Link href={news.url} target="_blank" style={{ color: "#667eea" }}>{news.url}</Link>
-                </Typography>
               </Box>
+              </Link>
               <Divider sx={{ my: 2, borderColor: "rgba(74, 85, 104, 0.3)" }} />
               </>
             ))}

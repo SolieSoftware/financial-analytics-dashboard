@@ -194,7 +194,7 @@ const BottomPanel: React.FC = () => {
               sx={{
                 color: "#a0aec0",
                 fontWeight: 650,
-                fontSize: "1.25rem",
+                fontSize: "1rem",
                 textTransform: "uppercase",
                 letterSpacing: "0.05em",
               }}
