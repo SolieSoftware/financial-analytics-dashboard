@@ -1,24 +1,24 @@
 "use client";
 import { useAppSelector } from "../redux/store";
-import { 
-  Typography, 
-  Card, 
-  CardContent, 
-  CardHeader, 
-  Box, 
-  Chip, 
+import {
+  Typography,
+  Card,
+  CardContent,
+  CardHeader,
+  Box,
+  Chip,
   Divider,
   Skeleton,
   Alert,
-  AlertTitle
+  AlertTitle,
 } from "@mui/material";
-import { 
-  Business, 
-  People, 
-  AttachMoney, 
-  TrendingUp, 
-  BarChart, 
-  Info, 
+import {
+  Business,
+  People,
+  AttachMoney,
+  TrendingUp,
+  BarChart,
+  Info,
   CorporateFare,
   ShowChart,
   Percent,
@@ -28,10 +28,15 @@ import Link from "next/link";
 import { useStockProfile } from "@/utils/hooks/useStockProfile";
 
 const LeftPanel = () => {
-  const selectedTicker = useAppSelector(
-    (state) => state.ticker.selectedTicker
-  );
-  const { data: stockData, isLoading, error, stockMarketNewsData, stockMarketNewsError, stockMarketNewsLoading } = useStockProfile({ ticker: selectedTicker });
+  const selectedTicker = useAppSelector((state) => state.ticker.selectedTicker);
+  const {
+    data: stockData,
+    isLoading,
+    error,
+    stockMarketNewsData,
+    stockMarketNewsError,
+    stockMarketNewsLoading,
+  } = useStockProfile({ ticker: selectedTicker });
 
   console.log(stockMarketNewsData);
 
@@ -52,7 +57,7 @@ const LeftPanel = () => {
     if (!sentimentScore) return { label: "N/A", color: "#a0aec0" };
 
     switch (true) {
-      case  sentimentScore > 0.35:
+      case sentimentScore > 0.35:
         return { label: "Bullish", color: "#68d391" };
       case sentimentScore < 0.15:
         return { label: "Somewhat Bullish", color: "#68d3c7" };
@@ -67,27 +72,31 @@ const LeftPanel = () => {
     }
   };
 
-  const parseCustomTimestamp = (timestamp: number) => {
-    const year = timestamp.slice(0, 4)
-    const month = timestamp.slice(4, 6)
-    const day = timestamp.slice(6, 8)
-    const hour = timestamp.slice(9, 11)
-    const minute = timestamp.slice(11, 13)
-    const second = timestamp.slice(13, 15)
-    
-    const isoString = `${year}-${month}-${day}T${hour}:${minute}:${second}`
-    return new Date(isoString)
-  }
+  const parseCustomTimestamp = (timestamp: string) => {
+    if (!timestamp) return new Date();
+
+    const year = timestamp.slice(0, 4);
+    const month = timestamp.slice(4, 6);
+    const day = timestamp.slice(6, 8);
+    const hour = timestamp.slice(9, 11);
+    const minute = timestamp.slice(11, 13);
+    const second = timestamp.slice(13, 15);
+
+    const isoString = `${year}-${month}-${day}T${hour}:${minute}:${second}`;
+    return new Date(isoString);
+  };
 
   if (!selectedTicker) {
     return (
       <Box>
-        <Card sx={{ 
-          backgroundColor: "rgba(26, 32, 44, 0.9)", 
-          border: "1px solid rgba(74, 85, 104, 0.3)",
-          textAlign: "center",
-          py: 6
-        }}>
+        <Card
+          sx={{
+            backgroundColor: "rgba(26, 32, 44, 0.9)",
+            border: "1px solid rgba(74, 85, 104, 0.3)",
+            textAlign: "center",
+            py: 6,
+          }}
+        >
           <CardContent>
             <Business sx={{ fontSize: 48, color: "#a0aec0", mb: 2 }} />
             <Typography variant="body1" sx={{ color: "#a0aec0" }}>
@@ -102,7 +111,12 @@ const LeftPanel = () => {
   if (isLoading) {
     return (
       <Box sx={{ spaceY: 3 }}>
-        <Card sx={{ backgroundColor: "rgba(26, 32, 44, 0.9)", border: "1px solid rgba(74, 85, 104, 0.3)" }}>
+        <Card
+          sx={{
+            backgroundColor: "rgba(26, 32, 44, 0.9)",
+            border: "1px solid rgba(74, 85, 104, 0.3)",
+          }}
+        >
           <CardHeader>
             <Skeleton variant="text" width={200} height={32} />
           </CardHeader>
@@ -122,7 +136,13 @@ const LeftPanel = () => {
   if (error) {
     return (
       <Box>
-        <Alert severity="error" sx={{ backgroundColor: "rgba(239, 68, 68, 0.1)", border: "1px solid rgba(239, 68, 68, 0.3)" }}>
+        <Alert
+          severity="error"
+          sx={{
+            backgroundColor: "rgba(239, 68, 68, 0.1)",
+            border: "1px solid rgba(239, 68, 68, 0.3)",
+          }}
+        >
           <AlertTitle>Error</AlertTitle>
           Error loading company info: {error?.message || error?.toString()}
         </Alert>
@@ -133,7 +153,13 @@ const LeftPanel = () => {
   if (!stockData) {
     return (
       <Box>
-        <Alert severity="info" sx={{ backgroundColor: "rgba(59, 130, 246, 0.1)", border: "1px solid rgba(59, 130, 246, 0.3)" }}>
+        <Alert
+          severity="info"
+          sx={{
+            backgroundColor: "rgba(59, 130, 246, 0.1)",
+            border: "1px solid rgba(59, 130, 246, 0.3)",
+          }}
+        >
           <Info sx={{ mr: 1 }} />
           No company information available
         </Alert>
@@ -146,52 +172,60 @@ const LeftPanel = () => {
   return (
     <Box sx={{ maxWidth: "md" }}>
       {/* Company Overview */}
-      <Card sx={{ 
-        mb: 3, 
-        backgroundColor: "rgba(26, 32, 44, 0.9)", 
-        border: "1px solid rgba(74, 85, 104, 0.3)",
-        backdropFilter: "blur(20px)",
-        boxShadow: "0 8px 32px rgba(0, 0, 0, 0.2)"
-      }}>
+      <Card
+        sx={{
+          mb: 3,
+          backgroundColor: "rgba(26, 32, 44, 0.9)",
+          border: "1px solid rgba(74, 85, 104, 0.3)",
+          backdropFilter: "blur(20px)",
+          boxShadow: "0 8px 32px rgba(0, 0, 0, 0.2)",
+        }}
+      >
         <CardHeader
           title={
             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
               <Business sx={{ color: "#667eea" }} />
-              <Typography variant="h6" sx={{ color: "#f7fafc", fontWeight: 600 }}>
+              <Typography
+                variant="h6"
+                sx={{ color: "#f7fafc", fontWeight: 600 }}
+              >
                 Company Overview
               </Typography>
             </Box>
           }
-          sx={{ 
+          sx={{
             backgroundColor: "rgba(102, 126, 234, 0.1)",
-            borderBottom: "1px solid rgba(74, 85, 104, 0.3)"
+            borderBottom: "1px solid rgba(74, 85, 104, 0.3)",
           }}
         />
         <CardContent sx={{ spaceY: 2 }}>
           <Box>
-            <Typography variant="h5" sx={{ color: "#f7fafc", fontWeight: 600, mb: 1 }}>
+            <Typography
+              variant="h5"
+              sx={{ color: "#f7fafc", fontWeight: 600, mb: 1 }}
+            >
               {companyInfo?.shortName || "N/A"}
             </Typography>
             <Box sx={{ display: "flex", gap: 1, mb: 2 }}>
               {companyInfo?.sector && (
-                <Chip 
-                  label={companyInfo.sector} 
+                <Chip
+                  label={companyInfo.sector}
                   size="small"
-                  sx={{ 
+                  sx={{
                     backgroundColor: "rgba(102, 126, 234, 0.2)",
                     color: "#667eea",
-                    border: "1px solid rgba(102, 126, 234, 0.3)"
+                    border: "1px solid rgba(102, 126, 234, 0.3)",
                   }}
                 />
               )}
               {companyInfo?.industry && (
-                <Chip 
-                  label={companyInfo.industry} 
+                <Chip
+                  label={companyInfo.industry}
                   size="small"
                   variant="outlined"
-                  sx={{ 
+                  sx={{
                     borderColor: "rgba(74, 85, 104, 0.5)",
-                    color: "#a0aec0"
+                    color: "#a0aec0",
                   }}
                 />
               )}
@@ -199,7 +233,10 @@ const LeftPanel = () => {
           </Box>
 
           {companyInfo?.longBusinessSummary && (
-            <Typography variant="body2" sx={{ color: "#cbd5e0", lineHeight: 1.6 }}>
+            <Typography
+              variant="body2"
+              sx={{ color: "#cbd5e0", lineHeight: 1.6 }}
+            >
               {companyInfo.longBusinessSummary}
             </Typography>
           )}
@@ -207,33 +244,48 @@ const LeftPanel = () => {
       </Card>
 
       {/* Key Metrics */}
-      <Card sx={{ 
-        mb: 3, 
-        backgroundColor: "rgba(26, 32, 44, 0.9)", 
-        border: "1px solid rgba(74, 85, 104, 0.3)",
-        backdropFilter: "blur(20px)",
-        boxShadow: "0 8px 32px rgba(0, 0, 0, 0.2)"
-      }}>
+      <Card
+        sx={{
+          mb: 3,
+          backgroundColor: "rgba(26, 32, 44, 0.9)",
+          border: "1px solid rgba(74, 85, 104, 0.3)",
+          backdropFilter: "blur(20px)",
+          boxShadow: "0 8px 32px rgba(0, 0, 0, 0.2)",
+        }}
+      >
         <CardHeader
           title={
             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
               <BarChart sx={{ color: "#667eea" }} />
-              <Typography variant="h6" sx={{ color: "#f7fafc", fontWeight: 600 }}>
+              <Typography
+                variant="h6"
+                sx={{ color: "#f7fafc", fontWeight: 600 }}
+              >
                 Key Metrics
               </Typography>
             </Box>
           }
-          sx={{ 
+          sx={{
             backgroundColor: "rgba(102, 126, 234, 0.1)",
-            borderBottom: "1px solid rgba(74, 85, 104, 0.3)"
+            borderBottom: "1px solid rgba(74, 85, 104, 0.3)",
           }}
         />
         <CardContent>
           <Box sx={{ spaceY: 2 }}>
-            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 2 }}>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                mb: 2,
+              }}
+            >
               <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                 <People sx={{ color: "#a0aec0", fontSize: 20 }} />
-                <Typography variant="body2" sx={{ color: "#e2e8f0", fontWeight: 500 }}>
+                <Typography
+                  variant="body2"
+                  sx={{ color: "#e2e8f0", fontWeight: 500 }}
+                >
                   Employees
                 </Typography>
               </Box>
@@ -244,67 +296,146 @@ const LeftPanel = () => {
 
             <Divider sx={{ my: 2, borderColor: "rgba(74, 85, 104, 0.3)" }} />
 
-            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 2 }}>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                mb: 2,
+              }}
+            >
               <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                 <AttachMoney sx={{ color: "#a0aec0", fontSize: 20 }} />
-                <Typography variant="body2" sx={{ color: "#e2e8f0", fontWeight: 500 }}>
+                <Typography
+                  variant="body2"
+                  sx={{ color: "#e2e8f0", fontWeight: 500 }}
+                >
                   Total Cash
                 </Typography>
               </Box>
-              <Typography variant="body2" sx={{ color: "#f7fafc", fontFamily: "monospace" }}>
+              <Typography
+                variant="body2"
+                sx={{ color: "#f7fafc", fontFamily: "monospace" }}
+              >
                 {formatNumber(companyInfo?.totalCash)}
               </Typography>
             </Box>
 
-            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 2, ml: 3 }}>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                mb: 2,
+                ml: 3,
+              }}
+            >
               <Typography variant="body2" sx={{ color: "#a0aec0" }}>
                 Per Share
               </Typography>
-              <Typography variant="body2" sx={{ color: "#f7fafc", fontFamily: "monospace" }}>
+              <Typography
+                variant="body2"
+                sx={{ color: "#f7fafc", fontFamily: "monospace" }}
+              >
                 ${companyInfo?.totalCashPerShare?.toFixed(2) || "N/A"}
               </Typography>
             </Box>
 
             <Divider sx={{ my: 2, borderColor: "rgba(74, 85, 104, 0.3)" }} />
 
-            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
               <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                 <TrendingUp sx={{ color: "#a0aec0", fontSize: 20 }} />
-                <Typography variant="body2" sx={{ color: "#e2e8f0", fontWeight: 500 }}>
+                <Typography
+                  variant="body2"
+                  sx={{ color: "#e2e8f0", fontWeight: 500 }}
+                >
                   EBITDA
                 </Typography>
               </Box>
-              <Typography variant="body2" sx={{ color: "#f7fafc", fontFamily: "monospace" }}>
+              <Typography
+                variant="body2"
+                sx={{ color: "#f7fafc", fontFamily: "monospace" }}
+              >
                 {formatNumber(companyInfo?.ebitda)}
               </Typography>
             </Box>
           </Box>
 
           <Divider sx={{ my: 2, borderColor: "rgba(74, 85, 104, 0.3)" }} />
-          <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
               <CorporateFare sx={{ color: "#a0aec0", fontSize: 20 }} />
-              <Typography variant="body2" sx={{ color: "#e2e8f0", fontWeight: 500 }}>
+              <Typography
+                variant="body2"
+                sx={{ color: "#e2e8f0", fontWeight: 500 }}
+              >
                 Enterprise Value
               </Typography>
             </Box>
-            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-              <Typography variant="body2" sx={{ color: "#f7fafc", fontFamily: "monospace" }}>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
+              <Typography
+                variant="body2"
+                sx={{ color: "#f7fafc", fontFamily: "monospace" }}
+              >
                 {formatNumber(companyInfo?.enterpriseValue)}
               </Typography>
             </Box>
           </Box>
 
           <Divider sx={{ my: 2, borderColor: "rgba(74, 85, 104, 0.3)" }} />
-          <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1, justifyContent: "center" }}>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: 1,
+                justifyContent: "center",
+              }}
+            >
               <Percent sx={{ color: "#a0aec0", fontSize: 20 }} />
-              <Typography variant="body2" sx={{ color: "#e2e8f0", fontWeight: 500 }}>
+              <Typography
+                variant="body2"
+                sx={{ color: "#e2e8f0", fontWeight: 500 }}
+              >
                 Profit Margins
               </Typography>
             </Box>
-            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-              <Typography variant="body2" sx={{ color: "#f7fafc", fontFamily: "monospace" }}>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
+              <Typography
+                variant="body2"
+                sx={{ color: "#f7fafc", fontFamily: "monospace" }}
+              >
                 {formatPercentage(companyInfo?.profitMargins)}
               </Typography>
             </Box>
@@ -313,57 +444,95 @@ const LeftPanel = () => {
       </Card>
 
       {/* Latest News */}
-      {stockMarketNewsData && <Card sx={{ 
-        mb: 3, 
-        backgroundColor: "rgba(26, 32, 44, 0.9)", 
-        border: "1px solid rgba(74, 85, 104, 0.3)",
-        backdropFilter: "blur(20px)",
-        boxShadow: "0 8px 32px rgba(0, 0, 0, 0.2)"
-      }}>
-        <CardHeader
-          title={
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-              <Newspaper sx={{ color: "#667eea" }} />
-              <Typography variant="h6" sx={{ color: "#f7fafc", fontWeight: 600 }}>
-                News
-              </Typography>
-            </Box>
-          }
-          sx={{ 
-            backgroundColor: "rgba(102, 126, 234, 0.1)",
-            borderBottom: "1px solid rgba(74, 85, 104, 0.3)"
+      {stockMarketNewsData && (
+        <Card
+          sx={{
+            mb: 3,
+            backgroundColor: "rgba(26, 32, 44, 0.9)",
+            border: "1px solid rgba(74, 85, 104, 0.3)",
+            backdropFilter: "blur(20px)",
+            boxShadow: "0 8px 32px rgba(0, 0, 0, 0.2)",
           }}
-        />
-        <CardContent>
-          <Box sx={{ display: "grid", gridTemplateColumns: "1fr", gap: 3, mt:  1}}>
-            {stockMarketNewsData["market_news"]["feed"]?.map((news: any) => (
-              <>
-              <Link href={news.url} target="news_link" className="block transform transition-all duration-300 hover:scale-101 hover:-translate-y-1">
-              <Box key={news.title}>
-                <Typography variant="body2" sx={{ color: "#e2e8f0", fontWeight: 500 }}>
-                  {(() => {
-                    const sentiment = formatSentiment(news.overall_sentiment_score);
-                    return (
-                      <>
-                        {news.title} - <strong style={{ color: sentiment.color }}>{sentiment.label}</strong> - {parseCustomTimestamp(news.time_published).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
-                      </>
-                    );
-                  })()}
-                </Typography>
-                <Typography variant="body2" sx={{ color: "#e2e8f0", fontWeight: 500 }}>
-                  {news.summary}
+        >
+          <CardHeader
+            title={
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                <Newspaper sx={{ color: "#667eea" }} />
+                <Typography
+                  variant="h6"
+                  sx={{ color: "#f7fafc", fontWeight: 600 }}
+                >
+                  News
                 </Typography>
               </Box>
-              </Link>
-              <Divider sx={{ my: 2, borderColor: "rgba(74, 85, 104, 0.3)" }} />
-              </>
-            ))}
-          </Box>
+            }
+            sx={{
+              backgroundColor: "rgba(102, 126, 234, 0.1)",
+              borderBottom: "1px solid rgba(74, 85, 104, 0.3)",
+            }}
+          />
+          <CardContent>
+            <Box
+              sx={{
+                display: "grid",
+                gridTemplateColumns: "1fr",
+                gap: 3,
+                mt: 1,
+              }}
+            >
+              {stockMarketNewsData["market_news"]["feed"]?.map((news: any) => (
+                <>
+                  <Link
+                    href={news.url}
+                    target="news_link"
+                    className="block transform transition-all duration-300 hover:scale-101 hover:-translate-y-1"
+                  >
+                    <Box key={news.title}>
+                      <Typography
+                        variant="body2"
+                        sx={{ color: "#e2e8f0", fontWeight: 500 }}
+                      >
+                        {(() => {
+                          const sentiment = formatSentiment(
+                            news.overall_sentiment_score
+                          );
+                          return (
+                            <>
+                              {news.title} -{" "}
+                              <strong style={{ color: sentiment.color }}>
+                                {sentiment.label}
+                              </strong>{" "}
+                              -{" "}
+                              {parseCustomTimestamp(
+                                news.published_timestamp
+                              ).toLocaleDateString("en-US", {
+                                year: "numeric",
+                                month: "long",
+                                day: "numeric",
+                              })}
+                            </>
+                          );
+                        })()}
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        sx={{ color: "#e2e8f0", fontWeight: 500 }}
+                      >
+                        {news.summary}
+                      </Typography>
+                    </Box>
+                  </Link>
+                  <Divider
+                    sx={{ my: 2, borderColor: "rgba(74, 85, 104, 0.3)" }}
+                  />
+                </>
+              ))}
+            </Box>
 
-          <Divider sx={{ my: 2, borderColor: "rgba(74, 85, 104, 0.3)" }} />
-        </CardContent>
-      </Card>}
-
+            <Divider sx={{ my: 2, borderColor: "rgba(74, 85, 104, 0.3)" }} />
+          </CardContent>
+        </Card>
+      )}
     </Box>
   );
 };
