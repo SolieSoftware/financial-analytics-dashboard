@@ -1,4 +1,5 @@
 import Layout from "../layout";
+import MarketChartOverview from "@/components/charts/MarketChartOverview";
 
 
 
@@ -6,7 +7,7 @@ import Layout from "../layout";
 const MarketOverviewPage = () => {
   return (
     <Layout>
-      <div>Market Overview</div>
+      <MarketChartOverview />
     </Layout>
   );
 };

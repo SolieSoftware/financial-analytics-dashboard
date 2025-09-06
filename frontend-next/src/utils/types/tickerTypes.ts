@@ -4,9 +4,18 @@ interface TickerListResponse {
     error: string | null;
   }
 
-  interface TickerEntry {
+interface TickerEntry {
     Symbol: string;
     Selected: boolean;
   }
 
-  export type { TickerListResponse, TickerEntry };
+interface tickerType {
+  ticker: string;
+}
+
+interface tickerListType {
+  tickerList: tickerType[];
+}
+
+
+export type { TickerListResponse, TickerEntry, tickerType, tickerListType };

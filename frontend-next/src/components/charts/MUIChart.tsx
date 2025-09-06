@@ -3,8 +3,11 @@ import React from "react";
 import { LineChart } from "@mui/x-charts";
 import { useEffect, useState } from "react";
 import { useAppSelector } from "../redux/store";
-import { stockEntryCleaned, stockEntry } from "@/utils/types/stockData";
-import { useStockProfile } from "@/utils/hooks/useStockProfile";
+import {
+  stockEntryCleaned,
+  stockEntry,
+  stockData,
+} from "@/utils/types/stockData";
 import dayjs from "dayjs";
 import {
   Box,
@@ -24,17 +27,19 @@ import {
   AttachMoney,
   Speed,
   Warning,
-  ShowChart,
 } from "@mui/icons-material";
 
-const MUIChart: React.FC = () => {
-  const selectedTicker = useAppSelector((state) => state.ticker.selectedTicker);
-  const {
-    data: stockData,
-    isLoading,
-    error,
-  } = useStockProfile({ ticker: selectedTicker });
-
+const MUIChart = ({
+  ticker,
+  stockData,
+  isLoading,
+  error,
+}: {
+  ticker: string;
+  stockData: stockData;
+  isLoading: boolean;
+  error: any;
+}) => {
   const [data, setData] = useState<stockEntryCleaned[]>([]);
 
   const [chartStats, setChartStats] = useState({
@@ -74,28 +79,6 @@ const MUIChart: React.FC = () => {
       setData([]);
     }
   }, [stockData]);
-
-
- // Ticker not selected
-  if (!selectedTicker) {
-    return (
-      <Box>
-        <Card sx={{ 
-          backgroundColor: "rgba(26, 32, 44, 0.9)", 
-          border: "1px solid rgba(74, 85, 104, 0.3)",
-          textAlign: "center",
-          py: 6
-        }}>
-          <CardContent>
-            <ShowChart sx={{ fontSize: 48, color: "#a0aec0", mb: 2 }} />
-            <Typography variant="body1" sx={{ color: "#a0aec0" }}>
-              Select a ticker to view the price chart
-            </Typography>
-          </CardContent>
-        </Card>
-      </Box>
-    );
-  }
 
   // Loading State
   if (isLoading) {
@@ -167,7 +150,7 @@ const MUIChart: React.FC = () => {
                 fontWeight: 500,
               }}
             >
-              Loading chart data for {selectedTicker}...
+              Loading chart data for {ticker}...
             </Typography>
           </Box>
         </CardContent>
@@ -341,7 +324,7 @@ const MUIChart: React.FC = () => {
                     mb: 0.5,
                   }}
                 >
-                  {selectedTicker} Price Chart
+                  {ticker} Price Chart
                 </Typography>
                 <Typography
                   variant="body2"
@@ -496,7 +479,7 @@ const MUIChart: React.FC = () => {
               series={[
                 {
                   data: data.map((d) => d.Close),
-                  label: `${selectedTicker} Close Price`,
+                  label: `${ticker} Close Price`,
                   showMark: false,
                   color: isPositive
                     ? "#22c55e"

@@ -12,11 +12,12 @@ import {
 import { Box, Typography, Chip, Divider } from "@mui/material";
 import Link from "next/link";
 import { useAppSelector } from "../redux/store";
+import { useState } from "react";
 
 export const Navigation = () => {
   const selectedTicker = useAppSelector((state) => state.ticker.selectedTicker);
 
-  const navigationItems = [
+  const [navigationItems, setNavigationItems] = useState([
     {
       label: "Stock Profile",
       href: selectedTicker
@@ -68,7 +69,15 @@ export const Navigation = () => {
       active: false,
       badge: null,
     },
-  ];
+  ]);
+
+  const handleItemClick = (item: any) => {
+    navigationItems.forEach((item) => {
+      item.active = false;
+    });
+    item.active = true;
+    setNavigationItems(navigationItems);
+  };
 
   return (
     <div>
@@ -90,7 +99,7 @@ export const Navigation = () => {
           {navigationItems.map((item) => {
             const IconComponent = item.icon;
             return (
-              <Link href={item.href} key={item.label}>
+              <Link href={item.href} key={item.label} onClick={() => {handleItemClick(item)}}>
                 <Box
                   key={item.label}
                   sx={{
