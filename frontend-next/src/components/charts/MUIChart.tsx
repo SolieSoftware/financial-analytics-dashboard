@@ -6,7 +6,7 @@ import { useAppSelector } from "../redux/store";
 import {
   stockEntryCleaned,
   stockEntry,
-  stockData,
+  stockDataResponse,
 } from "@/utils/types/stockData";
 import dayjs from "dayjs";
 import {
@@ -36,7 +36,7 @@ const MUIChart = ({
   error,
 }: {
   ticker: string;
-  stockData: stockData;
+  stockData: stockDataResponse;
   isLoading: boolean;
   error: any;
 }) => {
@@ -51,7 +51,7 @@ const MUIChart = ({
   });
 
   useEffect(() => {
-    if (stockData?.history_data) {
+    if (stockData?.history_data && stockData.history_data.length > 0) {
       const cleanedData = stockData.history_data.map((item: stockEntry) => ({
         ...item,
         Date: dayjs(item.Date).toDate(),
@@ -77,6 +77,13 @@ const MUIChart = ({
       }
     } else {
       setData([]);
+      setChartStats({
+        priceChange: 0,
+        priceChangePercent: 0,
+        highPrice: 0,
+        lowPrice: 0,
+        currentPrice: 0,
+      });
     }
   }, [stockData]);
 

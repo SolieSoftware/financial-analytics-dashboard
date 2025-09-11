@@ -1,7 +1,5 @@
 "use client";
 import React from "react";
-import { useAppSelector } from "../redux/store";
-import { useStockProfile } from "@/utils/hooks/useStockProfile";
 import {
   Typography,
   Card,
@@ -11,22 +9,30 @@ import {
   Skeleton,
   Alert,
   AlertTitle,
-  Chip
 } from "@mui/material";
 import {
   TrendingUp,
   TrendingDown,
   AttachMoney,
   ShowChart,
-  VolumeUp,
-  Height,
-  Speed,
+  VolumeUp, 
   Assessment
 } from "@mui/icons-material";
+import { stockDataResponse } from "@/utils/types/stockData";
 
-const BottomPanel: React.FC = () => {
-  const { selectedTicker } = useAppSelector((state) => state.ticker);
-  const { data: stockData, isLoading, error } = useStockProfile({ ticker: selectedTicker });
+const BottomPanel = ({
+  ticker,
+  data,
+  isLoading,
+  error,
+}: {
+  ticker: string,
+  data: stockDataResponse,
+  isLoading: boolean,
+  error: string,
+}) => {
+  const selectedTicker = ticker;
+  const stockData = data;
 
   const formatNumber = (num?: number): string => {
     if (!num) return "N/A";
@@ -45,7 +51,7 @@ const BottomPanel: React.FC = () => {
     return volume.toLocaleString();
   };
 
-  if (!selectedTicker) {
+  if (!ticker) {
     return (
       <Box>
         <Card sx={{ 
@@ -122,7 +128,7 @@ const BottomPanel: React.FC = () => {
           border: "1px solid rgba(239, 68, 68, 0.3)" 
         }}>
           <AlertTitle>Error</AlertTitle>
-          Error loading performance data: {error?.message || error?.toString()}
+          Error loading performance data: {error || error?.toString()}
         </Alert>
       </Box>
     );

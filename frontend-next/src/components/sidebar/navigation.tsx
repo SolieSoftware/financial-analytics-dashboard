@@ -1,82 +1,20 @@
 "use client";
 
-import {
-  BarChart,
-  Business,
-  AttachMoney,
-  TrendingUp,
-  Star,
-  PieChart,
-  ShowChart,
-} from "@mui/icons-material";
 import { Box, Typography, Chip, Divider } from "@mui/material";
 import Link from "next/link";
-import { useAppSelector } from "../redux/store";
-import { useState } from "react";
+import { useAppSelector, useAppDispatch } from "../redux/store";
+import { setNavigationState } from "../redux/slices/navigationSlice";
 
 export const Navigation = () => {
-  const selectedTicker = useAppSelector((state) => state.ticker.selectedTicker);
+  const navigationItems = useAppSelector((state) => state.navigation.navigation);
+  const dispatch = useAppDispatch();
 
-  const [navigationItems, setNavigationItems] = useState([
-    {
-      label: "Stock Profile",
-      href: selectedTicker
-        ? `/stock-profile/${selectedTicker}`
-        : "/stock-profile",
-      icon: BarChart,
-      active: true,
-      badge: null,
-    },
-    {
-      label: "Market Overview",
-      href: "/market-overview",
-      icon: ShowChart,
-      active: false,
-      badge: null,  
-    },
-    {
-      label: "Portfolio",
-      href: "/portfolio",
-      icon: Business,
-      active: false,
-      badge: "3",
-    },
-    {
-      label: "Dividend Picks",
-      href: "/dividend",
-      icon: AttachMoney,
-      active: false,
-      badge: "New",
-    },
-    {
-      label: "Market Analysis",
-      href: "/analysis",
-      icon: TrendingUp,
-      active: false,
-      badge: null,
-    },
-    {
-      label: "Watchlist",
-      href: "/watchlist",
-      icon: Star,
-      active: false,
-      badge: "12",
-    },
-    {
-      label: "Reports",
-      href: "/reports",
-      icon: PieChart,
-      active: false,
-      badge: null,
-    },
-  ]);
-
-  const handleItemClick = (item: any) => {
-    navigationItems.forEach((item) => {
-      item.active = false;
-    });
-    item.active = true;
-    setNavigationItems(navigationItems);
+  const handleItemClick = (selectedItem: any) => {
+    const updatedItems = navigationItems.map((item) => ({
+      ...item,
+      active: item === selectedItem,
+    }));
+    dispatch(setNavigationState(updatedItems));
   };
 
   return (

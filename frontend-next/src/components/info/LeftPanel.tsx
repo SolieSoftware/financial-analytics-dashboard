@@ -1,5 +1,5 @@
 "use client";
-import { useAppSelector } from "../redux/store";
+
 import {
   Typography,
   Card,
@@ -20,25 +20,33 @@ import {
   BarChart,
   Info,
   CorporateFare,
-  ShowChart,
   Percent,
   Newspaper,
 } from "@mui/icons-material";
 import Link from "next/link";
-import { useStockProfile } from "@/utils/hooks/useStockProfile";
+import { NewsArticle } from "@/utils/types/newsTypes";
+import { stockDataResponse } from "@/utils/types/stockData";  
+import { stockMarketNewsResponse } from "@/utils/types/newsTypes";
 
-const LeftPanel = () => {
-  const selectedTicker = useAppSelector((state) => state.ticker.selectedTicker);
-  const {
-    data: stockData,
-    isLoading,
-    error,
-    stockMarketNewsData,
-    stockMarketNewsError,
-    stockMarketNewsLoading,
-  } = useStockProfile({ ticker: selectedTicker });
-
-  console.log(stockMarketNewsData);
+const LeftPanel = ({
+  ticker,
+  data,
+  isLoading,
+  error,
+  stockMarketNewsData,
+  stockMarketNewsError,
+  stockMarketNewsLoading,
+}: {
+  ticker: string,
+  data: stockDataResponse,
+  isLoading: boolean,
+  error: string,
+  stockMarketNewsData: stockMarketNewsResponse,
+  stockMarketNewsError: string,
+  stockMarketNewsLoading: boolean,
+}) => {
+  const selectedTicker = ticker;
+  const stockData = data;
 
   const formatNumber = (num?: number) => {
     if (!num) return "N/A";
@@ -144,7 +152,7 @@ const LeftPanel = () => {
           }}
         >
           <AlertTitle>Error</AlertTitle>
-          Error loading company info: {error?.message || error?.toString()}
+          Error loading company info: {error || error?.toString()}
         </Alert>
       </Box>
     );
@@ -168,6 +176,73 @@ const LeftPanel = () => {
   }
 
   const companyInfo = stockData.info_data;
+
+  const keyMetrics = [
+    {
+      label: "Employees",
+      value: companyInfo?.fullTimeEmployees?.toLocaleString() || "N/A",
+      icon: <People sx={{ color: "#a0aec0", fontSize: 20 }} />,
+    },
+    {
+      label: "Total Cash",
+      value: formatNumber(companyInfo?.totalCash),
+      icon: <AttachMoney sx={{ color: "#a0aec0", fontSize: 20 }} />,
+    },
+    {
+      label: "Per Share",
+      value: `${companyInfo?.totalCashPerShare?.toFixed(2) || "N/A"}`,
+      icon: <Percent sx={{ color: "#a0aec0", fontSize: 20 }} />,
+    },
+    {
+      label: "EBITDA",
+      value: formatNumber(companyInfo?.ebitda),
+      icon: <TrendingUp sx={{ color: "#a0aec0", fontSize: 20 }} />,
+    },
+    {
+      label: "Enterprise Value",
+      value: formatNumber(companyInfo?.enterpriseValue),
+      icon: <CorporateFare sx={{ color: "#a0aec0", fontSize: 20 }} />,
+    },
+    {
+      label: "Profit Margins",
+      value: formatPercentage(companyInfo?.profitMargins),
+      icon: <Percent sx={{ color: "#a0aec0", fontSize: 20 }} />,
+    }
+  ]
+
+  const displayKeyMetrics = (
+    label: string,
+    value: string,
+    icon: React.ReactNode,
+  ) => {
+    return (
+      <>
+        <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          mb: 2,
+        }}
+      >
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+          {icon}
+          <Typography
+            variant="body2"
+            sx={{ color: "#e2e8f0", fontWeight: 500 }}
+          >
+            {label}
+          </Typography>
+        </Box>
+        <Typography variant="body2" sx={{ color: "#f7fafc" }}>
+          {value || "N/A"}
+        </Typography>
+      </Box>
+
+      <Divider sx={{ my: 2, borderColor: "rgba(74, 85, 104, 0.3)" }} />
+    </>
+    );
+  };
 
   return (
     <Box sx={{ maxWidth: "md" }}>
@@ -270,175 +345,13 @@ const LeftPanel = () => {
             borderBottom: "1px solid rgba(74, 85, 104, 0.3)",
           }}
         />
+
+        {/* Key Metrics List */}
         <CardContent>
           <Box sx={{ spaceY: 2 }}>
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                mb: 2,
-              }}
-            >
-              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                <People sx={{ color: "#a0aec0", fontSize: 20 }} />
-                <Typography
-                  variant="body2"
-                  sx={{ color: "#e2e8f0", fontWeight: 500 }}
-                >
-                  Employees
-                </Typography>
-              </Box>
-              <Typography variant="body2" sx={{ color: "#f7fafc" }}>
-                {companyInfo?.fullTimeEmployees?.toLocaleString() || "N/A"}
-              </Typography>
-            </Box>
-
-            <Divider sx={{ my: 2, borderColor: "rgba(74, 85, 104, 0.3)" }} />
-
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                mb: 2,
-              }}
-            >
-              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                <AttachMoney sx={{ color: "#a0aec0", fontSize: 20 }} />
-                <Typography
-                  variant="body2"
-                  sx={{ color: "#e2e8f0", fontWeight: 500 }}
-                >
-                  Total Cash
-                </Typography>
-              </Box>
-              <Typography
-                variant="body2"
-                sx={{ color: "#f7fafc", fontFamily: "monospace" }}
-              >
-                {formatNumber(companyInfo?.totalCash)}
-              </Typography>
-            </Box>
-
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                mb: 2,
-                ml: 3,
-              }}
-            >
-              <Typography variant="body2" sx={{ color: "#a0aec0" }}>
-                Per Share
-              </Typography>
-              <Typography
-                variant="body2"
-                sx={{ color: "#f7fafc", fontFamily: "monospace" }}
-              >
-                ${companyInfo?.totalCashPerShare?.toFixed(2) || "N/A"}
-              </Typography>
-            </Box>
-
-            <Divider sx={{ my: 2, borderColor: "rgba(74, 85, 104, 0.3)" }} />
-
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-              }}
-            >
-              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                <TrendingUp sx={{ color: "#a0aec0", fontSize: 20 }} />
-                <Typography
-                  variant="body2"
-                  sx={{ color: "#e2e8f0", fontWeight: 500 }}
-                >
-                  EBITDA
-                </Typography>
-              </Box>
-              <Typography
-                variant="body2"
-                sx={{ color: "#f7fafc", fontFamily: "monospace" }}
-              >
-                {formatNumber(companyInfo?.ebitda)}
-              </Typography>
-            </Box>
-          </Box>
-
-          <Divider sx={{ my: 2, borderColor: "rgba(74, 85, 104, 0.3)" }} />
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-            }}
-          >
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-              <CorporateFare sx={{ color: "#a0aec0", fontSize: 20 }} />
-              <Typography
-                variant="body2"
-                sx={{ color: "#e2e8f0", fontWeight: 500 }}
-              >
-                Enterprise Value
-              </Typography>
-            </Box>
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-              }}
-            >
-              <Typography
-                variant="body2"
-                sx={{ color: "#f7fafc", fontFamily: "monospace" }}
-              >
-                {formatNumber(companyInfo?.enterpriseValue)}
-              </Typography>
-            </Box>
-          </Box>
-
-          <Divider sx={{ my: 2, borderColor: "rgba(74, 85, 104, 0.3)" }} />
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-            }}
-          >
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                gap: 1,
-                justifyContent: "center",
-              }}
-            >
-              <Percent sx={{ color: "#a0aec0", fontSize: 20 }} />
-              <Typography
-                variant="body2"
-                sx={{ color: "#e2e8f0", fontWeight: 500 }}
-              >
-                Profit Margins
-              </Typography>
-            </Box>
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-              }}
-            >
-              <Typography
-                variant="body2"
-                sx={{ color: "#f7fafc", fontFamily: "monospace" }}
-              >
-                {formatPercentage(companyInfo?.profitMargins)}
-              </Typography>
-            </Box>
+            {keyMetrics.map((metric) => (
+              displayKeyMetrics(metric.label, metric.value, metric.icon)
+            ))}
           </Box>
         </CardContent>
       </Card>
@@ -480,14 +393,14 @@ const LeftPanel = () => {
                 mt: 1,
               }}
             >
-              {stockMarketNewsData["market_news"]["feed"]?.map((news: any) => (
+              {stockMarketNewsData["market_news"]["feed"]?.map((news: NewsArticle, index: number) => (
                 <>
                   <Link
                     href={news.url}
                     target="news_link"
                     className="block transform transition-all duration-300 hover:scale-101 hover:-translate-y-1"
                   >
-                    <Box key={news.title}>
+                    <Box key={index}>
                       <Typography
                         variant="body2"
                         sx={{ color: "#e2e8f0", fontWeight: 500 }}
@@ -504,7 +417,7 @@ const LeftPanel = () => {
                               </strong>{" "}
                               -{" "}
                               {parseCustomTimestamp(
-                                news.published_timestamp
+                                news.time_published
                               ).toLocaleDateString("en-US", {
                                 year: "numeric",
                                 month: "long",

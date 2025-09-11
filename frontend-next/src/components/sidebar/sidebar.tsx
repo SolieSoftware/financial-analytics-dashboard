@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Drawer, Box, IconButton, Typography, Divider } from "@mui/material";
 import { Menu, Close, Speed, Settings } from "@mui/icons-material";
 import { Navigation } from "./Navigation";

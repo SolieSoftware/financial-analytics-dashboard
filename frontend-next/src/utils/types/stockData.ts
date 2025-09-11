@@ -1,4 +1,4 @@
-export type stockEntry = {
+type stockEntry = {
   Date: string;
   Open: number;
   High: number;
@@ -9,7 +9,7 @@ export type stockEntry = {
   "Stock Splits": number;
 };
 
-export type stockEntryCleaned = {
+type stockEntryCleaned = {
   Date: Date;
   Open: number;
   High: number;
@@ -241,17 +241,13 @@ interface stockInfoData {
   SandP52WeekChange: number;
 }
 
-export interface stockHistoricalData {
+interface stockHistoricalData {
   historyData: stockEntry[];
 }
 
-export interface stockData {
+interface stockDataResponse {
   info_data: stockInfoData;
   history_data: stockEntry[];
 }
 
-export interface stockDataResponse {
-  stockData: stockData | null;
-  status: "idle" | "loading" | "succeeded" | "failed";
-  error: string | null;
-}
+export type { stockEntry, stockEntryCleaned, stockInfoData, stockHistoricalData, stockDataResponse };

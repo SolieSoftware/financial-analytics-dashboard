@@ -3,16 +3,16 @@ import { useDispatch, useSelector, TypedUseSelectorHook } from "react-redux";
 import tickerReducer from "./slices/tickerSlice";
 import tickerListReducer from "./slices/tickerListSlice";
 import dividendReducer from "./slices/dividendSlice";
-import marketSummaryReducer from "./slices/marketSummarySlice";
 import sidebarReducer from "./slices/sidebarSlice";
+import navigationReducer from "./slices/navigationSlice";
 
 const store = configureStore({
   reducer: {
     ticker: tickerReducer,
     tickerList: tickerListReducer,
     dividend: dividendReducer,
-    marketSummary: marketSummaryReducer,
     sidebar: sidebarReducer,
+    navigation: navigationReducer,
   },
 });
 

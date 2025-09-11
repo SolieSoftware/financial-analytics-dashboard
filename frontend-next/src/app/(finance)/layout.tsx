@@ -1,6 +1,5 @@
 "use client";
 
-import { fetchMarketSummary } from "@/components/redux/slices/marketSummarySlice";
 import { fetchTickerList } from "@/components/redux/slices/tickerListSlice";
 import { useAppDispatch, useAppSelector } from "@/components/redux/store";
 import SideBar from "@/components/sidebar/Sidebar";
