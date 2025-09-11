@@ -1,6 +1,7 @@
 import yfinance as yf
 import pandas as pd
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 import httpx
 from io import StringIO
 import requests
@@ -10,7 +11,6 @@ from contextlib import asynccontextmanager
 import asyncio
 import functools
 import logging
-from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 from typing import List
 from services.yfinance_client import YahooFinanceClient
