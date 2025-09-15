@@ -1,4 +1,4 @@
-import { Providers } from "./providers/providers";
+import { ReduxProvider } from "./providers/ReduxProvider";
 import { SWRConfig } from "swr";
 import "./global.css";
 
@@ -8,21 +8,20 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <head />
+    <html>
       <body>
-        <SWRConfig
-          value={{
-            revalidateOnFocus: false,
-            revalidateOnReconnect: true,
-            keepPreviousData: true,
-          }}
+        <ReduxProvider>
+          <SWRConfig
+            value={{
+              revalidateOnFocus: false,
+              revalidateOnReconnect: true,
+              keepPreviousData: true,
+            }}
           >
-          <Providers>
             {children}
-          </Providers>
-        </SWRConfig>
-      </body>
-    </html>
+          </SWRConfig>
+        </ReduxProvider>
+        </body>
+      </html>
   );
 }
