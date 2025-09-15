@@ -28,6 +28,7 @@ import { NewsArticle } from "@/utils/types/newsTypes";
 import { stockDataResponse } from "@/utils/types/stockData";  
 import { stockMarketNewsResponse } from "@/utils/types/newsTypes";
 
+
 const LeftPanel = ({
   ticker,
   data,

@@ -31,7 +31,6 @@ const BottomPanel = ({
   isLoading: boolean,
   error: string,
 }) => {
-  const selectedTicker = ticker;
   const stockData = data;
 
   const formatNumber = (num?: number): string => {
