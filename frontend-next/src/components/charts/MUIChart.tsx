@@ -34,11 +34,13 @@ const MUIChart = ({
   stockData,
   isLoading,
   error,
+  compact = false,
 }: {
   ticker: string;
   stockData: stockDataResponse;
   isLoading: boolean;
   error: any;
+  compact?: boolean;
 }) => {
   const [data, setData] = useState<stockEntryCleaned[]>([]);
 
@@ -168,6 +170,31 @@ const MUIChart = ({
     );
   }
 
+  if (!ticker) {
+    return (
+      <Card
+        sx={{
+          background: "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)",
+          border: "1px solid rgba(148, 163, 184, 0.1)",
+          borderRadius: "20px",
+          height: "100%",
+          minHeight: "300px",
+          maxHeight: "400px",
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
+        <CardContent sx={{ p: 3, flex: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <Typography sx={{ color: "#64748b", fontSize: "1.125rem", fontWeight: 600, mb: 1 }}>No ticker selected</Typography>
+          <Typography sx={{ color: "#475569", fontSize: "0.875rem", textAlign: "center", maxWidth: "300px" }}>
+            Select a ticker from the dashboard to view historical price data and
+            trends
+          </Typography>
+        </CardContent>
+      </Card>
+    )
+  }
+
   // Error State
   if (error) {
     return (
@@ -283,6 +310,8 @@ const MUIChart = ({
           boxShadow: "0 8px 32px rgba(0, 0, 0, 0.2)",
           overflow: "hidden",
           position: "relative",
+          display: "flex",
+          flexDirection: "column",
           "&::before": {
             content: '""',
             position: "absolute",
@@ -299,18 +328,32 @@ const MUIChart = ({
         }}
       >
         <CardContent
-          sx={{ p: 0, height: "100%", width: "100%", overflow: "hidden" }}
+          sx={{
+            p: 0,
+            height: "100%",
+            width: "100%",
+            overflow: "hidden",
+            display: "flex",
+            flexDirection: "column",
+            flex: 1,
+          }}
         >
           {/* Chart Header */}
-          <Box sx={{ p: 1.5 }}>
-            <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+          <Box sx={{ p: compact ? 1 : 1.5, flexShrink: 0 }}>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                mb: compact ? 1 : 2,
+              }}
+            >
               <Box
                 sx={{
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  width: "32px",
-                  height: "32px",
+                  width: compact ? "24px" : "32px",
+                  height: compact ? "24px" : "32px",
                   borderRadius: "16px",
                   background: isPositive
                     ? "rgba(34, 197, 94, 0.1)"
@@ -321,7 +364,7 @@ const MUIChart = ({
               >
                 <BarChart
                   sx={{
-                    fontSize: 24,
+                    fontSize: compact ? 16 : 24,
                     color: isPositive
                       ? "#22c55e"
                       : isNegative
@@ -336,20 +379,22 @@ const MUIChart = ({
                   sx={{
                     color: "#f8fafc",
                     fontWeight: 700,
-                    fontSize: "1rem",
+                    fontSize: compact ? "0.875rem" : "1rem",
                   }}
                 >
                   {ticker} Price Chart
                 </Typography>
-                <Typography
-                  variant="body2"
-                  sx={{
-                    color: "#64748b",
-                    fontSize: "0.875rem",
-                  }}
-                >
-                  Historical price movement • {data.length} data points
-                </Typography>
+                {!compact && (
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      color: "#64748b",
+                      fontSize: "0.875rem",
+                    }}
+                  >
+                    Historical price movement • {data.length} data points
+                  </Typography>
+                )}
               </Box>
             </Box>
 
@@ -460,22 +505,23 @@ const MUIChart = ({
           {/* Chart Container */}
           <Box
             sx={{
-              height: "100%",
+              flex: 1,
               width: "100%",
               background: "rgba(15, 23, 42, 0.5)",
               borderRadius: "0 0 20px 20px",
               overflow: "hidden",
               display: "flex",
               flexDirection: "column",
+              minHeight: 0,
             }}
           >
             <Box
               sx={{
                 flex: 1,
-                height: "100%",
                 width: "100%",
                 overflow: "hidden",
                 position: "relative",
+                minHeight: 0,
               }}
             >
               <Box
@@ -522,7 +568,12 @@ const MUIChart = ({
                       curve: "linear",
                     },
                   ]}
-                  margin={{ left: 50, right: 15, top: 15, bottom: 40 }}
+                  margin={{
+                    left: compact ? 30 : 50,
+                    right: compact ? 10 : 15,
+                    top: compact ? 10 : 15,
+                    bottom: compact ? 30 : 40,
+                  }}
                   sx={{
                     width: "100%",
                     height: "100%",
@@ -546,7 +597,14 @@ const MUIChart = ({
                     "& .MuiChartsLegend-root": {
                       "& .MuiChartsLegend-series": {
                         "& text": {
-                          fill: "#e2e8f0 !important",
+                          fill: "#ffffff !important", // Change this color
+                          color: "#ffffff !important",
+                          fontSize: "12px !important",
+                          fontWeight: "500 !important",
+                        },
+                        "& .MuiChartsLegend-Label": {
+                          fill: "#ffffff !important", // Change this color
+                          color: "#ffffff !important",
                           fontSize: "12px !important",
                           fontWeight: "500 !important",
                         },

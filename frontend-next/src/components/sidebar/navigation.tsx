@@ -5,24 +5,21 @@ import Link from "next/link";
 import { useAppSelector, useAppDispatch } from "../redux/store";
 import { setNavigationState } from "../redux/slices/navigationSlice";
 import { useEffect } from "react";
-import { useParams } from "next/navigation";
+import { usePathname } from "next/navigation";
 
 export const Navigation = () => {
   const navigationItems = useAppSelector(
     (state) => state.navigation.navigation
   );
   const dispatch = useAppDispatch();
-  const params = useParams();
+  const pathname = usePathname();
 
   useEffect(() => {
-    if (!params?.pathname) return;
-    const selectedItem = navigationItems.find(
-      (item) => item.href === params.pathname
-    );
+    const selectedItem = navigationItems.find((item) => item.href === pathname);
     if (selectedItem) {
       handleItemClick(selectedItem);
     }
-  }, [params?.pathname]);
+  }, [pathname]);
 
   const handleItemClick = (selectedItem: any) => {
     const updatedItems = navigationItems.map((item) => ({

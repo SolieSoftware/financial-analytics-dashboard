@@ -126,6 +126,31 @@
   max-width: none !important;
 }
 
+/* Force charts to fit in grid cells */
+.grid .MuiCard-root {
+  height: 100% !important;
+  max-height: 100% !important;
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+.grid .MuiCardContent-root {
+  height: 100% !important;
+  max-height: 100% !important;
+  padding: 0.5rem !important;
+  overflow: hidden !important;
+}
+
+.grid .MuiBox-root {
+  max-height: 100% !important;
+  overflow: hidden !important;
+}
+
+.grid svg {
+  max-height: 100% !important;
+  max-width: 100% !important;
+}
+
 .chart-container:hover {
   transform: translateY(-2px);
   box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);

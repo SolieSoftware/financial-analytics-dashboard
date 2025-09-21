@@ -24,13 +24,12 @@ const MarketChartOverview = () => {
       <h2 className="text-xl md:text-2xl font-semibold text-white mb-4">
         Market Indices
       </h2>
-      <div className="grid grid-cols-2 sm:grid-cols-2 grid-rows-2 gap-4  h-[100vh]">
+      <div className="grid grid-cols-2 gap-4 h-[600px]">
         {Object.entries(marketData).map(([ticker, data]) => (
           <div
             key={ticker}
-            className="bg-white/5 backdrop-blur-sm rounded-xl overflow-hidden shadow-lg border border-white/10"
+            className="bg-white/5 backdrop-blur-sm rounded-xl overflow-hidden shadow-lg border border-white/10 h-full"
           >
-            <div className="h-[50vh] w-[50vw]">
             <MUIChart
               ticker={data.name}
               stockData={
@@ -40,9 +39,9 @@ const MarketChartOverview = () => {
                 }
               }
               isLoading={marketData[ticker].isLoading || false}
-                error={marketData[ticker].error || null}
-              />
-            </div>
+              error={marketData[ticker].error || null}
+              compact={true}
+            />
           </div>
         ))}
       </div>
