@@ -3,4 +3,13 @@ export const paths = {
     stockProfile: "/stock-profile",
     watchlist: "/watchlist",
     reports: "/reports",
+    login: "/login",
+    profile: "/profile",
+    register: "/register",
+    forgotPassword: "/forgot-password",
+    resetPassword: "/reset-password",
+    verifyEmail: "/verify-email",
+    verifyEmailSent: "/verify-email-sent",
+    verifyEmailSuccess: "/verify-email-success",
+    verifyEmailFailed: "/verify-email-failed",
 }

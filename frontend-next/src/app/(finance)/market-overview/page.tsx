@@ -11,13 +11,13 @@ const MarketOverviewPage = () => {
         sx={{
           px: { xs: 2, sm: 3, md: 4 },
           py: { xs: 2, sm: 3, md: 4 },
+          width: "100%",
         }}
       >
         <Box
           sx={{
             display: "flex",
             flexDirection: "column",
-            gap: { xs: 3, sm: 4, md: 6 },
             width: "100%",
           }}
         >
@@ -25,7 +25,6 @@ const MarketOverviewPage = () => {
           <Box
             sx={{
               textAlign: "center",
-              mb: { xs: 2, sm: 3, md: 4 },
             }}
           >
             <Typography
@@ -64,6 +63,8 @@ const MarketOverviewPage = () => {
           <Box
             sx={{
               width: "100%",
+              maxHeight: "100vh",
+              overflowY: "auto",
             }}
           >
             <MarketSummary />

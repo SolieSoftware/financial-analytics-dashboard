@@ -4,15 +4,27 @@ import { Box, Typography, Chip, Divider } from "@mui/material";
 import Link from "next/link";
 import { useAppSelector, useAppDispatch } from "../redux/store";
 import { setNavigationState } from "../redux/slices/navigationSlice";
+import { useEffect } from "react";
+import { usePathname } from "next/navigation";
 
 export const Navigation = () => {
-  const navigationItems = useAppSelector((state) => state.navigation.navigation);
+  const navigationItems = useAppSelector(
+    (state) => state.navigation.navigation
+  );
   const dispatch = useAppDispatch();
+  const pathname = usePathname();
+
+  useEffect(() => {
+    const selectedItem = navigationItems.find((item) => item.href === pathname);
+    if (selectedItem) {
+      handleItemClick(selectedItem);
+    }
+  }, [pathname]);
 
   const handleItemClick = (selectedItem: any) => {
     const updatedItems = navigationItems.map((item) => ({
       ...item,
-      active: item === selectedItem,
+      active: item.href === selectedItem.href,
     }));
     dispatch(setNavigationState(updatedItems));
   };
@@ -37,7 +49,13 @@ export const Navigation = () => {
           {navigationItems.map((item) => {
             const IconComponent = item.icon;
             return (
-              <Link href={item.href} key={item.label} onClick={() => {handleItemClick(item)}}>
+              <Link
+                href={item.href}
+                key={item.label}
+                onClick={() => {
+                  handleItemClick(item);
+                }}
+              >
                 <Box
                   key={item.label}
                   sx={{

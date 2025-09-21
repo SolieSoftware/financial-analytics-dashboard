@@ -1,6 +1,5 @@
 "use client";
 import MUIChart from "@/components/charts/MUIChart";
-import { Box, Grid, Typography } from "@mui/material";
 
 import { useStockProfile } from "@/utils/hooks/useStockProfile";
 import { stockInfoData, stockEntry } from "@/utils/types/stockData";
@@ -21,33 +20,15 @@ const MarketChartOverview = () => {
   );
 
   return (
-    <Box sx={{ width: "100%" }}>
-      <Typography
-        variant="h5"
-        sx={{
-          color: "#f7fafc",
-          fontWeight: 600,
-          mb: { xs: 2, sm: 3, md: 4 },
-          fontSize: { xs: "1.25rem", sm: "1.5rem", md: "1.75rem" },
-        }}
-      >
+    <div className="w-full">
+      <h2 className="text-xl md:text-2xl font-semibold text-white mb-4">
         Market Indices
-      </Typography>
-
-      <Grid container spacing={{ xs: 2, sm: 3, md: 4, lg: 5, xl: 6 }} sx={{ width: "100%" }}>
+      </h2>
+      <div className="grid grid-cols-2 gap-4 h-[600px]">
         {Object.entries(marketData).map(([ticker, data]) => (
-          <Grid
+          <div
             key={ticker}
-            item
-            xs={12}
-            sm={6}
-            md={6}
-            lg={3}
-            xl={3}
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-            }}
+            className="bg-white/5 backdrop-blur-sm rounded-xl overflow-hidden shadow-lg border border-white/10 h-full"
           >
             <MUIChart
               ticker={data.name}
@@ -59,11 +40,12 @@ const MarketChartOverview = () => {
               }
               isLoading={marketData[ticker].isLoading || false}
               error={marketData[ticker].error || null}
+              compact={true}
             />
-          </Grid>
+          </div>
         ))}
-      </Grid>
-    </Box>
+      </div>
+    </div>
   );
 };
 export default MarketChartOverview;
