@@ -95,7 +95,9 @@ const MUIChart = ({
           background: "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)",
           border: "1px solid rgba(148, 163, 184, 0.1)",
           borderRadius: "20px",
-          height: "500px",
+          height: "100%",
+          minHeight: "300px",
+          maxHeight: "400px",
           display: "flex",
           flexDirection: "column",
         }}
@@ -133,7 +135,8 @@ const MUIChart = ({
               alignItems: "center",
               justifyContent: "center",
               flex: 1,
-              minHeight: "300px",
+              height: "100%",
+              width: "100%",
             }}
           >
             <Speed sx={{ fontSize: 48, color: "#3b82f6", mb: 2 }} />
@@ -173,7 +176,8 @@ const MUIChart = ({
           background: "linear-gradient(135deg, #1e1b4b 0%, #312e81 100%)",
           border: "1px solid rgba(239, 68, 68, 0.2)",
           borderRadius: "20px",
-          height: "500px",
+          height: "100%",
+          width: "100%",
         }}
       >
         <CardContent
@@ -221,7 +225,7 @@ const MUIChart = ({
           background: "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)",
           border: "1px solid rgba(148, 163, 184, 0.1)",
           borderRadius: "20px",
-          height: "500px",
+          height: "100%",
         }}
       >
         <CardContent
@@ -271,6 +275,10 @@ const MUIChart = ({
           background: "linear-gradient(135deg, #020617 0%, #0f172a 100%)",
           border: "1px solid rgba(148, 163, 184, 0.1)",
           borderRadius: "20px",
+          height: "100%",
+          width: "100%",
+          maxHeight: "100%",
+          maxWidth: "100%",
           backdropFilter: "blur(20px)",
           boxShadow: "0 8px 32px rgba(0, 0, 0, 0.2)",
           overflow: "hidden",
@@ -290,24 +298,25 @@ const MUIChart = ({
           },
         }}
       >
-        <CardContent sx={{ p: 0 }}>
+        <CardContent
+          sx={{ p: 0, height: "100%", width: "100%", overflow: "hidden" }}
+        >
           {/* Chart Header */}
-          <Box sx={{ p: 3, pb: 2 }}>
+          <Box sx={{ p: 1.5 }}>
             <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
               <Box
                 sx={{
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  width: "48px",
-                  height: "48px",
+                  width: "32px",
+                  height: "32px",
                   borderRadius: "16px",
                   background: isPositive
                     ? "rgba(34, 197, 94, 0.1)"
                     : isNegative
                     ? "rgba(239, 68, 68, 0.1)"
                     : "rgba(59, 130, 246, 0.1)",
-                  mr: 3,
                 }}
               >
                 <BarChart
@@ -327,8 +336,7 @@ const MUIChart = ({
                   sx={{
                     color: "#f8fafc",
                     fontWeight: 700,
-                    fontSize: "1.5rem",
-                    mb: 0.5,
+                    fontSize: "1rem",
                   }}
                 >
                   {ticker} Price Chart
@@ -361,7 +369,7 @@ const MUIChart = ({
                   sx={{
                     color: "#f8fafc",
                     fontWeight: 700,
-                    fontSize: "1.25rem",
+                    fontSize: "1rem",
                   }}
                 >
                   ${chartStats.currentPrice.toFixed(2)}
@@ -452,107 +460,129 @@ const MUIChart = ({
           {/* Chart Container */}
           <Box
             sx={{
-              height: "400px",
-              px: 2,
-              pb: 2,
+              height: "100%",
+              width: "100%",
               background: "rgba(15, 23, 42, 0.5)",
               borderRadius: "0 0 20px 20px",
+              overflow: "hidden",
+              display: "flex",
+              flexDirection: "column",
             }}
           >
-            <LineChart
-              xAxis={[
-                {
-                  data: data.map((d) => d.Date),
-                  label: "Time Period",
-                  scaleType: "time",
-                  valueFormatter: (value) => dayjs(value).format("MMM DD"),
-                  tickLabelStyle: {
-                    fill: "#94a3b8",
-                    fontSize: "11px",
-                    fontWeight: 500,
-                  },
-                },
-              ]}
-              yAxis={[
-                {
-                  label: "Price ($)",
-                  tickLabelStyle: {
-                    fill: "#94a3b8",
-                    fontSize: "11px",
-                    fontWeight: 500,
-                  },
-                },
-              ]}
-              series={[
-                {
-                  data: data.map((d) => d.Close),
-                  label: `${ticker} Close Price`,
-                  showMark: false,
-                  color: isPositive
-                    ? "#22c55e"
-                    : isNegative
-                    ? "#ef4444"
-                    : "#3b82f6",
-                  curve: "linear",
-                },
-              ]}
-              margin={{ left: 60, right: 20, top: 20, bottom: 60 }}
+            <Box
               sx={{
-                width: "100%",
+                flex: 1,
                 height: "100%",
-                "& .MuiChartsAxis-root": {
-                  "& .MuiChartsAxis-line": {
-                    stroke: "rgba(148, 163, 184, 0.2)",
-                    strokeWidth: 1,
-                  },
-                  "& .MuiChartsAxis-tick": {
-                    stroke: "rgba(148, 163, 184, 0.3)",
-                    strokeWidth: 1,
-                  },
-                },
-                "& .MuiChartsAxis-label": {
-                  fill: "#94a3b8 !important",
-                  fontSize: "12px !important",
-                  fontWeight: "600 !important",
-                },
-                "& .MuiChartsLegend-root": {
-                  "& .MuiChartsLegend-series": {
-                    "& text": {
-                      fill: "#e2e8f0 !important",
-                      fontSize: "12px !important",
-                      fontWeight: "500 !important",
-                    },
-                  },
-                },
-                "& .MuiChartsTooltip-root": {
-                  backgroundColor: "rgba(15, 23, 42, 0.95) !important",
-                  border: "1px solid rgba(148, 163, 184, 0.2) !important",
-                  borderRadius: "12px !important",
-                  backdropFilter: "blur(20px)",
-                  boxShadow: "0 8px 32px rgba(0, 0, 0, 0.3) !important",
-                  "& .MuiChartsTooltip-paper": {
-                    backgroundColor: "transparent !important",
-                    color: "#f8fafc !important",
-                  },
-                  "& .MuiChartsTooltip-table": {
-                    "& td": {
-                      color: "#f8fafc !important",
-                      fontSize: "12px !important",
-                      fontWeight: "500 !important",
-                    },
-                  },
-                },
-                "& .MuiLineElement-root": {
-                  strokeWidth: 2.5,
-                  filter: "drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1))",
-                },
-                "& .MuiChartsGrid-line": {
-                  stroke: "rgba(148, 163, 184, 0.08)",
-                  strokeDasharray: "2 4",
-                },
+                width: "100%",
+                overflow: "hidden",
+                position: "relative",
               }}
-              grid={{ vertical: true, horizontal: true }}
-            />
+            >
+              <Box
+                sx={{
+                  position: "absolute",
+                  width: "100%",
+                  height: "100%",
+                }}
+              >
+                <LineChart
+                  xAxis={[
+                    {
+                      data: data.map((d) => d.Date),
+                      label: "Time Period",
+                      scaleType: "time",
+                      valueFormatter: (value) => dayjs(value).format("MMM DD"),
+                      tickLabelStyle: {
+                        fill: "#94a3b8",
+                        fontSize: "11px",
+                        fontWeight: 500,
+                      },
+                    },
+                  ]}
+                  yAxis={[
+                    {
+                      label: "Price ($)",
+                      tickLabelStyle: {
+                        fill: "#94a3b8",
+                        fontSize: "11px",
+                        fontWeight: 500,
+                      },
+                    },
+                  ]}
+                  series={[
+                    {
+                      data: data.map((d) => d.Close),
+                      label: `${ticker} Close Price`,
+                      showMark: false,
+                      color: isPositive
+                        ? "#22c55e"
+                        : isNegative
+                        ? "#ef4444"
+                        : "#3b82f6",
+                      curve: "linear",
+                    },
+                  ]}
+                  margin={{ left: 50, right: 15, top: 15, bottom: 40 }}
+                  sx={{
+                    width: "100%",
+                    height: "100%",
+                    maxWidth: "100%",
+                    maxHeight: "100%",
+                    "& .MuiChartsAxis-root": {
+                      "& .MuiChartsAxis-line": {
+                        stroke: "rgba(148, 163, 184, 0.2)",
+                        strokeWidth: 1,
+                      },
+                      "& .MuiChartsAxis-tick": {
+                        stroke: "rgba(148, 163, 184, 0.3)",
+                        strokeWidth: 1,
+                      },
+                    },
+                    "& .MuiChartsAxis-label": {
+                      fill: "#94a3b8 !important",
+                      fontSize: "12px !important",
+                      fontWeight: "600 !important",
+                    },
+                    "& .MuiChartsLegend-root": {
+                      "& .MuiChartsLegend-series": {
+                        "& text": {
+                          fill: "#e2e8f0 !important",
+                          fontSize: "12px !important",
+                          fontWeight: "500 !important",
+                        },
+                      },
+                    },
+                    "& .MuiChartsTooltip-root": {
+                      backgroundColor: "rgba(15, 23, 42, 0.95) !important",
+                      border: "1px solid rgba(148, 163, 184, 0.2) !important",
+                      borderRadius: "12px !important",
+                      backdropFilter: "blur(20px)",
+                      boxShadow: "0 8px 32px rgba(0, 0, 0, 0.3) !important",
+                      "& .MuiChartsTooltip-paper": {
+                        backgroundColor: "transparent !important",
+                        color: "#f8fafc !important",
+                      },
+                      "& .MuiChartsTooltip-table": {
+                        "& td": {
+                          color: "#f8fafc !important",
+                          fontSize: "12px !important",
+                          fontWeight: "500 !important",
+                        },
+                      },
+                    },
+                    "& .MuiLineElement-root": {
+                      strokeWidth: 2.5,
+                      filter: "drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1))",
+                    },
+                    "& .MuiChartsGrid-line": {
+                      stroke: "rgba(148, 163, 184, 0.08)",
+                      strokeDasharray: "2 4",
+                    },
+                  }}
+                  grid={{ vertical: true, horizontal: true }}
+                />
+              </Box>
+            </Box>
           </Box>
         </CardContent>
       </Card>
