@@ -46,9 +46,8 @@ supabase_client = None
 class CacheConfig:
     # Cache TTL in seconds
     TICKER_LIST_TTL = 3600  # 1 hour
-    TICKER_INFO_TTL = 1800  # 30 minutes
+    TICKER_INFO_TTL = 3600  # 1 hour
     TICKER_HISTORY_TTL = 3600  # 1 hour
-    TICKER_DATA_TTL = 1800  # 30 minutes (combined data)
     SUMMARY_TTL = 900  # 15 minutes
     MARKET_SUMMARY_TTL = 300  # 5 minutes
     ALPHA_VANTAGE_TTL = 1800  # 30 minutes (API has rate limits)
@@ -65,22 +64,49 @@ def generate_cache_key(prefix: str, *args, **kwargs) -> str:
 async def serialize_data(data: dict) -> bytes:
     """Serialize data for Redis Storage with compression"""
     try:
+        # Try pickle + gzip first
         pickled_data = pickle.dumps(data)
         compressed_data = gzip.compress(pickled_data)
-        return compressed_data
+        # Add a prefix to identify compressed data
+        return b"COMPRESSED:" + compressed_data
     except Exception as e:
         logger.error(f"Error serializing data: {str(e)}")
-        return json.dumps(data, default=str).encode()
+        # Fallback to JSON without compression
+        return b"JSON:" + json.dumps(data, default=str).encode()
 
 
 async def deserialize_data(data: Any) -> dict:
     """Deserialize data from Redis Storage with decompression"""
     try:
-        decompressed_data = gzip.decompress(data)
-        return pickle.loads(decompressed_data)
+        # Convert to bytes if it's a string
+        if isinstance(data, str):
+            data = data.encode()
+
+        # Check if data has a prefix
+        if data.startswith(b"COMPRESSED:"):
+            # Remove prefix and decompress
+            compressed_data = data[11:]  # Remove 'COMPRESSED:' prefix
+            decompressed_data = gzip.decompress(compressed_data)
+            return pickle.loads(decompressed_data)
+        elif data.startswith(b"JSON:"):
+            # Remove prefix and parse JSON
+            json_data = data[5:]  # Remove 'JSON:' prefix
+            return json.loads(json_data.decode())
+        else:
+            # Try legacy format (no prefix)
+            try:
+                decompressed_data = gzip.decompress(data)
+                return pickle.loads(decompressed_data)
+            except:
+                # Fallback to JSON
+                return json.loads(data.decode())
     except Exception as e:
         logger.error(f"Error deserializing data: {str(e)}")
-        return json.loads(data.decode())
+        # Final fallback
+        try:
+            return json.loads(data.decode() if isinstance(data, bytes) else data)
+        except:
+            return None
 
 
 def cache_result(ttl: int, key_prefix: str, *args, **kwargs):
@@ -127,14 +153,13 @@ def cache_result(ttl: int, key_prefix: str, *args, **kwargs):
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Starting lifespance
-    
+
     # Initializing services on global scope
     logger.info("Initializing services on global scope")
     global yf_session, yfinance_client, redis_client, supabase_client
 
     # Configure session for yfinance
     yf_session = requests.Session()
-    
 
     retry_strategy = Retry(
         total=3, backoff_factor=1, status_forcelist=[429, 500, 502, 503, 504]
@@ -233,6 +258,21 @@ async def redis_health():
             "redis": "error",
             "message": f"Redis error: {str(e)}",
         }
+
+
+@app.post("/admin/clear-cache")
+async def clear_cache():
+    """Clear all cached data (admin endpoint)"""
+    try:
+        if redis_client and redis_client.redis:
+            await redis_client.redis.flushdb()
+            logger.info("Cache cleared successfully")
+            return {"status": "success", "message": "Cache cleared successfully"}
+        else:
+            return {"status": "error", "message": "Redis client not initialized"}
+    except Exception as e:
+        logger.error(f"Error clearing cache: {str(e)}")
+        return {"status": "error", "message": f"Failed to clear cache: {str(e)}"}
 
 
 """Supabase API Endpoints"""
