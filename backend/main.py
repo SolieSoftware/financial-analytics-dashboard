@@ -6,8 +6,7 @@ import hashlib
 import json
 import gzip
 import pickle
-from io import StringIO
-from typing import List, Any, Callable
+from typing import Any, Callable
 from contextlib import asynccontextmanager
 
 import yfinance as yf
@@ -17,7 +16,7 @@ from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 import uvicorn
 
-from fastapi import FastAPI, HTTPException, Depends
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
 from dotenv import load_dotenv
@@ -26,6 +25,15 @@ from dotenv import load_dotenv
 from services.yfinance_client import YahooFinanceClient
 from services.redis_client import RedisClient
 from services.supabase_client import SupabaseClient
+from services.cache_service import CacheService
+
+# Core
+# Config
+from core.config import CacheConfig
+
+# Serializers
+from utils.serializers import CacheSerializer
+
 
 # Load environment variables from .env file
 load_dotenv()
@@ -41,109 +49,27 @@ yf_session = None
 yfinance_client = None
 redis_client = None
 supabase_client = None
+cache_service = None
 
 
-class CacheConfig:
-    # Cache TTL in seconds
-    TICKER_LIST_TTL = 3600  # 1 hour
-    TICKER_INFO_TTL = 3600  # 1 hour
-    TICKER_HISTORY_TTL = 3600  # 1 hour
-    SUMMARY_TTL = 900  # 15 minutes
-    MARKET_SUMMARY_TTL = 300  # 5 minutes
-    ALPHA_VANTAGE_TTL = 1800  # 30 minutes (API has rate limits)
-    MARKET_NEWS_TTL = 600  # 10 minutes
-    COMPANY_OVERVIEW_TTL = 3600  # 1 hour (relatively static)
+def get_cache_service():
+    """Get or create cache service instance"""
+    global cache_service
+    if cache_service is None:
+        raise RuntimeError("Cache service not initialized. Call lifespan first.")
+    return cache_service
 
 
-def generate_cache_key(prefix: str, *args, **kwargs) -> str:
-    args_str = str(args) + str(sorted(kwargs.items()))
-    args_hash = hashlib.md5(args_str.encode()).hexdigest()
-    return f"{prefix}:{args_hash}"
+def cache_result(ttl: int, key_prefix: str):
+    """Cache decorator that works with the global cache service"""
 
-
-async def serialize_data(data: dict) -> bytes:
-    """Serialize data for Redis Storage with compression"""
-    try:
-        # Try pickle + gzip first
-        pickled_data = pickle.dumps(data)
-        compressed_data = gzip.compress(pickled_data)
-        # Add a prefix to identify compressed data
-        return b"COMPRESSED:" + compressed_data
-    except Exception as e:
-        logger.error(f"Error serializing data: {str(e)}")
-        # Fallback to JSON without compression
-        return b"JSON:" + json.dumps(data, default=str).encode()
-
-
-async def deserialize_data(data: Any) -> dict:
-    """Deserialize data from Redis Storage with decompression"""
-    try:
-        # Convert to bytes if it's a string
-        if isinstance(data, str):
-            data = data.encode()
-
-        # Check if data has a prefix
-        if data.startswith(b"COMPRESSED:"):
-            # Remove prefix and decompress
-            compressed_data = data[11:]  # Remove 'COMPRESSED:' prefix
-            decompressed_data = gzip.decompress(compressed_data)
-            return pickle.loads(decompressed_data)
-        elif data.startswith(b"JSON:"):
-            # Remove prefix and parse JSON
-            json_data = data[5:]  # Remove 'JSON:' prefix
-            return json.loads(json_data.decode())
-        else:
-            # Try legacy format (no prefix)
-            try:
-                decompressed_data = gzip.decompress(data)
-                return pickle.loads(decompressed_data)
-            except:
-                # Fallback to JSON
-                return json.loads(data.decode())
-    except Exception as e:
-        logger.error(f"Error deserializing data: {str(e)}")
-        # Final fallback
-        try:
-            return json.loads(data.decode() if isinstance(data, bytes) else data)
-        except:
-            return None
-
-
-def cache_result(ttl: int, key_prefix: str, *args, **kwargs):
-    """Decorator to cache async function results in Redis"""
-
-    def decorator(func: Callable[..., Any]) -> Callable[..., Any]:
+    def decorator(func):
         @wraps(func)
         async def wrapper(*args, **kwargs):
-            global redis_client
-            if not redis_client:
-                raise ValueError("Redis client not initialized")
-
-            cache_key = generate_cache_key(key_prefix, *args, **kwargs)
-
-            if redis_client.redis:
-                try:
-                    cached_data = await redis_client.redis.get(cache_key)
-                    if cached_data:
-                        logger.info(f"Cache hit for {cache_key}")
-                        result = await deserialize_data(cached_data)
-                        if result is not None:
-                            return result
-
-                except Exception as e:
-                    logger.error(f"Error getting cached data: {str(e)}")
-
-            logger.info(f"Cache miss for {cache_key}")
-            result = await func(*args, **kwargs)
-
-            if redis_client and redis_client.redis and result is not None:
-                try:
-                    serialized_data = await serialize_data(result)
-                    await redis_client.redis.setex(cache_key, ttl, serialized_data)
-                    logger.info(f"Cached result for {cache_key}")
-                except Exception as e:
-                    logger.error(f"Error caching result: {str(e)}")
-            return result
+            cache_svc = get_cache_service()
+            return await cache_svc.cache.cache_result(ttl, key_prefix)(func)(
+                *args, **kwargs
+            )
 
         return wrapper
 
@@ -156,7 +82,7 @@ async def lifespan(app: FastAPI):
 
     # Initializing services on global scope
     logger.info("Initializing services on global scope")
-    global yf_session, yfinance_client, redis_client, supabase_client
+    global yf_session, yfinance_client, redis_client, supabase_client, cache_service
 
     # Configure session for yfinance
     yf_session = requests.Session()
@@ -179,25 +105,30 @@ async def lifespan(app: FastAPI):
     redis_client = RedisClient()
     await redis_client.init_redis()
 
+    logging.info("Starting up Cache Service")
+    cache_service = CacheService(redis_client=redis_client, serializer=CacheSerializer)
+
     logging.info("Starting up Supabase Client")
     supabase_client = SupabaseClient()
     await supabase_client.init_supabase()
 
+    logging.info("Clearing Redis Cache")
+    await clear_cache()
+
     # Populate Redis Cache with initial data
     try:
         logger.info("Populating Redis Cache with Ticker List")
-        tickers = await get_tickers()
+        tickers = await get_tickers(market_cap=1000000000000)
         logger.info(f"Populating Redis Cache with {len(tickers['tickers'])} Tickers")
         logger.info(
             "Populating Redis Cache with Ticker Info and Historical Pricing Data"
         )
 
         # Only populate cache for first few tickers to avoid overwhelming the system on startup
-        ticker_symbols = [
-            ticker.get("Symbol", ticker) for ticker in tickers["tickers"][:10]
-        ]
+        ticker_symbols = [ticker.get("Symbol", ticker) for ticker in tickers["tickers"]]
 
         for ticker in ticker_symbols:
+            logger.info(f"Caching data for ticker {ticker}")
             try:
                 await get_ticker_info_cached(ticker)
                 await get_ticker_history_cached(ticker)
@@ -234,6 +165,7 @@ app.add_middleware(
 async def root():
     return {"message": "Trading API is running"}
 
+"""Redis Endpoints"""
 
 @app.get("/health/redis")
 async def redis_health():
@@ -274,19 +206,23 @@ async def clear_cache():
         logger.error(f"Error clearing cache: {str(e)}")
         return {"status": "error", "message": f"Failed to clear cache: {str(e)}"}
 
+@app.get("/admin/redis/stats")
+async def get_redis_stats():
+    """Get Redis stats"""
+    return await redis_client.get_stats()
 
 """Supabase API Endpoints"""
 
 
 @cache_result(CacheConfig.TICKER_LIST_TTL, key_prefix="supabase_tickers")
-@app.get("/api/supabase/tickers")
-async def get_tickers():
+@app.get("/api/supabase/tickers/{market_cap}")
+async def get_tickers(market_cap: int):
     """Get tickers from Supabase"""
     try:
         response = (
             supabase_client.supabase.table("listings")
             .select("Symbol")
-            .gt("Market Cap", 10000000000)
+            .gt("market_cap", market_cap)
             .execute()
         )
         tickers = response.data

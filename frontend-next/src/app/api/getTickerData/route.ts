@@ -3,7 +3,6 @@ import { NextRequest, NextResponse } from "next/server";
 const FASTAPI_URL = "http://localhost:8000";
 
 export async function GET(request: NextRequest) {
-
   try {
     if (!FASTAPI_URL) {
       return NextResponse.json(
