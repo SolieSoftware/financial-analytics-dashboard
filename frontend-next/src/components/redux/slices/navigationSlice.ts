@@ -32,27 +32,6 @@ const initialState: NavigationState = {
           badge: null,  
         },
         {
-          label: "Portfolio",
-          href: "/portfolio",
-          icon: Business,
-          active: false,
-          badge: "3",
-        },
-        {
-          label: "Dividend Picks",
-          href: "/dividend",
-          icon: AttachMoney,
-          active: false,
-          badge: "New",
-        },
-        {
-          label: "Market Analysis",
-          href: "/analysis",
-          icon: TrendingUp,
-          active: false,
-          badge: null,
-        },
-        {
           label: "Watchlist",
           href: "/watchlist",
           icon: Star,
