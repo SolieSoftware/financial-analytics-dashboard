@@ -3,7 +3,7 @@
 import React from "react";
 import { Drawer, Box, IconButton, Typography, Divider } from "@mui/material";
 import { Menu, Close, Speed, Settings } from "@mui/icons-material";
-import { Navigation } from "./Navigation";
+import { Navigation } from "./navigation";
 import { QuickStats } from "./QuickStats";
 import { useAppDispatch, useAppSelector } from "../redux/store";
 import { setSidebarOpen } from "../redux/slices/sidebarSlice";

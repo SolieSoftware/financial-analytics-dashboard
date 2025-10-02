@@ -32,6 +32,13 @@ const initialState: NavigationState = {
           badge: null,  
         },
         {
+          label: "Live Trading View",
+          href: "/trading-view",
+          icon: ShowChart,
+          active: false,
+          badge: null,
+        },
+        {
           label: "Watchlist",
           href: "/watchlist",
           icon: Star,

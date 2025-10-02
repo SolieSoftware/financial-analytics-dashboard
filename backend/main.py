@@ -321,7 +321,6 @@ async def get_market_summary():
 
 """Alpha Vantage API Endpoints"""
 
-
 @app.get("/api/market-daily/{symbol}/data")
 async def get_market_data(symbol: str):
     """Get market data"""
@@ -375,7 +374,7 @@ async def get_market_status():
             status_code=500, detail=f"Failed to fetch market status: {str(e)}"
         )
 
-
+@cache_result(CacheConfig.MARKET_NEWS_TTL, key_prefix="market_news")
 @app.get("/api/market-news/{symbol}")
 async def get_market_news(symbol: str):
     """Get market news"""
