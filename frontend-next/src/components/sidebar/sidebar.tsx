@@ -1,8 +1,7 @@
 "use client";
 
 import React from "react";
-import { Drawer, Box, IconButton, Typography, Divider } from "@mui/material";
-import { Menu, Close, Speed, Settings } from "@mui/icons-material";
+import { Menu, X, Gauge, Settings } from "lucide-react";
 import { Navigation } from "./navigation";
 import { QuickStats } from "./QuickStats";
 import { useAppDispatch, useAppSelector } from "../redux/store";
@@ -18,152 +17,77 @@ function SideBar() {
 
   return (
     <>
-      <IconButton
+      {/* Toggle Button */}
+      <button
         aria-label="Toggle Sidebar"
         onClick={toggleDrawer}
-        sx={{
-          position: "fixed",
-          left: isOpen ? 320 : 290,
-          top: 20,
-          zIndex: 9999,
-          transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-          background: "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)",
-          backdropFilter: "blur(20px)",
-          border: "1px solid rgba(148, 163, 184, 0.2)",
-          boxShadow: "0 8px 32px rgba(0, 0, 0, 0.3)",
-          width: "48px",
-          height: "48px",
-          borderRadius: "12px",
-          "&:hover": {
-            background: "linear-gradient(135deg, #1e293b 0%, #334155 100%)",
-            transform: "scale(1.05)",
-            borderColor: "rgba(59, 130, 246, 0.4)",
-            boxShadow: "0 12px 40px rgba(0, 0, 0, 0.4)",
-          },
-          "& .MuiSvgIcon-root": {
-            color: "#f8fafc",
-            fontSize: "20px",
-          },
+        className="sidebar-toggle-btn"
+        style={{
+          left: isOpen ? 'calc(20vw + 10px)' : '22vw',
+          top: "20px",
         }}
       >
-        {isOpen ? <Close /> : <Menu />}
-      </IconButton>
+        {isOpen ? (
+          <X className="sidebar-icon" />
+        ) : (
+          <Menu className="sidebar-icon" />
+        )}
+      </button>
 
-      <Drawer
-        open={isOpen ? true : false}
-        anchor="left"
-        variant="persistent"
-        ModalProps={{
-          keepMounted: false,
-        }}
-        sx={{
-          width: 320,
-          flexShrink: 0,
-          "& .MuiDrawer-paper": {
-            width: 320,
-            boxSizing: "border-box",
-            position: "fixed",
-            height: "100vh",
-            top: 0,
-            left: 0,
-            zIndex: 1200,
-            background:
-              "linear-gradient(180deg, #020617 0%, #0f172a 50%, #1e293b 100%)",
-            border: "none",
-            borderRight: "1px solid rgba(148, 163, 184, 0.1)",
-            backdropFilter: "blur(20px)",
-          },
-        }}
+      {/* Drawer/Sidebar */}
+      <div
+        className={`sidebar-container ${  
+          isOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
       >
-        <Box sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
+        <div className="h-full flex flex-col">
           {/* Header */}
-          <Box sx={{ p: 3, pb: 2 }}>
-            <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
-              <Box
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  width: "40px",
-                  height: "40px",
-                  borderRadius: "12px",
-                  background: "linear-gradient(135deg, #3b82f6, #8b5cf6)",
-                  mr: 2,
-                }}
-              >
-                <Speed sx={{ color: "#ffffff", fontSize: "20px" }} />
-              </Box>
-              <Box>
-                <Typography
-                  variant="h6"
-                  sx={{
-                    color: "#f8fafc",
-                    fontWeight: 700,
-                    fontSize: "1.125rem",
-                    lineHeight: 1.2,
-                  }}
-                >
+          <div className="p-6 pb-4">
+            <div className="flex items-center mb-6 mt-4">
+              <div className="sidebar-logo">
+                <Gauge className="sidebar-logo-icon" />
+              </div>
+              <div>
+                <h1 className="sidebar-title">
                   Financial Analytics
-                </Typography>
-                <Typography
-                  variant="caption"
-                  sx={{
-                    color: "#64748b",
-                    fontSize: "0.75rem",
-                    fontWeight: 500,
-                  }}
-                >
-                  Dashboard
-                </Typography>
-              </Box>
-            </Box>
-          </Box>
+                </h1>
+              </div>
+            </div>
+          </div>
 
-          <Divider sx={{ borderColor: "rgba(148, 163, 184, 0.1)" }} />
+          {/* Divider */}
+          <div className="sidebar-divider" />
 
-          <Box sx={{ p: 3, pb: 2 }}>
+          {/* Navigation */}
+          <div className="p-6 pb-4">
             <Navigation />
-          </Box>
-
-          <Box sx={{ p: 3, pb: 2 }}>
-            <QuickStats />
-          </Box>
+          </div>
 
           {/* Footer */}
-          <Box sx={{ p: 3, pt: 2 }}>
-            <Divider sx={{ mb: 2, borderColor: "rgba(148, 163, 184, 0.1)" }} />
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-              }}
-            >
-              <Typography
-                sx={{
-                  fontSize: "0.75rem",
-                  color: "#64748b",
-                  fontWeight: 500,
-                }}
-              >
+          <div className="p-6 pt-4 mt-auto">
+            <div className="sidebar-divider mb-4" />
+            <div className="flex items-center justify-between">
+              <p className="sidebar-footer-text">
                 © 2024 Analytics Pro
-              </Typography>
-              <IconButton
-                size="small"
-                sx={{
-                  color: "#64748b",
-                  "&:hover": {
-                    color: "#3b82f6",
-                    backgroundColor: "rgba(59, 130, 246, 0.1)",
-                  },
-                }}
+              </p>
+              <button
+                className="sidebar-settings-btn"
+                aria-label="Settings"
               >
-                <Settings sx={{ fontSize: 16 }} />
-              </IconButton>
-            </Box>
-          </Box>
-        </Box>
-      </Drawer>
+                <Settings className="sidebar-settings-icon" />
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Backdrop overlay when sidebar is open */}
+      {isOpen && (
+        <div
+          className="fixed inset-0 bg-black/20 backdrop-blur-sm z-[1199]"
+          onClick={toggleDrawer}
+        />
+      )}
     </>
   );
 }

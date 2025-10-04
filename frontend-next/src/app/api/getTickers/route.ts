@@ -6,7 +6,7 @@ export async function POST(request: NextRequest) {
   try {
     const { query } = await request.json();
 
-    const supabase = await createClient(cookies());
+    const supabase = await createClient();
 
     const { data, error } = await supabase
       .from("listings")

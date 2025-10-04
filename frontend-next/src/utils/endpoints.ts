@@ -6,5 +6,6 @@ export const endpoints = {
   getCompanyOverview: "/api/getCompanyOverview",
   getStockMarketNews: "/api/getStockMarketNews",
   getGeneralMarketNews: "/api/getGeneralMarketNews",
-  createProfile: "/api/createProfile",
+  createProfile: "/api/auth/create-profile",
+  fetchProfile: "api/auth/fetch-profile"
 };

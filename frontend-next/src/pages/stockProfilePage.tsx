@@ -1,6 +1,6 @@
 "use client";
 //Components
-import MUIChart from "@/components/charts/MUIChart";
+import StockPriceChart from "@/components/charts/StockPriceChart";
 import LeftPanel from "@/components/info/LeftPanel";
 import BottomPanel from "@/components/info/BottomPanel";
 import { TickerSelector } from "@/components/selectors/TickerSelector";
@@ -35,8 +35,8 @@ function StockProfilePage() {
       <div className="main-content">
         {/* Chart positioned top-right */}
         <div className="chart-container">
-          <MUIChart 
-            ticker={selectedTicker} 
+          <StockPriceChart
+            ticker={selectedTicker}
             stockData={stockData || {
             info_data: {} as stockInfoData,
             history_data: [] as stockEntry[],

@@ -1,33 +1,25 @@
 "use client";
 
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import {
-  Typography,
-  Card,
-  CardContent,
-  CardHeader,
-  Box,
-  Chip,
-  Divider,
-  Skeleton,
-  Alert,
-  AlertTitle,
-} from "@mui/material";
-import {
-  Business,
-  People,
-  AttachMoney,
+  Building2,
+  Users,
+  DollarSign,
   TrendingUp,
-  BarChart,
+  BarChart3,
   Info,
-  CorporateFare,
+  Building,
   Percent,
   Newspaper,
-} from "@mui/icons-material";
+  AlertCircle,
+} from "lucide-react";
 import Link from "next/link";
 import { NewsArticle } from "@/utils/types/newsTypes";
-import { stockDataResponse } from "@/utils/types/stockData";  
+import { stockDataResponse } from "@/utils/types/stockData";
 import { stockMarketNewsResponse } from "@/utils/types/newsTypes";
-
 
 const LeftPanel = ({
   ticker,
@@ -38,13 +30,13 @@ const LeftPanel = ({
   stockMarketNewsError,
   stockMarketNewsLoading,
 }: {
-  ticker: string,
-  data: stockDataResponse,
-  isLoading: boolean,
-  error: string,
-  stockMarketNewsData: stockMarketNewsResponse,
-  stockMarketNewsError: string,
-  stockMarketNewsLoading: boolean,
+  ticker: string;
+  data: stockDataResponse;
+  isLoading: boolean;
+  error: string;
+  stockMarketNewsData: stockMarketNewsResponse;
+  stockMarketNewsError: string;
+  stockMarketNewsLoading: boolean;
 }) => {
   const selectedTicker = ticker;
   const stockData = data;
@@ -63,21 +55,21 @@ const LeftPanel = ({
   };
 
   const formatSentiment = (sentimentScore?: number) => {
-    if (!sentimentScore) return { label: "N/A", color: "#a0aec0" };
+    if (!sentimentScore) return { label: "N/A", color: "text-text-muted" };
 
     switch (true) {
       case sentimentScore > 0.35:
-        return { label: "Bullish", color: "#68d391" };
+        return { label: "Bullish", color: "text-bullish" };
       case sentimentScore < 0.15:
-        return { label: "Somewhat Bullish", color: "#68d3c7" };
+        return { label: "Somewhat Bullish", color: "text-bullish-muted" };
       case sentimentScore > -0.15:
-        return { label: "Neutral", color: "#a0aec0" };
+        return { label: "Neutral", color: "text-text-secondary" };
       case sentimentScore > -0.35:
-        return { label: "Somewhat Bearish", color: "#fcbf81" };
+        return { label: "Somewhat Bearish", color: "text-bearish-muted" };
       case sentimentScore < -0.35:
-        return { label: "Bearish", color: "#fc8181" };
+        return { label: "Bearish", color: "text-bearish" };
       default:
-        return { label: "Neutral", color: "#a0aec0" };
+        return { label: "Neutral", color: "text-text-secondary" };
     }
   };
 
@@ -97,82 +89,61 @@ const LeftPanel = ({
 
   if (!selectedTicker) {
     return (
-      <Box>
-        <Card
-          sx={{
-            backgroundColor: "rgba(26, 32, 44, 0.9)",
-            border: "1px solid rgba(74, 85, 104, 0.3)",
-            textAlign: "center",
-            py: 6,
-          }}
-        >
+      <div>
+        <Card className="bg-background-secondary/90 text-center py-12 border-0">
           <CardContent>
-            <Business sx={{ fontSize: 48, color: "#a0aec0", mb: 2 }} />
-            <Typography variant="body1" sx={{ color: "#a0aec0" }}>
+            <Building2 className="w-12 h-12 text-text-secondary mx-auto mb-4" />
+            <p className="text-text-secondary">
               Select a ticker to view company information
-            </Typography>
+            </p>
           </CardContent>
         </Card>
-      </Box>
+      </div>
     );
   }
 
   if (isLoading) {
     return (
-      <Box sx={{ spaceY: 3 }}>
-        <Card
-          sx={{
-            backgroundColor: "rgba(26, 32, 44, 0.9)",
-            border: "1px solid rgba(74, 85, 104, 0.3)",
-          }}
-        >
+      <div className="space-y-6">
+        <Card className="bg-background-secondary/90 border-border/30">
           <CardHeader>
-            <Skeleton variant="text" width={200} height={32} />
+            <Skeleton className="w-52 h-8" />
           </CardHeader>
           <CardContent>
             {Array.from({ length: 6 }).map((_, i) => (
-              <Box key={i} sx={{ mb: 2 }}>
-                <Skeleton variant="text" width={100} height={20} />
-                <Skeleton variant="text" width="100%" height={20} />
-              </Box>
+              <div key={i} className="mb-4">
+                <Skeleton className="w-24 h-5 mb-1" />
+                <Skeleton className="w-full h-5" />
+              </div>
             ))}
           </CardContent>
         </Card>
-      </Box>
+      </div>
     );
   }
 
   if (error) {
     return (
-      <Box>
-        <Alert
-          severity="error"
-          sx={{
-            backgroundColor: "rgba(239, 68, 68, 0.1)",
-            border: "1px solid rgba(239, 68, 68, 0.3)",
-          }}
-        >
+      <div>
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
           <AlertTitle>Error</AlertTitle>
-          Error loading company info: {error || error?.toString()}
+          <AlertDescription>
+            Error loading company info: {error || error?.toString()}
+          </AlertDescription>
         </Alert>
-      </Box>
+      </div>
     );
   }
 
   if (!stockData) {
     return (
-      <Box>
-        <Alert
-          severity="info"
-          sx={{
-            backgroundColor: "rgba(59, 130, 246, 0.1)",
-            border: "1px solid rgba(59, 130, 246, 0.3)",
-          }}
-        >
-          <Info sx={{ mr: 1 }} />
-          No company information available
+      <div>
+        <Alert variant="info">
+          <Info className="h-4 w-4" />
+          <AlertDescription>No company information available</AlertDescription>
         </Alert>
-      </Box>
+      </div>
     );
   }
 
@@ -182,272 +153,166 @@ const LeftPanel = ({
     {
       label: "Employees",
       value: companyInfo?.fullTimeEmployees?.toLocaleString() || "N/A",
-      icon: <People sx={{ color: "#a0aec0", fontSize: 20 }} />,
+      icon: <Users className="text-text-muted w-5 h-5" />,
     },
     {
       label: "Total Cash",
       value: formatNumber(companyInfo?.totalCash),
-      icon: <AttachMoney sx={{ color: "#a0aec0", fontSize: 20 }} />,
+      icon: <DollarSign className="text-text-muted w-5 h-5" />,
     },
     {
       label: "Per Share",
       value: `${companyInfo?.totalCashPerShare?.toFixed(2) || "N/A"}`,
-      icon: <Percent sx={{ color: "#a0aec0", fontSize: 20 }} />,
+      icon: <Percent className="text-text-muted w-5 h-5" />,
     },
     {
       label: "EBITDA",
       value: formatNumber(companyInfo?.ebitda),
-      icon: <TrendingUp sx={{ color: "#a0aec0", fontSize: 20 }} />,
+      icon: <TrendingUp className="text-text-muted w-5 h-5" />,
     },
     {
       label: "Enterprise Value",
       value: formatNumber(companyInfo?.enterpriseValue),
-      icon: <CorporateFare sx={{ color: "#a0aec0", fontSize: 20 }} />,
+      icon: <Building className="text-text-muted w-5 h-5" />,
     },
     {
       label: "Profit Margins",
       value: formatPercentage(companyInfo?.profitMargins),
-      icon: <Percent sx={{ color: "#a0aec0", fontSize: 20 }} />,
-    }
-  ]
+      icon: <Percent className="text-text-muted w-5 h-5" />,
+    },
+  ];
 
   const displayKeyMetrics = (
     label: string,
     value: string,
-    icon: React.ReactNode,
+    icon: React.ReactNode
   ) => {
     return (
-      <>
-        <Box
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          mb: 2,
-        }}
-      >
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-          {icon}
-          <Typography
-            variant="body2"
-            sx={{ color: "#e2e8f0", fontWeight: 500 }}
-          >
-            {label}
-          </Typography>
-        </Box>
-        <Typography variant="body2" sx={{ color: "#f7fafc" }}>
-          {value || "N/A"}
-        </Typography>
-      </Box>
-
-      <Divider sx={{ my: 2, borderColor: "rgba(74, 85, 104, 0.3)" }} />
-    </>
+      <div key={label} className="key-metric-item">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            {icon}
+            <span className="text-text-primary text-sm font-medium">
+              {label}
+            </span>
+          </div>
+          <span className="text-text-primary text-sm">{value || "N/A"}</span>
+        </div>
+      </div>
     );
   };
 
   return (
-    <Box sx={{ maxWidth: "md" }}>
+    <div className="max-w-4xl">
       {/* Company Overview */}
-      <Card
-        sx={{
-          mb: 3,
-          backgroundColor: "rgba(26, 32, 44, 0.9)",
-          border: "1px solid rgba(74, 85, 104, 0.3)",
-          backdropFilter: "blur(20px)",
-          boxShadow: "0 8px 32px rgba(0, 0, 0, 0.2)",
-        }}
-      >
-        <CardHeader
-          title={
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-              <Business sx={{ color: "#667eea" }} />
-              <Typography
-                variant="h6"
-                sx={{ color: "#f7fafc", fontWeight: 600 }}
-              >
-                Company Overview
-              </Typography>
-            </Box>
-          }
-          sx={{
-            backgroundColor: "rgba(102, 126, 234, 0.1)",
-            borderBottom: "1px solid rgba(74, 85, 104, 0.3)",
-          }}
-        />
-        <CardContent sx={{ spaceY: 2 }}>
-          <Box>
-            <Typography
-              variant="h5"
-              sx={{ color: "#f7fafc", fontWeight: 600, mb: 1 }}
-            >
+      <Card className="mb-6 bg-background-secondary/90 border-0 backdrop-blur-sm shadow-2xl">
+        <CardHeader className="bg-accent-blue/10 border-b border-0">
+          <CardTitle className="flex items-center gap-2">
+            <Building2 className="text-accent-blue w-5 h-5" />
+            <span className="text-text-primary font-semibold">
+              Company Overview
+            </span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4 pt-6">
+          <div>
+            <h2 className="text-text-primary text-2xl font-semibold mb-2">
               {companyInfo?.shortName || "N/A"}
-            </Typography>
-            <Box sx={{ display: "flex", gap: 1, mb: 2 }}>
+            </h2>
+            <div className="flex gap-2 mb-4">
               {companyInfo?.sector && (
-                <Chip
-                  label={companyInfo.sector}
-                  size="small"
-                  sx={{
-                    backgroundColor: "rgba(102, 126, 234, 0.2)",
-                    color: "#667eea",
-                    border: "1px solid rgba(102, 126, 234, 0.3)",
-                  }}
-                />
+                <Badge
+                  variant="default"
+                  className="bg-accent-blue/20 text-accent-blue border-accent-blue/30"
+                >
+                  {companyInfo.sector}
+                </Badge>
               )}
               {companyInfo?.industry && (
-                <Chip
-                  label={companyInfo.industry}
-                  size="small"
-                  variant="outlined"
-                  sx={{
-                    borderColor: "rgba(74, 85, 104, 0.5)",
-                    color: "#a0aec0",
-                  }}
-                />
+                <Badge variant="outline" className="border-border/50 text-text-secondary">
+                  {companyInfo.industry}
+                </Badge>
               )}
-            </Box>
-          </Box>
+            </div>
+          </div>
 
           {companyInfo?.longBusinessSummary && (
-            <Typography
-              variant="body2"
-              sx={{ color: "#cbd5e0", lineHeight: 1.6 }}
-            >
+            <p className="text-text-secondary text-sm leading-relaxed">
               {companyInfo.longBusinessSummary}
-            </Typography>
+            </p>
           )}
         </CardContent>
       </Card>
 
       {/* Key Metrics */}
-      <Card
-        sx={{
-          mb: 3,
-          backgroundColor: "rgba(26, 32, 44, 0.9)",
-          border: "1px solid rgba(74, 85, 104, 0.3)",
-          backdropFilter: "blur(20px)",
-          boxShadow: "0 8px 32px rgba(0, 0, 0, 0.2)",
-        }}
-      >
-        <CardHeader
-          title={
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-              <BarChart sx={{ color: "#667eea" }} />
-              <Typography
-                variant="h6"
-                sx={{ color: "#f7fafc", fontWeight: 600 }}
-              >
-                Key Metrics
-              </Typography>
-            </Box>
-          }
-          sx={{
-            backgroundColor: "rgba(102, 126, 234, 0.1)",
-            borderBottom: "1px solid rgba(74, 85, 104, 0.3)",
-          }}
-        />
-
-        {/* Key Metrics List */}
-        <CardContent>
-          <Box sx={{ spaceY: 2 }}>
-            {keyMetrics.map((metric) => (
+      <Card className="key-metrics-container">
+        <CardHeader className="bg-accent-blue/10 border-b border-border/30">
+          <CardTitle className="flex items-center gap-2">
+            <BarChart3 className="text-accent-blue w-5 h-5" />
+            <span className="text-text-primary font-semibold pl-2">Key Metrics</span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="key-metrics-content">
+            {keyMetrics.map((metric) =>
               displayKeyMetrics(metric.label, metric.value, metric.icon)
-            ))}
-          </Box>
+            )}
         </CardContent>
       </Card>
 
       {/* Latest News */}
       {stockMarketNewsData && (
-        <Card
-          sx={{
-            mb: 3,
-            backgroundColor: "rgba(26, 32, 44, 0.9)",
-            border: "1px solid rgba(74, 85, 104, 0.3)",
-            backdropFilter: "blur(20px)",
-            boxShadow: "0 8px 32px rgba(0, 0, 0, 0.2)",
-          }}
-        >
-          <CardHeader
-            title={
-              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                <Newspaper sx={{ color: "#667eea" }} />
-                <Typography
-                  variant="h6"
-                  sx={{ color: "#f7fafc", fontWeight: 600 }}
-                >
-                  News
-                </Typography>
-              </Box>
-            }
-            sx={{
-              backgroundColor: "rgba(102, 126, 234, 0.1)",
-              borderBottom: "1px solid rgba(74, 85, 104, 0.3)",
-            }}
-          />
-          <CardContent>
-            <Box
-              sx={{
-                display: "grid",
-                gridTemplateColumns: "1fr",
-                gap: 3,
-                mt: 1,
-              }}
-            >
-              {stockMarketNewsData["market_news"]["feed"]?.map((news: NewsArticle, index: number) => (
-                <>
-                  <Link
-                    href={news.url}
-                    target="news_link"
-                    className="block transform transition-all duration-300 hover:scale-101 hover:-translate-y-1"
-                  >
-                    <Box key={index}>
-                      <Typography
-                        variant="body2"
-                        sx={{ color: "#e2e8f0", fontWeight: 500 }}
+        <Card className="mb-6 bg-background-secondary/90 border-border/30 backdrop-blur-sm shadow-2xl">
+          <CardHeader className="bg-accent-blue/10 border-b border-border/30">
+            <CardTitle className="flex items-center gap-2">
+              <Newspaper className="text-accent-blue w-5 h-5" />
+              <span className="text-text-primary font-semibold">News</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="pt-6">
+            <div className="grid grid-cols-1 gap-6">
+              {stockMarketNewsData["market_news"]["feed"]?.map(
+                (news: NewsArticle, index: number) => {
+                  const sentiment = formatSentiment(news.overall_sentiment_score);
+                  return (
+                    <div key={index}>
+                      <Link
+                        href={news.url}
+                        target="news_link"
+                        className="block transform transition-all duration-200 hover:scale-[1.01] hover:-translate-y-0.5"
                       >
-                        {(() => {
-                          const sentiment = formatSentiment(
-                            news.overall_sentiment_score
-                          );
-                          return (
-                            <>
-                              {news.title} -{" "}
-                              <strong style={{ color: sentiment.color }}>
-                                {sentiment.label}
-                              </strong>{" "}
-                              -{" "}
-                              {parseCustomTimestamp(
-                                news.time_published
-                              ).toLocaleDateString("en-US", {
+                        <div>
+                          <p className="text-text-primary text-sm font-medium mb-2">
+                            {news.title} -{" "}
+                            <strong className={sentiment.color}>
+                              {sentiment.label}
+                            </strong>{" "}
+                            -{" "}
+                            {parseCustomTimestamp(news.time_published).toLocaleDateString(
+                              "en-US",
+                              {
                                 year: "numeric",
                                 month: "long",
                                 day: "numeric",
-                              })}
-                            </>
-                          );
-                        })()}
-                      </Typography>
-                      <Typography
-                        variant="body2"
-                        sx={{ color: "#e2e8f0", fontWeight: 500 }}
-                      >
-                        {news.summary}
-                      </Typography>
-                    </Box>
-                  </Link>
-                  <Divider
-                    sx={{ my: 2, borderColor: "rgba(74, 85, 104, 0.3)" }}
-                  />
-                </>
-              ))}
-            </Box>
-
-            <Divider sx={{ my: 2, borderColor: "rgba(74, 85, 104, 0.3)" }} />
+                              }
+                            )}
+                          </p>
+                          <p className="text-text-secondary text-sm">
+                            {news.summary}
+                          </p>
+                        </div>
+                      </Link>
+                      {index < stockMarketNewsData["market_news"]["feed"].length - 1 && (
+                        <div className="h-px bg-border/30 my-4" />
+                      )}
+                    </div>
+                  );
+                }
+              )}
+            </div>
           </CardContent>
         </Card>
       )}
-    </Box>
+    </div>
   );
 };
 

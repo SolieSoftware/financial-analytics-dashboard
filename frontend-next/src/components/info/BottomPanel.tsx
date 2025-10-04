@@ -1,23 +1,18 @@
 "use client";
 import React from "react";
-import {
-  Typography,
-  Card,
-  CardContent,
-  CardHeader,
-  Box,
-  Skeleton,
-  Alert,
-  AlertTitle,
-} from "@mui/material";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import {
   TrendingUp,
   TrendingDown,
-  AttachMoney,
-  ShowChart,
-  VolumeUp, 
-  Assessment
-} from "@mui/icons-material";
+  DollarSign,
+  LineChart,
+  Volume2,
+  BarChart3,
+  AlertCircle,
+  Info,
+} from "lucide-react";
 import { stockDataResponse } from "@/utils/types/stockData";
 
 const BottomPanel = ({
@@ -26,10 +21,10 @@ const BottomPanel = ({
   isLoading,
   error,
 }: {
-  ticker: string,
-  data: stockDataResponse,
-  isLoading: boolean,
-  error: string,
+  ticker: string;
+  data: stockDataResponse;
+  isLoading: boolean;
+  error: string;
 }) => {
   const stockData = data;
 
@@ -52,97 +47,74 @@ const BottomPanel = ({
 
   if (!ticker) {
     return (
-      <Box>
-        <Card sx={{ 
-          backgroundColor: "rgba(26, 32, 44, 0.9)", 
-          border: "1px solid rgba(74, 85, 104, 0.3)",
-          textAlign: "center",
-          py: 6
-        }}>
+      <div>
+        <Card className="bg-background-secondary/90 text-center mt-4 border-0">
           <CardContent>
-            <ShowChart sx={{ fontSize: 48, color: "#a0aec0", mb: 2 }} />
-            <Typography variant="body1" sx={{ color: "#a0aec0" }}>
+            <LineChart className="w-12 h-12 text-text-secondary mx-auto mb-4" />
+            <p className="text-text-secondary">
               Select a ticker to view performance analytics
-            </Typography>
+            </p>
           </CardContent>
         </Card>
-      </Box>
+      </div>
     );
   }
 
   if (isLoading) {
     return (
-      <Box>
-        <Card sx={{ 
-          backgroundColor: "rgba(26, 32, 44, 0.9)", 
-          border: "1px solid rgba(74, 85, 104, 0.3)",
-          backdropFilter: "blur(20px)",
-          boxShadow: "0 8px 32px rgba(0, 0, 0, 0.2)"
-        }}>
-          <CardHeader
-            title={
-              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                <Assessment sx={{ color: "#667eea" }} />
-                <Typography variant="h6" sx={{ color: "#f7fafc", fontWeight: 600 }}>
-                  Performance Analytics
-                </Typography>
-              </Box>
-            }
-            sx={{ 
-              backgroundColor: "rgba(102, 126, 234, 0.1)",
-              borderBottom: "1px solid rgba(74, 85, 104, 0.3)"
-            }}
-          />
-          <CardContent>
-            <Box sx={{ 
-              display: "grid", 
-              gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
-              gap: 3
-            }}>
+      <div>
+        <Card className="bg-background-secondary/90 border-border/30 backdrop-blur-sm shadow-2xl">
+          <CardHeader className="bg-accent-blue/10 border-b border-border/30">
+            <CardTitle className="flex items-center gap-2">
+              <BarChart3 className="text-accent-blue w-5 h-5" />
+              <span className="text-text-primary font-semibold">
+                Performance Analytics
+              </span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="pt-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {Array.from({ length: 4 }).map((_, i: number) => (
-                <Card key={i} sx={{ 
-                  backgroundColor: "rgba(26, 32, 44, 0.8)", 
-                  border: "1px solid rgba(74, 85, 104, 0.3)",
-                  height: "100%"
-                }}>
-                  <CardContent>
-                    <Skeleton variant="text" width={100} height={24} />
-                    <Skeleton variant="text" width={80} height={32} />
-                    <Skeleton variant="text" width={60} height={20} />
+                <Card
+                  key={i}
+                  className="bg-background-primary/80 border-border/30 h-full"
+                >
+                  <CardContent className="p-4">
+                    <Skeleton className="w-24 h-6 mb-2" />
+                    <Skeleton className="w-20 h-8 mb-1" />
+                    <Skeleton className="w-16 h-5" />
                   </CardContent>
                 </Card>
               ))}
-            </Box>
+            </div>
           </CardContent>
         </Card>
-      </Box>
+      </div>
     );
   }
 
   if (error) {
     return (
-      <Box>
-        <Alert severity="error" sx={{ 
-          backgroundColor: "rgba(239, 68, 68, 0.1)", 
-          border: "1px solid rgba(239, 68, 68, 0.3)" 
-        }}>
+      <div>
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
           <AlertTitle>Error</AlertTitle>
-          Error loading performance data: {error || error?.toString()}
+          <AlertDescription>
+            Error loading performance data: {error || error?.toString()}
+          </AlertDescription>
         </Alert>
-      </Box>
+      </div>
     );
   }
 
   if (!stockData) {
     return (
-      <Box>
-        <Alert severity="info" sx={{ 
-          backgroundColor: "rgba(59, 130, 246, 0.1)", 
-          border: "1px solid rgba(59, 130, 246, 0.3)" 
-        }}>
-          No performance data available
+      <div>
+        <Alert variant="info">
+          <Info className="h-4 w-4" />
+          <AlertDescription>No performance data available</AlertDescription>
         </Alert>
-      </Box>
+      </div>
     );
   }
 
@@ -153,7 +125,7 @@ const BottomPanel = ({
     changePercent,
     icon,
     subtitle,
-    showChange
+    showChange,
   }: {
     title: string;
     value: string | number;
@@ -165,111 +137,73 @@ const BottomPanel = ({
   }) {
     const isPositive: boolean = (changePercent ?? 0) > 0;
     const isNegative: boolean = (changePercent ?? 0) < 0;
-    const hasChange: boolean = changePercent !== undefined && changePercent !== null;
+    const hasChange: boolean =
+      changePercent !== undefined && changePercent !== null;
 
     return (
-      <Card
-        sx={{
-          backgroundColor: "rgba(8, 10, 15, 0.9)",
-          border: "1px solid rgba(74, 85, 104, 0.3)",
-          borderRadius: "12px",
-          backdropFilter: "blur(20px)",
-          boxShadow: "0 8px 32px rgba(0, 0, 0, 0.2)",
-          transition: "all 0.3s ease",
-          height: "100%",
-          "&:hover": {
-            transform: "translateY(-2px)",
-            boxShadow: "0 12px 40px rgba(0, 0, 0, 0.3)",
-            borderColor: "rgba(102, 126, 234, 0.4)",
-          },
-        }}
-      >
-        <CardContent sx={{ p: 2.5 }}>
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
-            <Box sx={{ 
-              color: "#667eea", 
-              display: "flex", 
-              alignItems: "center",
-              fontSize: "1.25rem"
-            }}>
+      <Card className="financial-profile-metric-card">
+        <CardContent className="ml-4">
+          <div className="flex items-center ml-4">
+            <div className="text-accent-blue flex items-center text-sm pr-4">
               {icon}
-            </Box>
-            <Typography
-              variant="body1"
-              sx={{
-                color: "#a0aec0",
-                fontWeight: 650,
-                fontSize: "1rem",
-                textTransform: "uppercase",
-                letterSpacing: "0.05em",
-              }}
-            >
+            </div>
+            <p className="text-text-secondary font-semibold text-sm uppercase tracking-wider">
               {title}
-            </Typography>
-          </Box>
-          
-          <Typography
-            variant="h4"
-            sx={{
-              color: "#f7fafc",
-              fontWeight: 700,
-              mb: 1,
-              fontSize: "1.5rem",
-              fontFamily: "monospace"
-            }}
-          >
+            </p>
+          </div>
+
+          <p className="text-text-primary text-2xl font-bold mb-2 font-mono">
             {typeof value === "number" ? value.toFixed(2) : value}
-          </Typography>
+          </p>
 
           {subtitle && (
-            <Typography
-              variant="caption"
-              sx={{
-                color: "#a0aec0",
-                display: "block",
-                mb: 1,
-                fontSize: "0.7rem"
-              }}
-            >
-              {subtitle}
-            </Typography>
+            <p className="text-text-muted text-xs block mb-2">{subtitle}</p>
           )}
 
           {hasChange && (
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-              <Box sx={{ 
-                display: "flex", 
-                alignItems: "center", 
-                color: isPositive ? "#68d391" : isNegative ? "#fc8181" : "#a0aec0"
-              }}>
-                {isPositive ? <TrendingUp sx={{ fontSize: 16 }} /> : 
-                 isNegative ? <TrendingDown sx={{ fontSize: 16 }} /> : null}
-              </Box>
-              <Typography
-                variant="body2"
-                sx={{
-                  color: isPositive ? "#68d391" : isNegative ? "#fc8181" : "#a0aec0",
-                  fontWeight: 500,
-                  fontSize: "0.875rem",
-                }}
+            <div className="flex items-center gap-2">
+              <div
+                className={`flex items-center ${
+                  isPositive
+                    ? "text-bullish"
+                    : isNegative
+                    ? "text-bearish"
+                    : "text-text-secondary"
+                }`}
+              >
+                {isPositive ? (
+                  <TrendingUp className="w-4 h-4" />
+                ) : isNegative ? (
+                  <TrendingDown className="w-4 h-4" />
+                ) : null}
+              </div>
+              <span
+                className={`text-sm font-medium ${
+                  isPositive
+                    ? "text-bullish"
+                    : isNegative
+                    ? "text-bearish"
+                    : "text-text-secondary"
+                }`}
               >
                 {typeof change === "number" ? change.toFixed(2) : change}
-              </Typography>
-              <Typography
-                variant="body2"
-                sx={{
-                  color: isPositive ? "#68d391" : isNegative ? "#fc8181" : "#a0aec0",
-                  fontWeight: 500,
-                  fontSize: "0.75rem",
-                }}
+              </span>
+              <span
+                className={`text-xs font-medium ${
+                  isPositive
+                    ? "text-bullish"
+                    : isNegative
+                    ? "text-bearish"
+                    : "text-text-secondary"
+                }`}
               >
                 (
                 {typeof changePercent === "number"
                   ? changePercent.toFixed(2)
                   : changePercent}
                 %)
-              </Typography>
-            </Box>
+              </span>
+            </div>
           )}
         </CardContent>
       </Card>
@@ -279,39 +213,24 @@ const BottomPanel = ({
   const companyInfo = stockData?.info_data;
 
   return (
-    <Box>
-      <Card sx={{ 
-        backgroundColor: "rgba(26, 32, 44, 0.9)", 
-        border: "1px solid rgba(74, 85, 104, 0.3)",
-        backdropFilter: "blur(20px)",
-        boxShadow: "0 8px 32px rgba(0, 0, 0, 0.2)"
-      }}>
-        <CardHeader
-          title={
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-              <Assessment sx={{ color: "#667eea" }} />
-              <Typography variant="h6" sx={{ color: "#f7fafc", fontWeight: 600 }}>
-                Financial Profile
-              </Typography>
-            </Box>
-          }
-          sx={{ 
-            backgroundColor: "rgba(102, 126, 234, 0.1)",
-            borderBottom: "1px solid rgba(74, 85, 104, 0.3)"
-          }}
-        />
-        <CardContent>
-          <Box sx={{ 
-            display: "grid", 
-            gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
-            gap: 2
-          }}>
+    <div>
+      <Card className="financial-profile-container">
+        <CardHeader className="bg-accent-blue/10 border-b border-border/30 pl-2">
+          <CardTitle className="flex items-center gap-2">
+            <BarChart3 className="text-accent-blue w-5 h-5" />
+            <span className="text-text-primary font-semibold pl-2">
+              Financial Profile
+            </span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="financial-profile-content">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <MetricCard
               title="Prev Close"
               value={companyInfo?.previousClose ?? "N/A"}
-              icon={<AttachMoney />}
+              icon={<DollarSign />}
             />
-            
+
             <MetricCard
               title="52W Range"
               value={
@@ -319,62 +238,60 @@ const BottomPanel = ({
                   ? `${companyInfo.fiftyTwoWeekRange} ${companyInfo.currency}`
                   : "N/A"
               }
-              icon={<ShowChart />}
+              icon={<LineChart />}
             />
 
             <MetricCard
               title="Market Cap"
               value={
                 companyInfo?.marketCap
-                  ? `${(formatNumber(companyInfo.marketCap))}`
+                  ? `${formatNumber(companyInfo.marketCap)}`
                   : "N/A"
               }
-              icon={<ShowChart />}
+              icon={<LineChart />}
               subtitle="Total market value"
               showChange={false}
             />
 
-          <MetricCard
+            <MetricCard
               title="Open"
               value={companyInfo?.open ?? "N/A"}
-              icon={<AttachMoney />}
+              icon={<DollarSign />}
             />
 
-          <MetricCard
+            <MetricCard
               title="P/E Ratio"
               value={companyInfo?.trailingPE || "N/A"}
-              icon={<Assessment />}
+              icon={<BarChart3 />}
               subtitle="Trailing P/E Ratio"
             />
 
-          <MetricCard
-                title="Dividend Yield"
-                value={
-                  companyInfo?.dividendYield 
-                    ? `${(companyInfo.dividendYield * 100).toFixed(2)}%`
-                    : "N/A"
-                }
-                icon={<AttachMoney />}
-              />
+            <MetricCard
+              title="Dividend Yield"
+              value={
+                companyInfo?.dividendYield
+                  ? `${(companyInfo.dividendYield * 100).toFixed(2)}%`
+                  : "N/A"
+              }
+              icon={<DollarSign />}
+            />
 
-          <MetricCard
+            <MetricCard
               title="Day Range"
               value={
                 companyInfo?.regularMarketDayRange
                   ? `${companyInfo.regularMarketDayRange} ${companyInfo.currency}`
                   : "N/A"
               }
-              icon={<ShowChart />}
+              icon={<LineChart />}
             />
-            
+
             <MetricCard
               title="Volume"
               value={
-                companyInfo?.volume
-                  ? formatVolume(companyInfo.volume)
-                  : "N/A"
+                companyInfo?.volume ? formatVolume(companyInfo.volume) : "N/A"
               }
-              icon={<VolumeUp />}
+              icon={<Volume2 />}
             />
 
             <MetricCard
@@ -383,13 +300,10 @@ const BottomPanel = ({
               icon={<TrendingUp />}
               subtitle="Trailing EPS"
             />
-
-            
-          
-          </Box>
+          </div>
         </CardContent>
       </Card>
-    </Box>
+    </div>
   );
 };
 

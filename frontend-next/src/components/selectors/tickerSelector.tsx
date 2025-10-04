@@ -9,6 +9,7 @@ import {
   Typography,
   Paper,
 } from "@mui/material";
+
 import { debounce } from "lodash";
 import { useAppSelector, useAppDispatch } from "../redux/store";
 import { setSelectedTickerState } from "../redux/slices/tickerSlice";

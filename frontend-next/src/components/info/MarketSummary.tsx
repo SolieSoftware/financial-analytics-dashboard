@@ -1,16 +1,9 @@
 "use client";
 import { useMarketProfile } from "@/utils/hooks/useMarketProfile";
-import {
-  Typography,
-  Card,
-  CardContent,
-  CardMedia,
-  Box,
-  Chip,
-} from "@mui/material";
-import { Newspaper, TrendingUp, TrendingDown } from "@mui/icons-material";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Newspaper, TrendingUp, TrendingDown } from "lucide-react";
 import { NewsArticle } from "@/utils/types/newsTypes";
-
 import { LoadingPage } from "@/components/default/LoadingPage";
 import { ErrorPage } from "@/components/default/ErrorPage";
 
@@ -19,44 +12,65 @@ const MarketSummary = () => {
 
   if (isLoading) {
     return (
-      <Box sx={{ width: "100%" }}>
+      <div className="w-full">
         <LoadingPage />
-      </Box>
+      </div>
     );
   }
 
   if (error) {
     return (
-      <Box sx={{ width: "100%" }}>
+      <div className="w-full">
         <ErrorPage error={error} />
-      </Box>
+      </div>
     );
   }
 
   const formatSentiment = (sentimentScore?: number) => {
-    if (!sentimentScore) return { label: "N/A", color: "#a0aec0", icon: null };
+    if (!sentimentScore)
+      return {
+        label: "N/A",
+        colorClass: "text-text-secondary",
+        icon: null,
+      };
 
     switch (true) {
       case sentimentScore > 0.35:
-        return { label: "Bullish", color: "#68d391", icon: <TrendingUp /> };
+        return {
+          label: "Bullish",
+          colorClass: "text-bullish",
+          icon: <TrendingUp className="w-4 h-4" />,
+        };
       case sentimentScore > 0.15:
         return {
           label: "Somewhat Bullish",
-          color: "#68d3c7",
-          icon: <TrendingUp />,
+          colorClass: "text-bullish-muted",
+          icon: <TrendingUp className="w-4 h-4" />,
         };
       case sentimentScore > -0.15:
-        return { label: "Neutral", color: "#a0aec0", icon: null };
+        return {
+          label: "Neutral",
+          colorClass: "text-text-secondary",
+          icon: null,
+        };
       case sentimentScore > -0.35:
         return {
           label: "Somewhat Bearish",
-          color: "#fcbf81",
-          icon: <TrendingDown />,
+          colorClass: "text-bearish-muted",
+          icon: <TrendingDown className="w-4 h-4" />,
         };
       case sentimentScore < -0.35:
-        return { label: "Bearish", color: "#fc8181", icon: <TrendingDown /> };
+        return {
+          label: "Bearish",
+          colorClass: "text-bearish",
+          icon: <TrendingDown className="w-4 h-4" />,
+        };
       default:
-        return { label: "Neutral", color: "#a0aec0", icon: null };
+        return {
+          label: "Neutral",
+          colorClass: "text-text-secondary",
+          icon: null,
+        };
     }
   };
 
@@ -64,121 +78,56 @@ const MarketSummary = () => {
     const sentiment = formatSentiment(article.overall_sentiment_score);
 
     return (
-      <Box key={article.title} sx={{ mb: { xs: 2, sm: 3 } }}>
-        <Card
-          sx={{
-            backgroundColor: "rgba(26, 32, 44, 0.9)",
-            border: "1px solid rgba(74, 85, 104, 0.3)",
-            backdropFilter: "blur(20px)",
-            boxShadow: "0 8px 32px rgba(0, 0, 0, 0.2)",
-            borderRadius: "12px",
-            overflow: "hidden",
-            transition:
-              "transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out",
-            "&:hover": {
-              transform: "translateY(-2px)",
-              boxShadow: "0 12px 40px rgba(0, 0, 0, 0.3)",
-            },
-          }}
-        >
+      <div key={article.title} className="mb-3">
+        <Card className="market-summary-card">
+          {/* <CardContent className="market-summary-image-container">
           {article.banner_image && (
-            <CardMedia
-              component="img"
-              image={article.banner_image}
+            <img
+              src={article.banner_image}
               alt={article.title}
-              sx={{
-                height: { xs: 200, sm: 250, md: 300 }, // Responsive height in sx
-                objectFit: 'cover'
-              }}
+              className="market-summary-image"
             />
           )}
-          <CardContent sx={{ padding: { xs: 2, sm: 3 } }}>
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "flex-start",
-                gap: 1,
-                mb: 2,
-                flexDirection: { xs: "column", sm: "row" },
-              }}
-            >
-              <Box
-                sx={{ display: "flex", alignItems: "center", gap: 1, flex: 1 }}
-              >
-                <Newspaper
-                  sx={{ color: "#667eea", fontSize: { xs: 18, sm: 20 } }}
-                />
-                <Typography
-                  variant="h6"
-                  sx={{
-                    color: "#f7fafc",
-                    fontWeight: 600,
-                    flex: 1,
-                    fontSize: { xs: "1rem", sm: "1.125rem", md: "1.25rem" },
-                    lineHeight: 1.3,
-                  }}
-                >
-                  {article.title}
-                </Typography>
-              </Box>
+          </CardContent> */}
+          <CardContent className="market-summary-content">
+            <div className="market-summary-header">
+              <div className="market-summary-title-section">
+                <Newspaper className="market-summary-icon" />
+                <h3 className="market-summary-title">{article.title}</h3>
+              </div>
               {sentiment.icon && (
-                <Box
-                  sx={{
-                    color: sentiment.color,
-                    alignSelf: { xs: "flex-start", sm: "center" },
-                  }}
+                <div
+                  className={`${sentiment.colorClass} market-summary-sentiment-icon`}
                 >
                   {sentiment.icon}
-                </Box>
+                </div>
               )}
-            </Box>
+            </div>
 
-            <Typography
-              variant="body2"
-              sx={{
-                color: "#cbd5e0",
-                lineHeight: 1.6,
-                mb: 2,
-                fontSize: { xs: "0.875rem", sm: "0.9rem" },
-              }}
-            >
-              {article.summary}
-            </Typography>
+            <p className="market-summary-description">{article.summary}</p>
 
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                gap: 1,
-                flexWrap: "wrap",
-              }}
-            >
-              <Chip
-                label={sentiment.label}
-                size="small"
-                sx={{
-                  backgroundColor: `${sentiment.color}20`,
-                  color: sentiment.color,
-                  border: `1px solid ${sentiment.color}40`,
-                  fontSize: { xs: "0.75rem", sm: "0.8rem" },
-                }}
-              />
+            <div className="market-summary-badges">
+              <Badge
+                variant={
+                  sentiment.colorClass.includes("bullish")
+                    ? "bullish"
+                    : sentiment.colorClass.includes("bearish")
+                    ? "bearish"
+                    : "default"
+                }
+                className="market-summary-badge"
+              >
+                {sentiment.label}
+              </Badge>
               {article.source && (
-                <Chip
-                  label={article.source}
-                  size="small"
-                  variant="outlined"
-                  sx={{
-                    borderColor: "rgba(74, 85, 104, 0.5)",
-                    color: "#a0aec0",
-                    fontSize: { xs: "0.75rem", sm: "0.8rem" },
-                  }}
-                />
+                <Badge variant="outline" className="market-summary-badge">
+                  {article.source}
+                </Badge>
               )}
-            </Box>
+            </div>
           </CardContent>
         </Card>
-      </Box>
+      </div>
     );
   };
 
@@ -187,57 +136,21 @@ const MarketSummary = () => {
   };
 
   return (
-    <Box sx={{ width: "100%" }}>
-      <Card
-        sx={{
-          mb: 3,
-          backgroundColor: "rgba(26, 32, 44, 0.9)",
-          border: "1px solid rgba(74, 85, 104, 0.3)",
-          backdropFilter: "blur(20px)",
-          boxShadow: "0 8px 32px rgba(0, 0, 0, 0.2)",
-        }}
-      >
-        <CardContent
-          sx={{
-            backgroundColor: "rgba(102, 126, 234, 0.1)",
-            borderBottom: "1px solid rgba(74, 85, 104, 0.3)",
-            padding: { xs: 2, sm: 3 },
-          }}
-        >
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            <Newspaper
-              sx={{ color: "#667eea", fontSize: { xs: 20, sm: 24 } }}
-            />
-            <Typography
-              variant="h5"
-              sx={{
-                color: "#f7fafc",
-                fontWeight: 600,
-                fontSize: { xs: "1.25rem", sm: "1.5rem", md: "1.75rem" },
-              }}
-            >
-              Market Summary
-            </Typography>
-          </Box>
-        </CardContent>
-        <CardContent sx={{ padding: { xs: 2, sm: 3 } }}>
+      <Card className="market-summary-container">
+        <CardHeader className="market-summary-header-container">
+          <CardTitle className="market-summary-main-title">
+            <Newspaper className="market-summary-main-icon" />
+            <span className="market-summary-title-text">Market Summary</span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="market-summary-content-container">
           {data && data.general_market_news?.feed ? (
             newCards(data.general_market_news.feed)
           ) : (
-            <Typography
-              variant="body2"
-              sx={{
-                color: "#a0aec0",
-                textAlign: "center",
-                py: 4,
-              }}
-            >
-              No market news available
-            </Typography>
+            <p className="market-summary-no-data">No market news available</p>
           )}
         </CardContent>
       </Card>
-    </Box>
   );
 };
 
