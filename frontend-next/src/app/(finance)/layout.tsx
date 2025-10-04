@@ -14,15 +14,15 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <div
-      className={`dashboard-container ${
-        isOpen ? "sidebar-open" : "sidebar-closed"
-      }`}
-    >
+    <div className="dashboard-container">
       <div className={`sidebar ${!isOpen ? "closed" : ""}`}>
         <SideBar />
       </div>
-      <main className="main-layout">{children}</main>
+      <main
+        className={`main-layout ${isOpen ? "sidebar-open" : "sidebar-closed"}`}
+      >
+        {children}
+      </main>
     </div>
   );
 }

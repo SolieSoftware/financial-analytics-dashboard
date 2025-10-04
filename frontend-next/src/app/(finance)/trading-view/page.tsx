@@ -1,4 +1,3 @@
-import { Typography } from "@mui/material";
 import Layout from "../layout";
 import TradingViewChart from "@/components/trading-view-widgets/TradingViewChart";
 import TickerTape from "@/components/trading-view-widgets/TickerTape";
@@ -6,15 +5,16 @@ import TickerTape from "@/components/trading-view-widgets/TickerTape";
 const TradingViewPage = () => {
   return (
     <Layout>
-      <div className="width-full height-10vh text-center mb-10">
-        <Typography variant="h1">Trading View</Typography>
-
+      <div className="w-full h-20 text-center mb-10">
+        <h1 className="text-4xl md:text-5xl font-bold text-text-primary">
+          Trading View
+        </h1>
       </div>
 
-      <div style={{ height: "10vh", width: "80%" , margin: "50px auto" }}>
-         <TickerTape />
+      <div className="h-24 w-4/5 mx-auto my-12">
+        <TickerTape />
       </div>
-      <div style={{ height: "calc(100vh - 120px)", width: "80%" , margin: "0 auto" }}>
+      <div className="h-[calc(100vh-120px)] w-4/5 mx-auto">
         <TradingViewChart />
       </div>
     </Layout>

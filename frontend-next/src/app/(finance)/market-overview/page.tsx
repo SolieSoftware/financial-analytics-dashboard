@@ -1,76 +1,35 @@
 import Layout from "../layout";
 import MarketChartOverview from "@/components/charts/MarketChartOverview";
 import MarketSummary from "@/components/info/MarketSummary";
-import { Box, Typography, Container } from "@mui/material";
 
 const MarketOverviewPage = () => {
   return (
     <Layout>
-      <Container
-        maxWidth={false}
-        sx={{
-          px: { xs: 2, sm: 3, md: 4 },
-          py: { xs: 2, sm: 3, md: 4 },
-          width: "100%",
-        }}
-      >
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            width: "100%",
-          }}
-        >
+      <div className="px-4 sm:px-6 md:px-8 py-4 sm:py-6 md:py-8 w-full">
+        <div className="flex flex-col w-full">
           {/* Header Section */}
-          <Box
-            sx={{
-              textAlign: "center",
-            }}
-          >
-            <Typography
-              variant="h3"
-              sx={{
-                color: "#f7fafc",
-                fontWeight: 700,
-                fontSize: { xs: "1.75rem", sm: "2.25rem", md: "3rem" },
-                mb: 1,
-              }}
-            >
+          <div className="text-center mb-6">
+            <h1 className="text-text-primary font-bold text-3xl sm:text-4xl md:text-5xl mb-2">
               Market Overview
-            </Typography>
-            <Typography
-              variant="h6"
-              sx={{
-                color: "#a0aec0",
-                fontSize: { xs: "0.875rem", sm: "1rem", md: "1.125rem" },
-              }}
-            >
+            </h1>
+            <p className="text-text-secondary text-sm sm:text-base md:text-lg">
               Real-time market data and analysis
-            </Typography>
-          </Box>
+            </p>
+          </div>
 
           {/* Charts Section */}
-          <Box
-            sx={{
-              width: "100%",
-              mb: { xs: 3, sm: 4, md: 6 },
-            }}
-          >
+          <div className="market-overview-content-container">
+          <div>
             <MarketChartOverview />
-          </Box>
+          </div>
 
           {/* News Summary Section */}
-          <Box
-            sx={{
-              width: "100%",
-              maxHeight: "100vh",
-              overflowY: "auto",
-            }}
-          >
+          <div className="w-full max-h-[50vh] overflow-y-auto">
             <MarketSummary />
-          </Box>
-        </Box>
-      </Container>
+          </div>
+          </div>
+        </div>
+      </div>
     </Layout>
   );
 };

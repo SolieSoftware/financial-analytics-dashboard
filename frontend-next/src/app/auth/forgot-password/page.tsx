@@ -1,52 +1,54 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { LogIn, AlertCircle } from "lucide-react";
+import { KeyRound, AlertCircle, CheckCircle, ArrowLeft } from "lucide-react";
 import { createClient } from "@/utils/supabase/browserClient";
 
-export default function LoginPage() {
+export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const router = useRouter();
+  const [success, setSuccess] = useState(false);
   const supabase = createClient();
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError("");
+    setSuccess(false);
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/auth/reset-password`,
       });
 
       if (error) throw error;
 
-      router.push("/market-overview");
-      router.refresh();
+      setSuccess(true);
+      setEmail("");
     } catch (error: any) {
-      setError(error.message);
+      setError(
+        error.message || "Failed to send reset email. Please try again."
+      );
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <form onSubmit={handleLogin} className="w-full">
+    <div className="w-full">
       <div className="text-center mb-6">
         <div className="auth-icon-container">
-          <LogIn className="auth-icon" />
+          <KeyRound className="auth-icon" />
         </div>
-        <h1 className="auth-title">Welcome Back</h1>
-        <p className="auth-subtitle">Sign in to your financial dashboard</p>
+        <h1 className="auth-title">Forgot Password</h1>
+        <p className="auth-subtitle">
+          Enter your email to receive a password reset link
+        </p>
       </div>
 
       {error && (
@@ -56,10 +58,19 @@ export default function LoginPage() {
         </Alert>
       )}
 
-      <div className="space-y-4">
+      {success && (
+        <div className="auth-success-alert">
+          <CheckCircle className="h-4 w-4" />
+          <span>
+            Password reset link sent! Check your email for instructions.
+          </span>
+        </div>
+      )}
+
+      <form onSubmit={handleResetPassword} className="space-y-4">
         <div>
           <label htmlFor="email" className="auth-label">
-            Email
+            Email Address
           </label>
           <Input
             id="email"
@@ -72,37 +83,20 @@ export default function LoginPage() {
           />
         </div>
 
-        <div>
-          <label htmlFor="password" className="auth-label">
-            Password
-          </label>
-          <Input
-            id="password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            placeholder="Enter your password"
-            className="auth-input"
-          />
-        </div>
-
         <button type="submit" className="auth-button" disabled={loading}>
-          {loading ? "Signing In..." : "Sign In"}
+          {loading ? "Sending..." : "Send Reset Link"}
         </button>
-      </div>
+      </form>
 
       <div className="text-center mt-6">
-        <p className="auth-subtitle text-sm mb-2">
-          Don't have an account?{" "}
-          <Link href="/auth/register" className="auth-link">
-            Sign up
-          </Link>
-        </p>
-        <Link href="/auth/forgot-password" className="auth-link-secondary">
-          Forgot your password?
+        <Link
+          href="/auth/login"
+          className="inline-flex items-center gap-2 auth-link-secondary"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Back to Login
         </Link>
       </div>
-    </form>
+    </div>
   );
 }

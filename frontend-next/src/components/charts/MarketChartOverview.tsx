@@ -1,5 +1,5 @@
 "use client";
-import MUIChart from "@/components/charts/MUIChart";
+import StockPriceChart from "@/components/charts/StockPriceChart";
 
 import { useStockProfile } from "@/utils/hooks/useStockProfile";
 import { stockInfoData, stockEntry } from "@/utils/types/stockData";
@@ -21,16 +21,11 @@ const MarketChartOverview = () => {
 
   return (
     <div className="w-full">
-      <h2 className="text-xl md:text-2xl font-semibold text-white mb-4">
-        Market Indices
-      </h2>
-      <div className="grid grid-cols-2 gap-4 h-[600px]">
+      <h2 className="market-charts-title">Market Indices</h2>
+      <div className="market-charts-grid">
         {Object.entries(marketData).map(([ticker, data]) => (
-          <div
-            key={ticker}
-            className="bg-white/5 backdrop-blur-sm rounded-xl overflow-hidden shadow-lg border border-white/10 h-full"
-          >
-            <MUIChart
+          <div key={ticker} className="market-chart-card">
+            <StockPriceChart
               ticker={data.name}
               stockData={
                 marketData[ticker].data || {
