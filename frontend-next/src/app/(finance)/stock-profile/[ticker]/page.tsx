@@ -1,13 +1,11 @@
 "use client";
 import StockProfilePage from "@/pages/stockProfilePage";
-import Layout from "../../layout";
+import FinanceLayout from "../../layout";
       
 function StockPage() {
   
   return (
-    <Layout>
       <StockProfilePage />
-    </Layout>
   );
 }
 

@@ -8,6 +8,12 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['var(--font-inter)', 'system-ui', 'sans-serif'],
+      },
+      fontVariantNumeric: {
+        tabular: 'tabular-nums',
+      },
       colors: {
         background: {
           primary: '#1a1a1a',

@@ -48,10 +48,10 @@ const BottomPanel = ({
   if (!ticker) {
     return (
       <div>
-        <Card className="bg-background-secondary/90 text-center mt-4 border-0">
-          <CardContent>
-            <LineChart className="w-12 h-12 text-text-secondary mx-auto mb-4" />
-            <p className="text-text-secondary">
+        <Card className="bg-transparent border-0">
+          <CardContent className="text-center py-12">
+            <LineChart className="w-12 h-12 text-text-muted mx-auto mb-4" />
+            <p className="text-text-secondary text-sm">
               Select a ticker to view performance analytics
             </p>
           </CardContent>
@@ -63,28 +63,23 @@ const BottomPanel = ({
   if (isLoading) {
     return (
       <div>
-        <Card className="bg-background-secondary/90 border-border/30 backdrop-blur-sm shadow-2xl">
-          <CardHeader className="bg-accent-blue/10 border-b border-border/30">
-            <CardTitle className="flex items-center gap-2">
-              <BarChart3 className="text-accent-blue w-5 h-5" />
-              <span className="text-text-primary font-semibold">
+        <Card className="bg-transparent border-0">
+          <CardHeader className="border-b border-border/20 pb-3">
+            <CardTitle className="flex items-center gap-2 text-sm">
+              <BarChart3 className="text-text-muted w-4 h-4" />
+              <span className="text-text-primary font-medium">
                 Performance Analytics
               </span>
             </CardTitle>
           </CardHeader>
-          <CardContent className="pt-6">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <CardContent className="pt-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {Array.from({ length: 4 }).map((_, i: number) => (
-                <Card
-                  key={i}
-                  className="bg-background-primary/80 border-border/30 h-full"
-                >
-                  <CardContent className="p-4">
-                    <Skeleton className="w-24 h-6 mb-2" />
-                    <Skeleton className="w-20 h-8 mb-1" />
-                    <Skeleton className="w-16 h-5" />
-                  </CardContent>
-                </Card>
+                <div key={i} className="p-3 rounded-lg bg-background-tertiary/50 border border-border/20">
+                  <Skeleton className="w-24 h-5 mb-2" />
+                  <Skeleton className="w-20 h-7 mb-1" />
+                  <Skeleton className="w-16 h-4" />
+                </div>
               ))}
             </div>
           </CardContent>
@@ -141,90 +136,86 @@ const BottomPanel = ({
       changePercent !== undefined && changePercent !== null;
 
     return (
-      <Card className="financial-profile-metric-card">
-        <CardContent className="ml-4">
-          <div className="flex items-center ml-4">
-            <div className="text-accent-blue flex items-center text-sm pr-4">
-              {icon}
-            </div>
-            <p className="text-text-secondary font-semibold text-sm uppercase tracking-wider">
-              {title}
-            </p>
+      <div className="p-3 rounded-lg bg-background-tertiary/30 border-0 hover:border-border/40 transition-all pt-4">
+        <div className="flex items-center gap-2 mb-2">
+          <div className="text-text-muted flex items-center">
+            {icon}
           </div>
-
-          <p className="text-text-primary text-2xl font-bold mb-2 font-mono">
-            {typeof value === "number" ? value.toFixed(2) : value}
+          <p className="text-text-muted font-medium text-xs uppercase tracking-wide">
+            {title}
           </p>
+        </div>
 
-          {subtitle && (
-            <p className="text-text-muted text-xs block mb-2">{subtitle}</p>
-          )}
+        <p className="text-text-primary text-xl font-semibold mb-1">
+          {typeof value === "number" ? value.toFixed(2) : value}
+        </p>
 
-          {hasChange && (
-            <div className="flex items-center gap-2">
-              <div
-                className={`flex items-center ${
-                  isPositive
-                    ? "text-bullish"
-                    : isNegative
-                    ? "text-bearish"
-                    : "text-text-secondary"
-                }`}
-              >
-                {isPositive ? (
-                  <TrendingUp className="w-4 h-4" />
-                ) : isNegative ? (
-                  <TrendingDown className="w-4 h-4" />
-                ) : null}
-              </div>
-              <span
-                className={`text-sm font-medium ${
-                  isPositive
-                    ? "text-bullish"
-                    : isNegative
-                    ? "text-bearish"
-                    : "text-text-secondary"
-                }`}
-              >
-                {typeof change === "number" ? change.toFixed(2) : change}
-              </span>
-              <span
-                className={`text-xs font-medium ${
-                  isPositive
-                    ? "text-bullish"
-                    : isNegative
-                    ? "text-bearish"
-                    : "text-text-secondary"
-                }`}
-              >
-                (
-                {typeof changePercent === "number"
-                  ? changePercent.toFixed(2)
-                  : changePercent}
-                %)
-              </span>
+        {subtitle && (
+          <p className="text-text-muted text-xs mb-1">{subtitle}</p>
+        )}
+
+        {hasChange && (
+          <div className="flex items-center gap-1.5">
+            <div
+              className={`flex items-center ${
+                isPositive
+                  ? "text-bullish"
+                  : isNegative
+                  ? "text-bearish"
+                  : "text-text-secondary"
+              }`}
+            >
+              {isPositive ? (
+                <TrendingUp className="w-3.5 h-3.5" />
+              ) : isNegative ? (
+                <TrendingDown className="w-3.5 h-3.5" />
+              ) : null}
             </div>
-          )}
-        </CardContent>
-      </Card>
+            <span
+              className={`text-xs font-medium ${
+                isPositive
+                  ? "text-bullish"
+                  : isNegative
+                  ? "text-bearish"
+                  : "text-text-secondary"
+              }`}
+            >
+              {typeof change === "number" ? change.toFixed(2) : change}
+            </span>
+            <span
+              className={`text-xs font-medium ${
+                isPositive
+                  ? "text-bullish"
+                  : isNegative
+                  ? "text-bearish"
+                  : "text-text-secondary"
+              }`}
+            >
+              (
+              {typeof changePercent === "number"
+                ? changePercent.toFixed(2)
+                : changePercent}
+              %)
+            </span>
+          </div>
+        )}
+      </div>
     );
   }
 
   const companyInfo = stockData?.info_data;
 
   return (
-    <div>
-      <Card className="financial-profile-container">
-        <CardHeader className="bg-accent-blue/10 border-b border-border/30 pl-2">
-          <CardTitle className="flex items-center gap-2">
-            <BarChart3 className="text-accent-blue w-5 h-5" />
-            <span className="text-text-primary font-semibold pl-2">
-              Financial Profile
-            </span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="financial-profile-content">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div className="p-4 w-90% ml-2">
+      <div className="mb-3">
+        <div className="flex items-center gap-2">
+          <BarChart3 className="text-text-muted w-4 h-4" />
+          <h3 className="text-text-primary font-medium text-sm">
+            Financial Profile
+          </h3>
+        </div>
+      </div>
+      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-2">
             <MetricCard
               title="Prev Close"
               value={companyInfo?.previousClose ?? "N/A"}
@@ -300,9 +291,7 @@ const BottomPanel = ({
               icon={<TrendingUp />}
               subtitle="Trailing EPS"
             />
-          </div>
-        </CardContent>
-      </Card>
+      </div>
     </div>
   );
 };

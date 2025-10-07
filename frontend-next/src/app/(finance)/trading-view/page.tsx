@@ -1,10 +1,10 @@
-import Layout from "../layout";
+import FinanceLayout from "../layout";
 import TradingViewChart from "@/components/trading-view-widgets/TradingViewChart";
 import TickerTape from "@/components/trading-view-widgets/TickerTape";
 
 const TradingViewPage = () => {
   return (
-    <Layout>
+    <FinanceLayout>
       <div className="w-full h-20 text-center mb-10">
         <h1 className="text-4xl md:text-5xl font-bold text-text-primary">
           Trading View
@@ -17,7 +17,7 @@ const TradingViewPage = () => {
       <div className="h-[calc(100vh-120px)] w-4/5 mx-auto">
         <TradingViewChart />
       </div>
-    </Layout>
+    </FinanceLayout>
   );
 };
 

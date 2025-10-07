@@ -89,35 +89,27 @@ const LeftPanel = ({
 
   if (!selectedTicker) {
     return (
-      <div>
-        <Card className="bg-background-secondary/90 text-center py-12 border-0">
-          <CardContent>
-            <Building2 className="w-12 h-12 text-text-secondary mx-auto mb-4" />
-            <p className="text-text-secondary">
-              Select a ticker to view company information
-            </p>
-          </CardContent>
-        </Card>
+      <div className="text-center py-12">
+        <Building2 className="w-12 h-12 text-text-muted mx-auto mb-4" />
+        <p className="text-text-secondary text-sm">
+          Select a ticker to view company information
+        </p>
       </div>
     );
   }
 
   if (isLoading) {
     return (
-      <div className="space-y-6">
-        <Card className="bg-background-secondary/90 border-border/30">
-          <CardHeader>
-            <Skeleton className="w-52 h-8" />
-          </CardHeader>
-          <CardContent>
-            {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="mb-4">
-                <Skeleton className="w-24 h-5 mb-1" />
-                <Skeleton className="w-full h-5" />
-              </div>
-            ))}
-          </CardContent>
-        </Card>
+      <div className="space-y-4 p-4">
+        <div>
+          <Skeleton className="w-40 h-6 mb-3" />
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="mb-3">
+              <Skeleton className="w-24 h-4 mb-2" />
+              <Skeleton className="w-full h-4" />
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
@@ -188,48 +180,44 @@ const LeftPanel = ({
     icon: React.ReactNode
   ) => {
     return (
-      <div key={label} className="key-metric-item">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            {icon}
-            <span className="text-text-primary text-sm font-medium">
-              {label}
-            </span>
-          </div>
-          <span className="text-text-primary text-sm">{value || "N/A"}</span>
+      <div key={label} className="flex items-center justify-between py-2 border-b border-border/10">
+        <div className="flex items-center gap-2">
+          <div className="text-text-muted">{icon}</div>
+          <span className="text-text-secondary text-xs font-medium">
+            {label}
+          </span>
         </div>
+        <span className="text-text-primary text-xs font-semibold">{value || "N/A"}</span>
       </div>
     );
   };
 
   return (
-    <div className="max-w-4xl">
+    <div className="p-4 space-y-6">
       {/* Company Overview */}
-      <Card className="mb-6 bg-background-secondary/90 border-0 backdrop-blur-sm shadow-2xl">
-        <CardHeader className="bg-accent-blue/10 border-b border-0">
-          <CardTitle className="flex items-center gap-2">
-            <Building2 className="text-accent-blue w-5 h-5" />
-            <span className="text-text-primary font-semibold">
-              Company Overview
-            </span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4 pt-6">
+      <div>
+        <div className="flex items-center gap-2 mb-3">
+          <Building2 className="text-text-muted w-4 h-4" />
+          <h3 className="text-text-primary font-medium text-sm">
+            Company Overview
+          </h3>
+        </div>
+        <div className="space-y-3">
           <div>
-            <h2 className="text-text-primary text-2xl font-semibold mb-2">
+            <h2 className="text-text-primary text-xl font-semibold mb-2">
               {companyInfo?.shortName || "N/A"}
             </h2>
-            <div className="flex gap-2 mb-4">
+            <div className="flex gap-2 mb-3">
               {companyInfo?.sector && (
                 <Badge
                   variant="default"
-                  className="bg-accent-blue/20 text-accent-blue border-accent-blue/30"
+                  className="bg-background-tertiary/50 text-text-primary border-border/30 text-xs"
                 >
                   {companyInfo.sector}
                 </Badge>
               )}
               {companyInfo?.industry && (
-                <Badge variant="outline" className="border-border/50 text-text-secondary">
+                <Badge variant="outline" className="border-border/30 text-text-secondary text-xs">
                   {companyInfo.industry}
                 </Badge>
               )}
@@ -237,80 +225,76 @@ const LeftPanel = ({
           </div>
 
           {companyInfo?.longBusinessSummary && (
-            <p className="text-text-secondary text-sm leading-relaxed">
+            <p className="text-text-secondary text-xs leading-relaxed">
               {companyInfo.longBusinessSummary}
             </p>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* Key Metrics */}
-      <Card className="key-metrics-container">
-        <CardHeader className="bg-accent-blue/10 border-b border-border/30">
-          <CardTitle className="flex items-center gap-2">
-            <BarChart3 className="text-accent-blue w-5 h-5" />
-            <span className="text-text-primary font-semibold pl-2">Key Metrics</span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="key-metrics-content">
-            {keyMetrics.map((metric) =>
-              displayKeyMetrics(metric.label, metric.value, metric.icon)
-            )}
-        </CardContent>
-      </Card>
+      <div>
+        <div className="flex items-center gap-2 mb-3">
+          <BarChart3 className="text-text-muted w-4 h-4" />
+          <h3 className="text-text-primary font-medium text-sm">Key Metrics</h3>
+        </div>
+        <div className="space-y-1">
+          {keyMetrics.map((metric) =>
+            displayKeyMetrics(metric.label, metric.value, metric.icon)
+          )}
+        </div>
+      </div>
 
       {/* Latest News */}
       {stockMarketNewsData && (
-        <Card className="mb-6 bg-background-secondary/90 border-border/30 backdrop-blur-sm shadow-2xl">
-          <CardHeader className="bg-accent-blue/10 border-b border-border/30">
-            <CardTitle className="flex items-center gap-2">
-              <Newspaper className="text-accent-blue w-5 h-5" />
-              <span className="text-text-primary font-semibold">News</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="pt-6">
-            <div className="grid grid-cols-1 gap-6">
-              {stockMarketNewsData["market_news"]["feed"]?.map(
-                (news: NewsArticle, index: number) => {
-                  const sentiment = formatSentiment(news.overall_sentiment_score);
-                  return (
-                    <div key={index}>
-                      <Link
-                        href={news.url}
-                        target="news_link"
-                        className="block transform transition-all duration-200 hover:scale-[1.01] hover:-translate-y-0.5"
-                      >
-                        <div>
-                          <p className="text-text-primary text-sm font-medium mb-2">
-                            {news.title} -{" "}
-                            <strong className={sentiment.color}>
-                              {sentiment.label}
-                            </strong>{" "}
-                            -{" "}
+        <div>
+          <div className="flex items-center gap-2 mb-3">
+            <Newspaper className="text-text-muted w-4 h-4" />
+            <h3 className="text-text-primary font-medium text-sm">News</h3>
+          </div>
+          <div className="space-y-4">
+            {stockMarketNewsData["market_news"]["feed"]?.map(
+              (news: NewsArticle, index: number) => {
+                const sentiment = formatSentiment(news.overall_sentiment_score);
+                return (
+                  <div key={index}>
+                    <Link
+                      href={news.url}
+                      target="news_link"
+                      className="block transition-all duration-200 hover:opacity-80"
+                    >
+                      <div>
+                        <p className="text-text-primary text-xs font-medium mb-1">
+                          {news.title}
+                        </p>
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className={`text-xs font-medium ${sentiment.color}`}>
+                            {sentiment.label}
+                          </span>
+                          <span className="text-text-muted text-xs">
                             {parseCustomTimestamp(news.time_published).toLocaleDateString(
                               "en-US",
                               {
-                                year: "numeric",
-                                month: "long",
+                                month: "short",
                                 day: "numeric",
                               }
                             )}
-                          </p>
-                          <p className="text-text-secondary text-sm">
-                            {news.summary}
-                          </p>
+                          </span>
                         </div>
-                      </Link>
-                      {index < stockMarketNewsData["market_news"]["feed"].length - 1 && (
-                        <div className="h-px bg-border/30 my-4" />
-                      )}
-                    </div>
-                  );
-                }
-              )}
-            </div>
-          </CardContent>
-        </Card>
+                        <p className="text-text-secondary text-xs line-clamp-2">
+                          {news.summary}
+                        </p>
+                      </div>
+                    </Link>
+                    {index < stockMarketNewsData["market_news"]["feed"].length - 1 && (
+                      <div className="h-px bg-border/10 my-3" />
+                    )}
+                  </div>
+                );
+              }
+            )}
+          </div>
+        </div>
       )}
     </div>
   );

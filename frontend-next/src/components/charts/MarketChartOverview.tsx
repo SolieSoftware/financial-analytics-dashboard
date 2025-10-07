@@ -20,7 +20,7 @@ const MarketChartOverview = () => {
   );
 
   return (
-    <div className="w-full">
+    <div className="market-charts-container">
       <h2 className="market-charts-title">Market Indices</h2>
       <div className="market-charts-grid">
         {Object.entries(marketData).map(([ticker, data]) => (

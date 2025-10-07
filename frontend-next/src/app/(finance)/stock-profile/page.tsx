@@ -1,11 +1,10 @@
 import StockProfilePage from "@/pages/stockProfilePage";
-import Layout from "../layout";
-      
+
 function StockPage() {
   return (
-    <Layout>
+    <div className="stock-profile-container">
       <StockProfilePage />
-    </Layout>
+    </div>
   );
 }
 

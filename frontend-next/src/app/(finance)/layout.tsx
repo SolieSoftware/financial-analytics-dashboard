@@ -5,7 +5,7 @@ import { useAppDispatch, useAppSelector } from "@/components/redux/store";
 import SideBar from "@/components/sidebar/sidebar";
 import { useEffect } from "react";
 
-export default function Layout({ children }: { children: React.ReactNode }) {
+export default function FinanceLayout({ children }: { children: React.ReactNode }) {
   const appDispatch = useAppDispatch();
   const isOpen = useAppSelector((state) => state.sidebar.isOpen);
 
@@ -15,9 +15,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="dashboard-container">
-      <div className={`sidebar ${!isOpen ? "closed" : ""}`}>
-        <SideBar />
-      </div>
+      <SideBar />
       <main
         className={`main-layout ${isOpen ? "sidebar-open" : "sidebar-closed"}`}
       >

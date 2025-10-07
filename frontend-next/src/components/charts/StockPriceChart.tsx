@@ -117,7 +117,7 @@ const StockPriceChart: React.FC<StockPriceChartProps> = ({
   // Loading State
   if (isLoading) {
     return (
-      <Card className="bg-gradient-to-br from-background-primary to-background-secondary border-border/50 h-full min-h-[300px] max-h-[400px] flex flex-col">
+      <Card className="bg-gradient-to-br from-background-primary to-background-secondary border-0 h-full min-h-[300px] max-h-[400px] flex flex-col">
         <CardContent className="p-6 flex-1">
           <div className="flex items-center mb-6">
             <Skeleton className="h-10 w-10 rounded-full mr-3" />
@@ -144,7 +144,7 @@ const StockPriceChart: React.FC<StockPriceChartProps> = ({
   // No Ticker State
   if (!ticker) {
     return (
-      <Card className="bg-gradient-to-br from-background-primary to-background-secondary border-border/50 h-full min-h-[300px] max-h-[400px] flex flex-col">
+      <Card className="bg-gradient-to-br from-background-primary to-background-secondary border-0 h-full min-h-[300px] max-h-[400px] flex flex-col">
         <CardContent className="p-6 flex items-center justify-center flex-1">
           <div className="text-center">
             <p className="text-text-secondary text-lg font-semibold mb-2">
@@ -182,7 +182,7 @@ const StockPriceChart: React.FC<StockPriceChartProps> = ({
   // Empty State
   if (!data.length) {
     return (
-      <Card className="bg-gradient-to-br from-background-primary to-background-secondary border-border/50 h-full">
+      <Card className="bg-gradient-to-br from-background-primary to-background-secondary border-0 h-full">
         <CardContent className="p-6 flex flex-col items-center justify-center h-full">
           <BarChart3 className="w-16 h-16 text-text-muted mb-4" />
           <p className="text-text-secondary text-lg font-semibold mb-2">

@@ -1,44 +1,41 @@
 "use client";
 
-import {
-  Box,
-  TextField,
-  RadioGroup,
-  FormControlLabel,
-  Radio,
-  Typography,
-  Paper,
-} from "@mui/material";
-
-import { debounce } from "lodash";
 import { useAppSelector, useAppDispatch } from "../redux/store";
 import { setSelectedTickerState } from "../redux/slices/tickerSlice";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { fetchTickerList } from "@/components/redux/slices/tickerListSlice";
 import { useRouter } from "next/navigation";
+import { Search } from "lucide-react";
+import { useParams } from "next/navigation";
 
 export const TickerSelector = () => {
   const dispatch = useAppDispatch();
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
   const [isFocused, setIsFocused] = useState(false);
+  const params = useParams();
 
-  // Get data from Redux
   const { tickerList } = useAppSelector((state) => state.tickerList);
-  const selectedTicker = useAppSelector((state) => state.ticker.selectedTicker);
+  const selectedTicker = params?.ticker as string;
 
-  // Filter tickers based on search
-  const filteredTickers = Object.keys(tickerList || {}).filter((ticker) =>
-    ticker.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredTickers = Object.keys(tickerList || {})
+    .filter((ticker) => ticker.toLowerCase().includes(searchTerm.toLowerCase()))
+    .slice(0, 10);
+
+  const debouncedFetch = useCallback(
+    (() => {
+      let timeout: NodeJS.Timeout;
+      return (term: string) => {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => dispatch(fetchTickerList(term)), 200);
+      };
+    })(),
+    [dispatch]
   );
 
-  const debouncedFetchTickerList = debounce((searchTerm: string) => {
-    dispatch(fetchTickerList(searchTerm));
-  }, 200);
-
   useEffect(() => {
-    debouncedFetchTickerList(searchTerm);
-  }, [searchTerm]);
+    if (searchTerm) debouncedFetch(searchTerm);
+  }, [searchTerm, debouncedFetch]);
 
   const handleTickerSelect = (ticker: string) => {
     dispatch(setSelectedTickerState(ticker));
@@ -47,154 +44,50 @@ export const TickerSelector = () => {
     setSearchTerm("");
   };
 
-  // Determine if the list should be expanded
-  const shouldExpand =
-    isFocused || searchTerm.length > 0 || filteredTickers.length > 0;
-
   return (
-    <Box
-      sx={{
-        p: 1,
-        position: "relative",
-        width: "100%",
-        maxWidth: "300px",
-      }}
-    >
-      {/* Search and Selected Ticker Container */}
-      <Box
-        sx={{
-          display: "flex",
-          gap: 1,
-          alignItems: "flex-start",
-          mb: 0,
-          mt: 2
-
-        }}
-      >
-        {/* Search */}
-        <TextField
-          placeholder="Search tickers..."
-          size="small"
-          sx={{
-            flex: 1,
-            "& .MuiOutlinedInput-root": {
-              backgroundColor: "rgba(15, 23, 42, 0.5)",
-              color: "#f8fafc",
-              "& fieldset": { borderColor: "rgba(148, 163, 184, 0.2)" },
-              "&:hover fieldset": { borderColor: "rgba(59, 130, 246, 0.4)" },
-              "&.Mui-focused fieldset": {
-                borderColor: "rgba(59, 130, 246, 0.6)",
-              },
-            },
-            "& .MuiInputBase-input": { color: "#f8fafc" },
-          }}
+    <div className="w-1/4">
+      {/* Search Input */}
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted pointer-events-none" />
+        <input
+          type="text"
+          placeholder="Search tickers"
+          className="ticker-search-input"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           onFocus={() => setIsFocused(true)}
-          onBlur={() => {
-            setTimeout(() => setIsFocused(false), 200);
-          }}
+          onBlur={() => setTimeout(() => setIsFocused(false), 200)}
         />
 
-        {/* Selected Ticker */}
-        {selectedTicker && (
-          <Box
-            sx={{
-              p: 0.5,
-              bgcolor: "rgba(59, 130, 246, 0.1)",
-              borderRadius: 1,
-              border: "1px solid rgba(59, 130, 246, 0.2)",
-              minWidth: "fit-content",
-              flexShrink: 0,
-            }}
-          >
-            <Typography
-              variant="body2"
-              sx={{ color: "#f8fafc", fontWeight: 600 }}
-            >
-              {selectedTicker}
-            </Typography>
-          </Box>
+        {/* Dropdown List */}
+        {isFocused && searchTerm && (
+          <div className="ticker-dropdown">
+            {filteredTickers.length > 0 ? (
+              filteredTickers.map((ticker, index) => (
+                <button
+                  key={ticker}
+                  onClick={() => handleTickerSelect(ticker)}
+                  className={`ticker-dropdown-item ${
+                    selectedTicker === ticker
+                      ? "ticker-dropdown-item-active"
+                      : "ticker-dropdown-item-inactive"
+                  } ${index === 0 ? "rounded-t-lg" : ""} ${
+                    index === filteredTickers.length - 1 ? "rounded-b-lg" : ""
+                  }`}
+                >
+                  {ticker}
+                </button>
+              ))
+            ) : (
+              <div className="ticker-dropdown-empty">
+                <p className="ticker-dropdown-empty-text">
+                  No tickers found
+                </p>
+              </div>
+            )}
+          </div>
         )}
-      </Box>
-
-      {/* Ticker List */}
-      {isFocused && shouldExpand && filteredTickers.length > 0 && (
-        <Paper
-          elevation={3}
-          sx={{
-            position: "absolute",
-            top: "100%",
-            left: 0,
-            right: 0,
-            zIndex: 9999,
-            maxHeight: "250px",
-            overflow: "auto",
-            backgroundColor: "#1e293b",
-            border: "1px solid rgba(148, 163, 184, 0.2)",
-            borderRadius: 1,
-          }}
-        >
-          <RadioGroup
-            value={selectedTicker}
-            onChange={(e) => handleTickerSelect(e.target.value)}
-          >
-            {filteredTickers.map((ticker) => (
-              <FormControlLabel
-                key={ticker}
-                control={<Radio size="small" />}
-                label={ticker}
-                value={ticker}
-                sx={{
-                  color: selectedTicker === ticker ? "#3b82f6" : "#94a3b8",
-                  px: 2,
-                  py: 1,
-                  m: 0,
-                  width: "100%",
-                  "&:hover": {
-                    backgroundColor: "rgba(59, 130, 246, 0.1)",
-                  },
-                  "& .MuiFormControlLabel-label": {
-                    fontSize: "0.875rem",
-                    fontWeight: selectedTicker === ticker ? 600 : 400,
-                  },
-                  "& .MuiRadio-root": {
-                    color: selectedTicker === ticker ? "#3b82f6" : "#64748b",
-                    "&.Mui-checked": {
-                      color: "#3b82f6",
-                    },
-                  },
-                }}
-              />
-            ))}
-          </RadioGroup>
-        </Paper>
-      )}
-
-      {/* No results message */}
-      {isFocused &&
-        shouldExpand &&
-        searchTerm.length > 0 &&
-        filteredTickers.length === 0 && (
-          <Paper
-            elevation={3}
-            sx={{
-              position: "absolute",
-              top: "100%",
-              left: 0,
-              right: 0,
-              zIndex: 9999,
-              p: 2,
-              backgroundColor: "#1e293b",
-              border: "1px solid rgba(148, 163, 184, 0.2)",
-              borderRadius: 1,
-            }}
-          >
-            <Typography sx={{ color: "#64748b", textAlign: "center" }}>
-              No tickers found
-            </Typography>
-          </Paper>
-        )}
-    </Box>
+      </div>
+    </div>
   );
 };

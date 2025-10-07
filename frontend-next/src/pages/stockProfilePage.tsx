@@ -27,10 +27,8 @@ function StockProfilePage() {
   
   return (
     <>
-      <div className="flex flex-row flex justify-center">
-        <div className="w-1/4">
+      <div className="stock-profile-selectors-container">
           <TickerSelector />
-        </div>
       </div>
       <div className="main-content">
         {/* Chart positioned top-right */}
