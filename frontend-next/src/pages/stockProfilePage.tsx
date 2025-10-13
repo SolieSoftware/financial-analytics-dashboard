@@ -1,7 +1,9 @@
 "use client";
 //Components
 import StockPriceChart from "@/components/charts/StockPriceChart";
-import LeftPanel from "@/components/info/LeftPanel";
+import CompanyOverview from "@/components/info/CompanyOverview";
+import KeyMetrics from "@/components/info/KeyMetrics";
+import LatestNews from "@/components/info/LatestNews";
 import BottomPanel from "@/components/info/BottomPanel";
 import { TickerSelector } from "@/components/selectors/TickerSelector";
 
@@ -12,72 +14,83 @@ import { useParams } from "next/navigation";
 //Types
 import { NewsArticle } from "@/utils/types/newsTypes";
 import { stockInfoData, stockEntry } from "@/utils/types/stockData";
-      
+
 function StockProfilePage() {
-  const params  = useParams();
+  const params = useParams();
   const selectedTicker = params?.ticker as string;
-  const { 
-    data: stockData, 
-    isLoading, 
-    error, 
-    stockMarketNewsData, 
-    stockMarketNewsError, 
-    stockMarketNewsLoading 
-} = useStockProfile({ ticker: selectedTicker });
-  
+  const {
+    data: stockData,
+    isLoading,
+    error,
+    stockMarketNewsData,
+    stockMarketNewsError,
+    stockMarketNewsLoading,
+  } = useStockProfile({ ticker: selectedTicker });
+
   return (
-    <>
-      <div className="flex flex-row flex justify-center">
-        <div className="w-1/4">
-          <TickerSelector />
-        </div>
+    <div className="stock-profile-page">
+      <div className="stock-profile-selectors-container">
+        <TickerSelector />
       </div>
       <div className="main-content">
         {/* Chart positioned top-right */}
         <div className="chart-container">
           <StockPriceChart
             ticker={selectedTicker}
-            stockData={stockData || {
-            info_data: {} as stockInfoData,
-            history_data: [] as stockEntry[],
-          }} isLoading={isLoading} error={error} />
+            stockData={
+              stockData || {
+                info_data: {} as stockInfoData,
+                history_data: [] as stockEntry[],
+              }
+            }
+            isLoading={isLoading}
+            error={error}
+          />
         </div>
 
-        {/* Left content area for company information */}
-        <div className="content-area-left">
-          <LeftPanel 
-          ticker={selectedTicker}
-          data={stockData || {
-            info_data: {} as stockInfoData,
-            history_data: [] as stockEntry[],
-          }} 
-          isLoading={isLoading} 
-          error={error || error?.toString()} 
-          stockMarketNewsData={stockMarketNewsData || {
-            market_news: {
-              items: "",
-              sentiment_score_definition: "",
-              relevance_score_definition: "",
-              feed: [] as NewsArticle[],
-            },
-          }} 
-          stockMarketNewsError={stockMarketNewsError || stockMarketNewsError?.toString()} 
-          stockMarketNewsLoading={stockMarketNewsLoading} />
-        </div>
+        {/* Left Panel - Company Info */}
+          <CompanyOverview
+            data={stockData?.info_data}
+            isLoading={isLoading}
+            error={error}
+          />
 
+        {/* Left Panel - Key Metrics */}
+          <KeyMetrics
+            data={stockData?.info_data}
+            isLoading={isLoading}
+            error={error}
+          />
+
+        {/* Left Panel - Latest News */}
+          <LatestNews
+            stockMarketNewsData={
+              stockMarketNewsData || {
+                market_news: {
+                  items: "",
+                  sentiment_score_definition: "",
+                  relevance_score_definition: "",
+                  feed: [] as NewsArticle[],
+                },
+              }
+            }
+            stockMarketNewsError={stockMarketNewsError}
+            stockMarketNewsLoading={stockMarketNewsLoading}
+          />
         {/* Bottom content area for performance analytics */}
-        <div className="content-area-bottom">
-          <BottomPanel 
-          ticker={selectedTicker}
-          data={stockData || {
-            info_data: {} as stockInfoData,
-            history_data: [] as stockEntry[],
-          }} 
-          isLoading={isLoading} 
-          error={error || error?.toString()} />
-        </div>
+          <BottomPanel
+            ticker={selectedTicker}
+            data={
+              stockData || {
+                info_data: {} as stockInfoData,
+                history_data: [] as stockEntry[],
+              }
+            }
+            isLoading={isLoading}
+            error={error}
+          />
       </div>
-      </>
+    </div>
   );
 }
 

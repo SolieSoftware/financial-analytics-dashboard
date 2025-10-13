@@ -4,8 +4,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Newspaper, TrendingUp, TrendingDown } from "lucide-react";
 import { NewsArticle } from "@/utils/types/newsTypes";
-import { LoadingPage } from "@/components/default/LoadingPage";
-import { ErrorPage } from "@/components/default/ErrorPage";
+import LoadingPage from "@/components/default/LoadingPage";
+import ErrorPage from "@/components/default/ErrorPage";
+import NoData from "@/components/default/NoData";
 
 const MarketSummary = () => {
   const { data, error, isLoading } = useMarketProfile();
@@ -13,7 +14,15 @@ const MarketSummary = () => {
   if (isLoading) {
     return (
       <div className="w-full">
-        <LoadingPage />
+        <LoadingPage title="Market Summary" />
+      </div>
+    );
+  }
+
+  if (!data) {
+    return (
+      <div className="w-full">
+        <NoData title="Market Summary" />
       </div>
     );
   }
@@ -21,7 +30,7 @@ const MarketSummary = () => {
   if (error) {
     return (
       <div className="w-full">
-        <ErrorPage error={error} />
+        <ErrorPage error={error} title="Market Summary" />
       </div>
     );
   }
@@ -78,17 +87,8 @@ const MarketSummary = () => {
     const sentiment = formatSentiment(article.overall_sentiment_score);
 
     return (
-      <div key={article.title} className="mb-3">
+      <div key={article.summary} className="mb-3">
         <Card className="market-summary-card">
-          {/* <CardContent className="market-summary-image-container">
-          {article.banner_image && (
-            <img
-              src={article.banner_image}
-              alt={article.title}
-              className="market-summary-image"
-            />
-          )}
-          </CardContent> */}
           <CardContent className="market-summary-content">
             <div className="market-summary-header">
               <div className="market-summary-title-section">
@@ -135,22 +135,28 @@ const MarketSummary = () => {
     return articles.map((article: NewsArticle) => newCard(article));
   };
 
+  const displayTitle = () => {
+    return (
+      <CardHeader className="market-summary-header-container">
+        <CardTitle className="market-summary-main-title">
+          <Newspaper className="market-summary-main-icon" />
+          <span className="market-summary-title-text">Market Summary</span>
+        </CardTitle>
+      </CardHeader>
+    );
+  };
+
   return (
-      <Card className="market-summary-container">
-        <CardHeader className="market-summary-header-container">
-          <CardTitle className="market-summary-main-title">
-            <Newspaper className="market-summary-main-icon" />
-            <span className="market-summary-title-text">Market Summary</span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="market-summary-content-container">
-          {data && data.general_market_news?.feed ? (
-            newCards(data.general_market_news.feed)
-          ) : (
-            <p className="market-summary-no-data">No market news available</p>
-          )}
-        </CardContent>
-      </Card>
+    <Card className="market-summary-container">
+      {displayTitle()}
+      <CardContent className="market-summary-content-container">
+        {data && data.general_market_news?.feed ? (
+          newCards(data.general_market_news.feed)
+        ) : (
+          <p className="market-summary-no-data">No market news available</p>
+        )}
+      </CardContent>
+    </Card>
   );
 };
 

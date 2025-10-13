@@ -1,21 +1,21 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Building2 } from "lucide-react";
 
-export const LoadingPage = () => {
+const LoadingPage = ({ title }: { title: React.ReactNode }) => {
   return (
-    <div className="w-full">
-      <Card className="bg-background-secondary/90 border-border/30 backdrop-blur-sm shadow-2xl">
-        <CardContent className="p-6">
-          <Skeleton className="w-52 h-8 mb-4" />
-          {Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="mb-4">
-              <Skeleton className="w-full h-32 mb-2 rounded-lg" />
-              <Skeleton className="w-full h-6 mb-1" />
-              <Skeleton className="w-4/5 h-5" />
-            </div>
-          ))}
-        </CardContent>
-      </Card>
+    <div className="bg-background-secondary/40 rounded-lg border-0 p-5 shadow-lg backdrop-blur-sm market-summary-container">
+        {title}
+    <div className="space-y-3">
+      <Skeleton className="w-40 h-6 mb-2" />
+      <div className="flex gap-2 mb-3">
+        <Skeleton className="w-20 h-5" />
+        <Skeleton className="w-24 h-5" />
+      </div>
+      <Skeleton className="w-full h-16" />
     </div>
+  </div>
   );
 };
+
+export default LoadingPage;

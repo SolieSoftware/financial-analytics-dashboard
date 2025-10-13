@@ -1,5 +1,7 @@
 "use client";
 import StockPriceChart from "@/components/charts/StockPriceChart";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { TrendingUp } from "lucide-react";
 
 import { useStockProfile } from "@/utils/hooks/useStockProfile";
 import { stockInfoData, stockEntry } from "@/utils/types/stockData";
@@ -20,7 +22,7 @@ const MarketChartOverview = () => {
   );
 
   return (
-    <div className="w-full">
+    <div className="market-charts-container">
       <h2 className="market-charts-title">Market Indices</h2>
       <div className="market-charts-grid">
         {Object.entries(marketData).map(([ticker, data]) => (

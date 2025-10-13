@@ -5,6 +5,7 @@ import { useAppSelector, useAppDispatch } from "../redux/store";
 import { setNavigationState } from "../redux/slices/navigationSlice";
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
+import { BarChart, ShowChart, Star, PieChart } from "@mui/icons-material";
 
 export const Navigation = () => {
   const navigationItems = useAppSelector(
@@ -38,7 +39,24 @@ export const Navigation = () => {
       {/* Navigation Items */}
       <div className="flex flex-col space-y-1">
         {navigationItems.map((item) => {
-          const IconComponent = item.icon;
+          // Map icon names to actual components
+          const getIconComponent = (iconName: string) => {
+            switch (iconName) {
+              case "BarChart":
+                return BarChart;
+              case "ShowChart":
+                return ShowChart;
+              case "Star":
+                return Star;
+              case "PieChart":
+                return PieChart;
+              default:
+                return BarChart;
+            }
+          };
+
+          const IconComponent = getIconComponent(item.iconName);
+
           return (
             <Link
               href={item.href}
@@ -46,14 +64,14 @@ export const Navigation = () => {
               onClick={() => {
                 handleItemClick(item);
               }}
-              className="block"
+              className="block no-underline"
             >
               <div
                 className={`nav-item ${
                   item.active ? "nav-item-active" : "nav-item-inactive"
                 }`}
               >
-                <IconComponent size={16} className="nav-icon" />
+                <IconComponent sx={{ fontSize: 16 }} className="nav-icon" />
                 <span
                   className={`nav-text ${item.active ? "nav-text-active" : ""}`}
                 >

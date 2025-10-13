@@ -1,6 +1,14 @@
 import { ReduxProvider } from "./providers/ReduxProvider";
 import { SWRConfig } from "swr";
+import { Inter } from "next/font/google";
 import "./global.css";
+
+const inter = Inter({
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+  variable: "--font-inter",
+  display: "swap",
+});
 
 export default function RootLayout({
   children,
@@ -8,8 +16,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html>
-      <body>
+    <html className={inter.variable}>
+      <body className={inter.className}>
         <ReduxProvider>
           <SWRConfig
             value={{

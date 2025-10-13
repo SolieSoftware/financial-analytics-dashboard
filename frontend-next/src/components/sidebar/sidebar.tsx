@@ -22,35 +22,26 @@ function SideBar() {
         aria-label="Toggle Sidebar"
         onClick={toggleDrawer}
         className="sidebar-toggle-btn"
-        style={{
-          left: isOpen ? 'calc(20vw + 10px)' : '22vw',
-          top: "20px",
-        }}
       >
         {isOpen ? (
-          <X className="sidebar-icon" />
+          <X className="sidebar-icon icon-sidebar-closed" />
         ) : (
-          <Menu className="sidebar-icon" />
+          <Menu className="sidebar-icon icon-sidebar-open" />
         )}
       </button>
 
       {/* Drawer/Sidebar */}
-      <div
-        className={`sidebar-container ${  
-          isOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
-      >
-        <div className="h-full flex flex-col">
+      <div className={`sidebar-container ${isOpen ? "sidebar-open" : "sidebar-closed"}`}>
+        <div className="sidebar-content">
           {/* Header */}
-          <div className="p-6 pb-4">
-            <div className="flex items-center mb-6 mt-4">
+          <div className="sidebar-header">
+            <div className="sidebar-header-content">
               <div className="sidebar-logo">
                 <Gauge className="sidebar-logo-icon" />
               </div>
               <div>
-                <h1 className="sidebar-title">
-                  Financial Analytics
-                </h1>
+                <h1 className="sidebar-title">Financial Analytics</h1>
+                <p className="sidebar-subtitle">Dashboard</p>
               </div>
             </div>
           </div>
@@ -59,17 +50,15 @@ function SideBar() {
           <div className="sidebar-divider" />
 
           {/* Navigation */}
-          <div className="p-6 pb-4">
+          <div className="sidebar-section">
             <Navigation />
           </div>
 
           {/* Footer */}
-          <div className="p-6 pt-4 mt-auto">
-            <div className="sidebar-divider mb-4" />
-            <div className="flex items-center justify-between">
-              <p className="sidebar-footer-text">
-                © 2024 Analytics Pro
-              </p>
+          <div className="sidebar-footer">
+            <div className="sidebar-divider sidebar-divider-footer" />
+            <div className="sidebar-footer-content">
+              <p className="sidebar-footer-text">© 2024 Analytics</p>
               <button
                 className="sidebar-settings-btn"
                 aria-label="Settings"
@@ -84,7 +73,7 @@ function SideBar() {
       {/* Backdrop overlay when sidebar is open */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black/20 backdrop-blur-sm z-[1199]"
+          className="fixed inset-0 bg-black/30 backdrop-blur-sm z-[1199]"
           onClick={toggleDrawer}
         />
       )}

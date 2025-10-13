@@ -18,11 +18,16 @@ export const useStockProfile = (queryParams: QueryParams) => {
   const { data, error, isLoading } = useSWR<stockDataResponse>(url, fetcher);
 
   const stockMarketNewsUrl = `${endpoints.getStockMarketNews}?symbol=${queryParams.ticker}`;
+  
   const {
     data: stockMarketNewsData,
     error: stockMarketNewsError,
     isLoading: stockMarketNewsLoading,
-  } = useSWR<stockMarketNewsResponse>(stockMarketNewsUrl, fetcher);
+  } = useSWR<stockMarketNewsResponse>(stockMarketNewsUrl, fetcher, {
+    revalidateIfStale: false,
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false
+  });
 
   return {
     data,

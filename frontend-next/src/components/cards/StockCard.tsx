@@ -1,9 +1,8 @@
 "use client";
 import React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { TrendingUp, TrendingDown } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { TrendingUp, TrendingDown, DollarSign } from "lucide-react";
 
 interface StockCardProps {
   ticker: string;
@@ -29,49 +28,57 @@ export const StockCard: React.FC<StockCardProps> = ({
   const isPositive = change > 0;
 
   return (
-    <Card
-      className={cn(
-        "hover:shadow-xl transition-all duration-200 cursor-pointer border-l-4",
-        isPositive ? "border-l-bullish" : "border-l-bearish",
-        className
-      )}
-      onClick={onClick}
-    >
-      <CardHeader className="pb-3">
-        <div className="flex items-start justify-between">
-          <div>
-            <CardTitle className="text-lg">{ticker}</CardTitle>
-            <p className="text-text-secondary text-sm mt-1">{name}</p>
+    <Card className="market-summary-card" onClick={onClick}>
+      <CardContent className="market-summary-content">
+        <div className="market-summary-header">
+          <div className="market-summary-title-section">
+            <DollarSign className="market-summary-icon" />
+            <h3 className="market-summary-title">{ticker}</h3>
           </div>
-          <Badge variant={isPositive ? "bullish" : "bearish"}>
-            {isPositive ? <TrendingUp className="w-3 h-3 mr-1" /> : <TrendingDown className="w-3 h-3 mr-1" />}
+          {isPositive ? (
+            <div className="text-bullish market-summary-sentiment-icon">
+              <TrendingUp className="w-4 h-4" />
+            </div>
+          ) : (
+            <div className="text-bearish market-summary-sentiment-icon">
+              <TrendingDown className="w-4 h-4" />
+            </div>
+          )}
+        </div>
+
+        <p className="market-summary-description">{name}</p>
+
+        <div className="market-summary-badges">
+          <Badge
+            variant={isPositive ? "bullish" : "bearish"}
+            className="market-summary-badge"
+          >
+            ${price.toFixed(2)}
+          </Badge>
+          <Badge
+            variant={isPositive ? "bullish" : "bearish"}
+            className="market-summary-badge"
+          >
             {isPositive ? "+" : ""}
             {changePercent.toFixed(2)}%
           </Badge>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-2">
-          <div className="flex justify-between items-end">
-            <span className="text-text-primary text-2xl font-bold">
-              ${price.toFixed(2)}
-            </span>
-            <span
-              className={cn(
-                "text-sm font-semibold",
-                isPositive ? "text-bullish" : "text-bearish"
-              )}
-            >
-              {isPositive ? "+" : ""}${change.toFixed(2)}
-            </span>
-          </div>
+          <Badge
+            variant={isPositive ? "bullish" : "bearish"}
+            className="market-summary-badge"
+          >
+            {isPositive ? "+" : ""}${Math.abs(change).toFixed(2)}
+          </Badge>
           {volume && (
-            <div className="pt-2 border-t border-border">
-              <span className="text-text-muted text-xs">Volume: </span>
-              <span className="text-text-secondary text-xs font-medium">
-                {volume.toLocaleString()}
-              </span>
-            </div>
+            <Badge variant="outline" className="market-summary-badge">
+              Vol:{" "}
+              {volume >= 1e9
+                ? `${(volume / 1e9).toFixed(2)}B`
+                : volume >= 1e6
+                ? `${(volume / 1e6).toFixed(2)}M`
+                : volume >= 1e3
+                ? `${(volume / 1e3).toFixed(2)}K`
+                : volume.toLocaleString()}
+            </Badge>
           )}
         </div>
       </CardContent>

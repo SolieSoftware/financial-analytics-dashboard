@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import {
@@ -15,6 +16,10 @@ import {
 } from "lucide-react";
 import { stockDataResponse } from "@/utils/types/stockData";
 
+import LoadingPage from "@/components/default/LoadingPage";
+import ErrorPage from "@/components/default/ErrorPage";
+import NoData from "@/components/default/NoData";
+
 const BottomPanel = ({
   ticker,
   data,
@@ -24,7 +29,7 @@ const BottomPanel = ({
   ticker: string;
   data: stockDataResponse;
   isLoading: boolean;
-  error: string;
+  error: Error;
 }) => {
   const stockData = data;
 
@@ -45,77 +50,31 @@ const BottomPanel = ({
     return volume.toLocaleString();
   };
 
-  if (!ticker) {
+  const displayTitle = () => {
     return (
-      <div>
-        <Card className="bg-background-secondary/90 text-center mt-4 border-0">
-          <CardContent>
-            <LineChart className="w-12 h-12 text-text-secondary mx-auto mb-4" />
-            <p className="text-text-secondary">
-              Select a ticker to view performance analytics
-            </p>
-          </CardContent>
-        </Card>
-      </div>
+      <CardHeader className="market-summary-header-container">
+        <CardTitle className="market-summary-main-title">
+          <BarChart3 className="market-summary-main-icon" />
+          <span className="market-summary-title-text">Financial Profile</span>
+        </CardTitle>
+      </CardHeader>
     );
+  };
+
+  if (!ticker) {
+    return <NoData title={displayTitle()} />;
   }
 
   if (isLoading) {
-    return (
-      <div>
-        <Card className="bg-background-secondary/90 border-border/30 backdrop-blur-sm shadow-2xl">
-          <CardHeader className="bg-accent-blue/10 border-b border-border/30">
-            <CardTitle className="flex items-center gap-2">
-              <BarChart3 className="text-accent-blue w-5 h-5" />
-              <span className="text-text-primary font-semibold">
-                Performance Analytics
-              </span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="pt-6">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {Array.from({ length: 4 }).map((_, i: number) => (
-                <Card
-                  key={i}
-                  className="bg-background-primary/80 border-border/30 h-full"
-                >
-                  <CardContent className="p-4">
-                    <Skeleton className="w-24 h-6 mb-2" />
-                    <Skeleton className="w-20 h-8 mb-1" />
-                    <Skeleton className="w-16 h-5" />
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div>
-        <Alert variant="destructive">
-          <AlertCircle className="h-4 w-4" />
-          <AlertTitle>Error</AlertTitle>
-          <AlertDescription>
-            Error loading performance data: {error || error?.toString()}
-          </AlertDescription>
-        </Alert>
-      </div>
-    );
+    return <LoadingPage title={displayTitle()} />;
   }
 
   if (!stockData) {
-    return (
-      <div>
-        <Alert variant="info">
-          <Info className="h-4 w-4" />
-          <AlertDescription>No performance data available</AlertDescription>
-        </Alert>
-      </div>
-    );
+    return <NoData title={displayTitle()} />;
+  }
+
+  if (error) {
+    return <ErrorPage error={error} title={displayTitle()} />;
   }
 
   function MetricCard({
@@ -141,29 +100,16 @@ const BottomPanel = ({
       changePercent !== undefined && changePercent !== null;
 
     return (
-      <Card className="financial-profile-metric-card">
-        <CardContent className="ml-4">
-          <div className="flex items-center ml-4">
-            <div className="text-accent-blue flex items-center text-sm pr-4">
-              {icon}
+      <Card className="market-summary-card">
+        <CardContent className="market-summary-content">
+          <div className="market-summary-header">
+            <div className="market-summary-title-section">
+              <div className="market-summary-icon">{icon}</div>
+              <h3 className="market-summary-title">{title}</h3>
             </div>
-            <p className="text-text-secondary font-semibold text-sm uppercase tracking-wider">
-              {title}
-            </p>
-          </div>
-
-          <p className="text-text-primary text-2xl font-bold mb-2 font-mono">
-            {typeof value === "number" ? value.toFixed(2) : value}
-          </p>
-
-          {subtitle && (
-            <p className="text-text-muted text-xs block mb-2">{subtitle}</p>
-          )}
-
-          {hasChange && (
-            <div className="flex items-center gap-2">
+            {hasChange && (
               <div
-                className={`flex items-center ${
+                className={`market-summary-sentiment-icon ${
                   isPositive
                     ? "text-bullish"
                     : isNegative
@@ -177,34 +123,29 @@ const BottomPanel = ({
                   <TrendingDown className="w-4 h-4" />
                 ) : null}
               </div>
-              <span
-                className={`text-sm font-medium ${
-                  isPositive
-                    ? "text-bullish"
-                    : isNegative
-                    ? "text-bearish"
-                    : "text-text-secondary"
-                }`}
+            )}
+          </div>
+
+          {subtitle && <p className="market-summary-description">{subtitle}</p>}
+
+          <div className="market-summary-badges">
+            <Badge variant="default" className="market-summary-badge">
+              {typeof value === "number" ? value.toFixed(2) : value}
+            </Badge>
+            {hasChange && (
+              <Badge
+                variant={
+                  isPositive ? "bullish" : isNegative ? "bearish" : "default"
+                }
+                className="market-summary-badge"
               >
-                {typeof change === "number" ? change.toFixed(2) : change}
-              </span>
-              <span
-                className={`text-xs font-medium ${
-                  isPositive
-                    ? "text-bullish"
-                    : isNegative
-                    ? "text-bearish"
-                    : "text-text-secondary"
-                }`}
-              >
-                (
                 {typeof changePercent === "number"
                   ? changePercent.toFixed(2)
                   : changePercent}
-                %)
-              </span>
-            </div>
-          )}
+                %
+              </Badge>
+            )}
+          </div>
         </CardContent>
       </Card>
     );
@@ -212,98 +153,84 @@ const BottomPanel = ({
 
   const companyInfo = stockData?.info_data;
 
+  const metricCards = [
+    {
+      title: "Prev Close",
+      value: companyInfo?.previousClose ?? "N/A",
+      icon: <DollarSign />,
+    },
+    {
+      title: "52W Range",
+      value: companyInfo?.fiftyTwoWeekRange
+        ? `${companyInfo.fiftyTwoWeekRange} ${companyInfo.currency}`
+        : "N/A",
+      icon: <LineChart />,
+    },
+    {
+      title: "Market Cap",
+      value: companyInfo?.marketCap
+        ? `${formatNumber(companyInfo.marketCap)}`
+        : "N/A",
+      icon: <LineChart />,
+      subtitle: "Total market value",
+      showChange: false,
+    },
+    {
+      title: "Open",
+      value: companyInfo?.open ?? "N/A",
+      icon: <DollarSign />,
+    },
+    {
+      title: "P/E Ratio",
+      value: companyInfo?.trailingPE || "N/A",
+      icon: <BarChart3 />,
+      subtitle: "Trailing P/E Ratio",
+    },
+    {
+      title: "Dividend Yield",
+      value: companyInfo?.dividendYield
+        ? `${(companyInfo.dividendYield * 100).toFixed(2)}%`
+        : "N/A",
+      icon: <DollarSign />,
+    },
+    {
+      title: "Day Range",
+      value: companyInfo?.regularMarketDayRange
+        ? `${companyInfo.regularMarketDayRange} ${companyInfo.currency}`
+        : "N/A",
+      icon: <LineChart />,
+    },
+    {
+      title: "Volume",
+      value: companyInfo?.volume ? formatVolume(companyInfo.volume) : "N/A",
+      icon: <Volume2 />,
+    },
+    {
+      title: "EPS",
+      value: companyInfo?.trailingEps || "N/A",
+      icon: <TrendingUp />,
+      subtitle: "Trailing EPS",
+    },
+  ];
+
   return (
-    <div>
-      <Card className="financial-profile-container">
-        <CardHeader className="bg-accent-blue/10 border-b border-border/30 pl-2">
-          <CardTitle className="flex items-center gap-2">
-            <BarChart3 className="text-accent-blue w-5 h-5" />
-            <span className="text-text-primary font-semibold pl-2">
-              Financial Profile
-            </span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="financial-profile-content">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+    <Card className="market-summary-container content-area-bottom">
+      {displayTitle()}
+      <CardContent className="market-summary-content-container">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          {metricCards.map((metric, index) => (
             <MetricCard
-              title="Prev Close"
-              value={companyInfo?.previousClose ?? "N/A"}
-              icon={<DollarSign />}
+              key={`${metric.title}-${index}`}
+              title={metric.title}
+              value={metric.value}
+              icon={metric.icon}
+              subtitle={metric.subtitle}
+              showChange={metric.showChange}
             />
-
-            <MetricCard
-              title="52W Range"
-              value={
-                companyInfo?.fiftyTwoWeekRange
-                  ? `${companyInfo.fiftyTwoWeekRange} ${companyInfo.currency}`
-                  : "N/A"
-              }
-              icon={<LineChart />}
-            />
-
-            <MetricCard
-              title="Market Cap"
-              value={
-                companyInfo?.marketCap
-                  ? `${formatNumber(companyInfo.marketCap)}`
-                  : "N/A"
-              }
-              icon={<LineChart />}
-              subtitle="Total market value"
-              showChange={false}
-            />
-
-            <MetricCard
-              title="Open"
-              value={companyInfo?.open ?? "N/A"}
-              icon={<DollarSign />}
-            />
-
-            <MetricCard
-              title="P/E Ratio"
-              value={companyInfo?.trailingPE || "N/A"}
-              icon={<BarChart3 />}
-              subtitle="Trailing P/E Ratio"
-            />
-
-            <MetricCard
-              title="Dividend Yield"
-              value={
-                companyInfo?.dividendYield
-                  ? `${(companyInfo.dividendYield * 100).toFixed(2)}%`
-                  : "N/A"
-              }
-              icon={<DollarSign />}
-            />
-
-            <MetricCard
-              title="Day Range"
-              value={
-                companyInfo?.regularMarketDayRange
-                  ? `${companyInfo.regularMarketDayRange} ${companyInfo.currency}`
-                  : "N/A"
-              }
-              icon={<LineChart />}
-            />
-
-            <MetricCard
-              title="Volume"
-              value={
-                companyInfo?.volume ? formatVolume(companyInfo.volume) : "N/A"
-              }
-              icon={<Volume2 />}
-            />
-
-            <MetricCard
-              title="EPS"
-              value={companyInfo?.trailingEps || "N/A"}
-              icon={<TrendingUp />}
-              subtitle="Trailing EPS"
-            />
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
   );
 };
 
