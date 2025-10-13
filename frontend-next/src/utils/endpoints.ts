@@ -7,5 +7,8 @@ export const endpoints = {
   getStockMarketNews: "/api/getStockMarketNews",
   getGeneralMarketNews: "/api/getGeneralMarketNews",
   createProfile: "/api/auth/create-profile",
-  fetchProfile: "api/auth/fetch-profile"
+  fetchProfile: "api/auth/fetch-profile",
+  getBiggestGainers: "/api/getBiggestGainers",
+  getBiggestLosers: "/api/getBiggestLosers",
+  getMostActive: "/api/getMostActive"
 };

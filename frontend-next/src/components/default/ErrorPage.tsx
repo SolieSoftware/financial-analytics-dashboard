@@ -1,14 +1,15 @@
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, Building2 } from "lucide-react";
 
-export const ErrorPage = ({ error }: { error: Error }) => {
+const ErrorPage = ({ error, title }: { error: Error, title: React.ReactNode }) => {
   return (
-    <div className="w-full">
+    <div className="w-full market-summary-container">
+      {title}
       <Alert variant="destructive">
         <AlertCircle className="h-4 w-4" />
         <AlertTitle>Error</AlertTitle>
         <AlertDescription>
-          Error loading market news: {error?.message || error?.toString()}
+          Error loading data: {error?.message || error?.toString()}
         </AlertDescription>
       </Alert>
     </div>

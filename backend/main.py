@@ -2,10 +2,6 @@ import os
 import logging
 import asyncio
 from functools import wraps, partial
-import hashlib
-import json
-import gzip
-import pickle
 from typing import Any, Callable
 from contextlib import asynccontextmanager
 
@@ -40,6 +36,7 @@ load_dotenv()
 
 # Get API keys from environment variables
 ALPHA_VANTAGE_API_KEY = os.getenv("ALPHAVANTAGE_API_KEY")
+FINANCIAL_MODELLING_API_KEY = os.getenv("FINANCIAL_MODELLING_API_KEY")
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -103,10 +100,18 @@ async def lifespan(app: FastAPI):
 
     logging.info("Starting up Redis Client")
     redis_client = RedisClient()
-    await redis_client.init_redis()
+    try:
+        await redis_client.init_redis()
+    except Exception as e:
+        logging.warning(f"Redis connection failed: {e}. Running without cache.")
 
     logging.info("Starting up Cache Service")
-    cache_service = CacheService(redis_client=redis_client, serializer=CacheSerializer)
+    try:
+        cache_service = CacheService(
+            redis_client=redis_client, serializer=CacheSerializer
+        )
+    except Exception as e:
+        logging.warning(f"Cache service failed: {e}. Running without cache.")
 
     logging.info("Starting up Supabase Client")
     supabase_client = SupabaseClient()
@@ -125,7 +130,9 @@ async def lifespan(app: FastAPI):
         )
 
         # Only populate cache for first few tickers to avoid overwhelming the system on startup
-        ticker_symbols = [ticker.get("Symbol", ticker) for ticker in tickers["tickers"]]
+        ticker_symbols = [
+            ticker.get("Symbol", ticker) for ticker in tickers["tickers"]
+        ] + ["^GSPC", "^VIX", "^DJI", "^IXIC"]
 
         for ticker in ticker_symbols:
             logger.info(f"Caching data for ticker {ticker}")
@@ -165,7 +172,9 @@ app.add_middleware(
 async def root():
     return {"message": "Trading API is running"}
 
+
 """Redis Endpoints"""
+
 
 @app.get("/health/redis")
 async def redis_health():
@@ -206,10 +215,12 @@ async def clear_cache():
         logger.error(f"Error clearing cache: {str(e)}")
         return {"status": "error", "message": f"Failed to clear cache: {str(e)}"}
 
+
 @app.get("/admin/redis/stats")
 async def get_redis_stats():
     """Get Redis stats"""
     return await redis_client.get_stats()
+
 
 """Supabase API Endpoints"""
 
@@ -321,6 +332,7 @@ async def get_market_summary():
 
 """Alpha Vantage API Endpoints"""
 
+
 @app.get("/api/market-daily/{symbol}/data")
 async def get_market_data(symbol: str):
     """Get market data"""
@@ -374,6 +386,7 @@ async def get_market_status():
             status_code=500, detail=f"Failed to fetch market status: {str(e)}"
         )
 
+
 @cache_result(CacheConfig.MARKET_NEWS_TTL, key_prefix="market_news")
 @app.get("/api/market-news/{symbol}")
 async def get_market_news(symbol: str):
@@ -404,6 +417,55 @@ async def get_general_market_news():
     except Exception as e:
         raise HTTPException(
             status_code=500, detail=f"Failed to fetch general market news: {str(e)}"
+        )
+
+
+# financial modelling prep api endpoints
+@app.get("/api/financial-modelling-prep/biggest-gainers")
+async def get_biggest_gainers():
+    """Get biggest gainers"""
+    url = f"https://financialmodelingprep.com/stable/biggest-gainers?apikey={FINANCIAL_MODELLING_API_KEY}"
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.get(url)
+            response.raise_for_status()
+            biggest_gainers = response.json()
+            return {"biggest_gainers": biggest_gainers}
+    except Exception as e:
+        raise HTTPException(
+            status_code=500, detail=f"Failed to fetch biggest gainers: {str(e)}"
+        )
+
+
+@app.get("/api/financial-modelling-prep/biggest-losers")
+async def get_biggest_losers():
+    """Get biggest losers"""
+    url = f"https://financialmodelingprep.com/stable/biggest-losers?apikey={FINANCIAL_MODELLING_API_KEY}"
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.get(url)
+            response.raise_for_status()
+            biggest_losers = response.json()
+            return {"biggest_losers": biggest_losers}
+    except Exception as e:
+        raise HTTPException(
+            status_code=500, detail=f"Failed to fetch biggest losers: {str(e)}"
+        )
+
+
+@app.get("/api/financial-modelling-prep/most-active")
+async def get_most_active():
+    """Get most active"""
+    url = f"https://financialmodelingprep.com/stable/most-actives?apikey={FINANCIAL_MODELLING_API_KEY}"
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.get(url)
+            response.raise_for_status()
+            most_active = response.json()
+            return {"most_active": most_active}
+    except Exception as e:
+        raise HTTPException(
+            status_code=500, detail=f"Failed to fetch most active: {str(e)}"
         )
 
 

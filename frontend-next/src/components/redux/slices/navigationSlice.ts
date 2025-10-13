@@ -1,69 +1,65 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { BarChart, ShowChart, Business, AttachMoney, TrendingUp, Star, PieChart } from "@mui/icons-material";
 import { PayloadAction } from "@reduxjs/toolkit";
 
-
 interface NavigationItem {
-    label: string;
-    href: string;
-    icon: any;
-    active: boolean;
-    badge: string | null;
+  label: string;
+  href: string;
+  iconName: string; // Store icon name instead of component
+  active: boolean;
+  badge: string | null;
 }
 
 interface NavigationState {
-    navigation: NavigationItem[]
+  navigation: NavigationItem[];
 }
 
 const initialState: NavigationState = {
-    navigation: [
-        {
-          label: "Stock Profile",
-          href: "/stock-profile",
-          icon: BarChart,
-          active: true,
-          badge: null,
-        },
-        {
-          label: "Market Overview",
-          href: "/market-overview",
-          icon: ShowChart,
-          active: false,
-          badge: null,  
-        },
-        {
-          label: "Live Trading View",
-          href: "/trading-view",
-          icon: ShowChart,
-          active: false,
-          badge: null,
-        },
-        {
-          label: "Watchlist",
-          href: "/watchlist",
-          icon: Star,
-          active: false,
-          badge: "12",
-        },
-        {
-          label: "Reports",
-          href: "/reports",
-          icon: PieChart,
-          active: false,
-          badge: null,
-        },
-      ]
-}
-;
-
+  navigation: [
+    {
+      label: "Stock Profile",
+      href: "/stock-profile",
+      iconName: "BarChart",
+      active: true,
+      badge: null,
+    },
+    {
+      label: "Market Overview",
+      href: "/market-overview",
+      iconName: "ShowChart",
+      active: false,
+      badge: null,
+    },
+    {
+      label: "Live Trading View",
+      href: "/trading-view",
+      iconName: "ShowChart",
+      active: false,
+      badge: null,
+    },
+    {
+      label: "Watchlist",
+      href: "/watchlist",
+      iconName: "Star",
+      active: false,
+      badge: "12",
+    },
+    {
+      label: "Reports",
+      href: "/reports",
+      iconName: "PieChart",
+      active: false,
+      badge: null,
+    },
+  ],
+};
 const navigationSlice = createSlice({
-    name: 'navigation',
-    initialState,
-    reducers: {
-        setNavigationState: (state, action: PayloadAction<any>) => {
-            state.navigation = action.payload;
-        }
-    }
+  name: "navigation",
+  initialState,
+  reducers: {
+    setNavigationState: (state, action: PayloadAction<any>) => {
+      state.navigation = action.payload;
+    },
+  },
 });
 
 export const { setNavigationState } = navigationSlice.actions;

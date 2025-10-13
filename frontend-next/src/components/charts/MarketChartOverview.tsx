@@ -1,5 +1,7 @@
 "use client";
 import StockPriceChart from "@/components/charts/StockPriceChart";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { TrendingUp } from "lucide-react";
 
 import { useStockProfile } from "@/utils/hooks/useStockProfile";
 import { stockInfoData, stockEntry } from "@/utils/types/stockData";

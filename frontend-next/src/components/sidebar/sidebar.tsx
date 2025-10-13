@@ -24,9 +24,9 @@ function SideBar() {
         className="sidebar-toggle-btn"
       >
         {isOpen ? (
-          <X className="sidebar-icon" />
+          <X className="sidebar-icon icon-sidebar-closed" />
         ) : (
-          <Menu className="sidebar-icon" />
+          <Menu className="sidebar-icon icon-sidebar-open" />
         )}
       </button>
 
@@ -52,11 +52,6 @@ function SideBar() {
           {/* Navigation */}
           <div className="sidebar-section">
             <Navigation />
-          </div>
-
-          {/* Quick Stats */}
-          <div className="sidebar-section">
-            <QuickStats />
           </div>
 
           {/* Footer */}

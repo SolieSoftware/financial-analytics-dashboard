@@ -5,7 +5,7 @@ import FinanceLayout from "../../layout";
 function StockPage() {
   
   return (
-      <StockProfilePage />
+    <StockProfilePage />
   );
 }
 
