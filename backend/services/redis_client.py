@@ -1,6 +1,7 @@
 import redis.asyncio as redis
 from typing import Optional, Dict, Any
 import logging
+import os
 
 
 logging.basicConfig(level=logging.INFO)
@@ -14,14 +15,25 @@ class RedisClient:
     async def init_redis(self):
         """Initialize the Redis client"""
         try:
-            self.redis = redis.Redis(
-                host="localhost",
-                port=6379,
-                db=0,
-                decode_responses=False,  # Keep binary data as bytes
-                retry_on_timeout=True,
-            )
-            logger.info("Redis client initialized")
+            # Use REDIS_URL if available (Railway/production), otherwise localhost
+            redis_url = os.getenv("REDIS_URL")
+
+            if redis_url:
+                self.redis = redis.from_url(
+                    redis_url,
+                    decode_responses=False,  # Keep binary data as bytes
+                    retry_on_timeout=True,
+                )
+                logger.info(f"Redis client initialized from REDIS_URL")
+            else:
+                self.redis = redis.Redis(
+                    host="localhost",
+                    port=6379,
+                    db=0,
+                    decode_responses=False,  # Keep binary data as bytes
+                    retry_on_timeout=True,
+                )
+                logger.info("Redis client initialized (localhost)")
 
             await self.redis.ping()
             logger.info("Redis Connected Successfully")

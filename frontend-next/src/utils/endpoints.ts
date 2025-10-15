@@ -10,5 +10,7 @@ export const endpoints = {
   fetchProfile: "api/auth/fetch-profile",
   getBiggestGainers: "/api/getBiggestGainers",
   getBiggestLosers: "/api/getBiggestLosers",
-  getMostActive: "/api/getMostActive"
+  getMostActive: "/api/getMostActive",
+  getWatchlist: "/api/getWatchlist",
+  addToWatchlist: "/api/addToWatchlist",
 };
