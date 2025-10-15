@@ -37,6 +37,8 @@ load_dotenv()
 # Get API keys from environment variables
 ALPHA_VANTAGE_API_KEY = os.getenv("ALPHAVANTAGE_API_KEY")
 FINANCIAL_MODELLING_API_KEY = os.getenv("FINANCIAL_MODELLING_API_KEY")
+SUPABASE_URL = os.getenv("NEXT_PUBLIC_SUPABASE_URL")
+SUPABASE_ANON_KEY = os.getenv("NEXT_PUBLIC_SUPABASE_ANON_KEY")
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -114,7 +116,7 @@ async def lifespan(app: FastAPI):
         logging.warning(f"Cache service failed: {e}. Running without cache.")
 
     logging.info("Starting up Supabase Client")
-    supabase_client = SupabaseClient()
+    supabase_client = SupabaseClient(SUPABASE_URL, SUPABASE_ANON_KEY)
     await supabase_client.init_supabase()
 
     logging.info("Clearing Redis Cache")
