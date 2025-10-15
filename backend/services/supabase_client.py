@@ -8,9 +8,9 @@ logger = logging.getLogger(__name__)
 
 
 class SupabaseClient:
-    def __init__(self):
-        self.supabase_url = os.getenv("NEXT_PUBLIC_SUPABASE_URL")
-        self.supabase_key = os.getenv("NEXT_PUBLIC_SUPABASE_ANON_KEY")
+    def __init__(self, supabase_url: str, supabase_key: str):
+        self.supabase_url = supabase_url
+        self.supabase_key = supabase_key
         self.supabase: Client = None
 
     async def init_supabase(self):
