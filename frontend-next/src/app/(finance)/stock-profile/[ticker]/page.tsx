@@ -1,6 +1,5 @@
 "use client";
-import StockProfilePage from "@/pages/stockProfilePage";
-import FinanceLayout from "../../layout";
+import StockProfilePage from "@/pageComponents/stockProfilePage";
       
 function StockPage() {
   

@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 import { Search } from "lucide-react";
 import { useParams } from "next/navigation";
 
-export const TickerSelector = () => {
+const TickerSelector = () => {
   const dispatch = useAppDispatch();
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
@@ -91,3 +91,6 @@ export const TickerSelector = () => {
     </div>
   );
 };
+
+
+export default TickerSelector;
