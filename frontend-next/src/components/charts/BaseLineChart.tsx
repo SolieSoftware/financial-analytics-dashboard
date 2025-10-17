@@ -10,7 +10,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
-import { cn } from "@/lib/utils";
+import { cn } from "../../lib/utils";
 
 interface BaseLineChartProps {
   data: any[];

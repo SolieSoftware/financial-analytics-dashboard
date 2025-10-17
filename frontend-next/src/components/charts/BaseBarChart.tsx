@@ -10,7 +10,7 @@ import {
   ResponsiveContainer,
   Cell,
 } from "recharts";
-import { cn } from "@/lib/utils";
+import { cn } from "../../lib/utils";
 
 interface BaseBarChartProps {
   data: any[];
