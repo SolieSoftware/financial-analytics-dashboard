@@ -92,7 +92,36 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzd
 
 ---
 
-## Step 3: Update Backend CORS (Important!)
+## Step 3: Configure Supabase (Important!)
+
+Your Supabase project needs to know your production URL for auth redirects to work properly.
+
+### 3.1 Update Site URL
+
+1. Go to your [Supabase Dashboard](https://supabase.com/dashboard)
+2. Select your project
+3. Go to **Authentication** → **URL Configuration**
+4. Update the following:
+   - **Site URL**: `https://your-app.vercel.app` (replace with your actual Vercel URL)
+   - **Redirect URLs**: Add these URLs:
+     ```
+     https://your-app.vercel.app/auth/callback
+     https://your-app.vercel.app/auth/reset-password
+     http://localhost:3000/auth/callback
+     http://localhost:3000/auth/reset-password
+     ```
+
+### 3.2 Email Templates (Optional but Recommended)
+
+1. Go to **Authentication** → **Email Templates**
+2. Select **Reset Password** template
+3. The default template should work, but verify it uses `{{ .SiteURL }}` for the redirect
+
+**Why this is important:** Without this configuration, password reset emails will link to `localhost` instead of your production URL.
+
+---
+
+## Step 4: Update Backend CORS (Important!)
 
 Your backend needs to allow requests from your Vercel frontend.
 
@@ -121,7 +150,7 @@ After updating, push changes to GitHub - Railway will auto-redeploy.
 
 ---
 
-## Step 4: Update Frontend API Calls
+## Step 5: Update Frontend API Calls
 
 Make sure `frontend-next/src/utils/endpoints.ts` uses the environment variable:
 
@@ -131,7 +160,7 @@ const FASTAPI_URL = process.env.FASTAPI_URL || 'http://localhost:8000';
 
 ---
 
-## Step 5: Test Your Deployment
+## Step 6: Test Your Deployment
 
 ### Test Backend
 Visit: `https://your-app.up.railway.app`
