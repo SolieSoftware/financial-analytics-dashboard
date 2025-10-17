@@ -49,46 +49,46 @@ function StockProfilePage() {
         </div>
 
         {/* Left Panel - Company Info */}
-          <CompanyOverview
-            data={stockData?.info_data}
-            isLoading={isLoading}
-            error={error}
-          />
+        <CompanyOverview
+          data={stockData?.info_data}
+          isLoading={isLoading}
+          error={error}
+        />
 
         {/* Left Panel - Key Metrics */}
-          <KeyMetrics
-            data={stockData?.info_data}
-            isLoading={isLoading}
-            error={error}
-          />
+        <KeyMetrics
+          data={stockData?.info_data}
+          isLoading={isLoading}
+          error={error}
+        />
 
         {/* Left Panel - Latest News */}
-          <LatestNews
-            stockMarketNewsData={
-              stockMarketNewsData || {
-                market_news: {
-                  items: "",
-                  sentiment_score_definition: "",
-                  relevance_score_definition: "",
-                  feed: [] as NewsArticle[],
-                },
-              }
+        <LatestNews
+          stockMarketNewsData={
+            stockMarketNewsData || {
+              market_news: {
+                items: "",
+                sentiment_score_definition: "",
+                relevance_score_definition: "",
+                feed: [] as NewsArticle[],
+              },
             }
-            stockMarketNewsError={stockMarketNewsError}
-            stockMarketNewsLoading={stockMarketNewsLoading}
-          />
+          }
+          stockMarketNewsError={stockMarketNewsError}
+          stockMarketNewsLoading={stockMarketNewsLoading}
+        />
         {/* Bottom content area for performance analytics */}
-          <BottomPanel
-            ticker={selectedTicker}
-            data={
-              stockData || {
-                info_data: {} as stockInfoData,
-                history_data: [] as stockEntry[],
-              }
+        <BottomPanel
+          ticker={selectedTicker}
+          data={
+            stockData || {
+              info_data: {} as stockInfoData,
+              history_data: [] as stockEntry[],
             }
-            isLoading={isLoading}
-            error={error}
-          />
+          }
+          isLoading={isLoading}
+          error={error}
+        />
       </div>
     </div>
   );
