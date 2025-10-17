@@ -5,7 +5,7 @@ import CompanyOverview from "@/components/info/CompanyOverview";
 import KeyMetrics from "@/components/info/KeyMetrics";
 import LatestNews from "@/components/info/LatestNews";
 import BottomPanel from "@/components/info/BottomPanel";
-import { TickerSelector } from "@/components/selectors/TickerSelector";
+import TickerSelector from "@/components/selectors/TickerSelector";
 
 //Utils
 import { useStockProfile } from "@/utils/hooks/useStockProfile";
