@@ -1,4 +1,5 @@
-import StockProfilePage from "@/pages/stockProfilePage";
+"use client";
+import StockProfilePage from "@/pageComponents/stockProfilePage";
 
 function StockPage() {
   return (
