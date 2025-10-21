@@ -32,7 +32,7 @@ from utils.serializers import CacheSerializer
 
 
 # Load environment variables from .env file
-load_dotenv()
+load_dotenv('.env.local')
 
 # Get API keys from environment variables
 ALPHA_VANTAGE_API_KEY = os.getenv("ALPHAVANTAGE_API_KEY")
@@ -125,26 +125,19 @@ async def lifespan(app: FastAPI):
     # Populate Redis Cache with initial data
     try:
         logger.info("Populating Redis Cache with Ticker List")
-        tickers = await get_tickers(market_cap=1000000000000)
-        logger.info(f"Populating Redis Cache with {len(tickers['tickers'])} Tickers")
-        logger.info(
-            "Populating Redis Cache with Ticker Info and Historical Pricing Data"
-        )
+        tickers_to_store = await get_tickers(market_cap=100000000000)
+        logger.info("Populating Redis Cache and Supabase with 40 Tickers")
 
-        # Only populate cache for first few tickers to avoid overwhelming the system on startup
-        ticker_symbols = [
-            ticker.get("Symbol", ticker) for ticker in tickers["tickers"]
-        ] + ["^GSPC", "^VIX", "^DJI", "^IXIC"]
+        for index, ticker in enumerate(tickers_to_store['tickers']):
+            if index <= 20:
+                await get_ticker_info_cached(ticker['Symbol'])
+                await get_ticker_historical_data(ticker['Symbol'])
+            elif index <= 40:
+                data = await run_in_threadpool(get_ticker_history_sync, ticker['Symbol'])
+                await supabase_client.store_ticker_data(ticker['Symbol'], data)
+            else: 
+                break
 
-        for ticker in ticker_symbols:
-            logger.info(f"Caching data for ticker {ticker}")
-            try:
-                await get_ticker_info_cached(ticker)
-                await get_ticker_history_cached(ticker)
-            except Exception as e:
-                logger.warning(f"Failed to cache data for ticker {ticker}: {str(e)}")
-
-        logger.info("Initial cache population completed")
     except Exception as e:
         logger.error(f"Failed to populate initial cache: {str(e)}")
 
@@ -162,7 +155,10 @@ app = FastAPI(lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "https://financial-analytics-dash-git-1dea3c-solomon-shortlands-projects.vercel.app",  # Replace with your Vercel URL
+        "http://localhost:3000"  # Keep for local development
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -234,8 +230,9 @@ async def get_tickers(market_cap: int):
     try:
         response = (
             supabase_client.supabase.table("listings")
-            .select("Symbol")
+            .select("Symbol", "market_cap")
             .gt("market_cap", market_cap)
+            .order("market_cap", desc=True)
             .execute()
         )
         tickers = response.data
@@ -244,9 +241,13 @@ async def get_tickers(market_cap: int):
         logging.error(f"Failed to fetch tickers: {str(e)}")
         raise HTTPException(status_code=500, detail="Failed to fetch tickers")
 
+@cache_result(CacheConfig.TICKER_HISTORY_TTL, key_prefix="ticker_history")
+async def get_ticker_data_from_supabase(ticker: str):
+    """Get ticker data from supabase"""
+    return await supabase_client.get_ticker_data(ticker)
+
 
 """Yahoo Finance API Endpoints"""
-
 
 # Helper function to run sync code in thread pool
 async def run_in_threadpool(func, *args, **kwargs):
@@ -286,9 +287,23 @@ async def get_ticker_info_cached(ticker: str):
 
 
 @cache_result(CacheConfig.TICKER_HISTORY_TTL, key_prefix="ticker_history")
-async def get_ticker_history_cached(ticker: str):
-    """Cached async wrapper for ticker history"""
-    return await run_in_threadpool(get_ticker_history_sync, ticker)
+async def get_ticker_historical_data(ticker: str):
+    """Get ticker historical data"""
+    try: 
+        data = await get_ticker_data_from_supabase(ticker)
+        if data:
+            return data
+    except Exception as supabase_error:
+        logger.error(f"Supabase error: {supabase_error}. Failed to get data from supabase for ticker {ticker}")
+    
+    try:
+        data = await run_in_threadpool(get_ticker_history_sync, ticker)
+        if data:
+            return data
+    except Exception as threadpool_error:
+        logger.error(f"Threadpool error: {threadpool_error}. Failed to get data from threadpool for ticker {ticker}")
+
+
 
 
 @app.get("/api/tickers/{ticker}/data")
@@ -296,39 +311,12 @@ async def get_ticker_data(ticker: str):
     try:
         print("ticker", ticker)
         info_data = await get_ticker_info_cached(ticker)
-        history_data = await get_ticker_history_cached(ticker)
+        history_data = await get_ticker_historical_data(ticker)
         return {"info_data": info_data, "history_data": history_data}
 
     except Exception as e:
         raise HTTPException(
             status_code=500, detail=f"Failed to fetch data for {ticker}: {str(e)}"
-        )
-
-
-@app.get("/api/summary/{ticker}")
-async def get_summary(ticker: str):
-    """Get summary of a stock"""
-    try:
-        ticker_summary = await yfinance_client.analyze_stock(ticker)
-
-        return {"ticker_summary": ticker_summary}
-    except Exception as e:
-        logger.error(f"Error in summary generation: {str(e)}")
-        raise HTTPException(
-            status_code=500, detail=f"Summary generation failed: {str(e)}"
-        )
-
-
-@app.get("/api/summary/market")
-async def get_market_summary():
-    """Get market summary"""
-    try:
-        market_summary = await yfinance_client.market_overview()
-        return {"market_summary": market_summary}
-    except Exception as e:
-        logger.error(f"Error in market summary generation: {str(e)}")
-        raise HTTPException(
-            status_code=500, detail=f"Market summary generation failed: {str(e)}"
         )
 
 
