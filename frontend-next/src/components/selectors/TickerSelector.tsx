@@ -8,7 +8,11 @@ import { useRouter } from "next/navigation";
 import { Search } from "lucide-react";
 import { useParams } from "next/navigation";
 
-const TickerSelector = () => {
+interface TickerSelectorProps {
+  routePrefix?: string; // e.g., "/stock-profile" or "/trading-view"
+}
+
+const TickerSelector = ({ routePrefix = "/stock-profile" }: TickerSelectorProps) => {
   const dispatch = useAppDispatch();
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
@@ -39,7 +43,7 @@ const TickerSelector = () => {
 
   const handleTickerSelect = (ticker: string) => {
     dispatch(setSelectedTickerState(ticker));
-    router.push(`/stock-profile/${ticker}`);
+    router.push(`${routePrefix}/${ticker}`);
     setIsFocused(false);
     setSearchTerm("");
   };

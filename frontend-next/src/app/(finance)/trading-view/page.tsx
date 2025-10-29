@@ -1,23 +1,19 @@
-import FinanceLayout from "../layout";
-import TradingViewChart from "@/components/trading-view-widgets/TradingViewChart";
-import TickerTape from "@/components/trading-view-widgets/TickerTape";
+"use client";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 const TradingViewPage = () => {
-  return (
-    <FinanceLayout>
-      <div className="w-full h-20 text-center mb-10">
-        <h1 className="text-4xl md:text-5xl font-bold text-text-primary">
-          Trading View
-        </h1>
-      </div>
+  const router = useRouter();
 
-      <div className="h-24 w-4/5 mx-auto my-12">
-        <TickerTape />
-      </div>
-      <div className="h-[calc(100vh-120px)] w-4/5 mx-auto">
-        <TradingViewChart />
-      </div>
-    </FinanceLayout>
+  useEffect(() => {
+    // Redirect to default ticker (AAPL)
+    router.push("/trading-view/AAPL");
+  }, [router]);
+
+  return (
+    <div className="flex items-center justify-center h-screen">
+      <p className="text-text-secondary">Redirecting to Trading View...</p>
+    </div>
   );
 };
 
