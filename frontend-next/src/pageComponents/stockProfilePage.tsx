@@ -1,11 +1,13 @@
 "use client";
 //Components
-import StockPriceChart from "@/components/charts/StockPriceChart";
+import ChartToggle from "@/components/charts/ChartToggle";
 import CompanyOverview from "@/components/info/CompanyOverview";
 import KeyMetrics from "@/components/info/KeyMetrics";
 import LatestNews from "@/components/info/LatestNews";
 import BottomPanel from "@/components/info/BottomPanel";
 import TickerSelector from "@/components/selectors/TickerSelector";
+import TechnicalIndicator from "@/components/trading-view-widgets/TechnicalIndicator";
+import FundamentalData from "@/components/trading-view-widgets/FundamentalData";
 
 //Utils
 import { useStockProfile } from "@/utils/hooks/useStockProfile";
@@ -35,7 +37,7 @@ function StockProfilePage() {
       <div className="main-content">
         {/* Chart positioned top-right */}
         <div className="chart-container">
-          <StockPriceChart
+          <ChartToggle
             ticker={selectedTicker}
             stockData={
               stockData || {
@@ -89,6 +91,21 @@ function StockProfilePage() {
           isLoading={isLoading}
           error={error}
         />
+      </div>
+
+      {/* TradingView Analysis Section */}
+      <div className="stock-tradingview-widgets-section">
+        <h2 className="stock-tradingview-widgets-title">
+          Technical & Fundamental Analysis
+        </h2>
+        <div className="stock-tradingview-widgets-container">
+          <div className="technical-indicator-widget-container">
+            <TechnicalIndicator ticker={selectedTicker} height={550} />
+          </div>
+          <div className="fundamental-data-widget-container">
+            <FundamentalData ticker={selectedTicker} height={550} />
+          </div>
+        </div>
       </div>
     </div>
   );

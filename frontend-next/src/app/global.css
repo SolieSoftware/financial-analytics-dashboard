@@ -199,6 +199,9 @@ body {
   width: 95%;
   box-sizing: border-box;
   transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 .stock-profile-selectors-container {
@@ -214,7 +217,6 @@ body {
 .main-content {
   position: relative;
   width: 100%;
-  max-height: calc(100vh - 10rem);
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-template-rows:
@@ -261,18 +263,21 @@ body {
   grid-row: 1;
   grid-column: 1;
   width: 100%;
+  overflow-y: auto;
 }
 
 .key-metrics {
   grid-row: 2;
   grid-column: 1;
   width: 100%;
+  overflow-y: auto;
 }
 
 .latest-news {
   grid-row: 3;
   grid-column: 1;
   width: 100%;
+  overflow-y: auto;
 }
 
 /* Bottom content area - positioned below chart */
@@ -290,6 +295,7 @@ body {
   width: 100%;
   box-sizing: border-box;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  overflow-y: auto;
 }
 
 .financial-profile-container {
@@ -386,6 +392,224 @@ body {
   color: var(--color-bearish);
   text-align: center;
   padding: 2rem;
+}
+
+/* Trading View Page Styling */
+.trading-view-page-container {
+  width: 95%;
+  margin: 0 auto;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  box-sizing: border-box;
+}
+
+.trading-view-header {
+  width: 100%;
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
+
+.trading-view-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  letter-spacing: -0.025em;
+}
+
+.trading-view-ticker-tape {
+  width: 100%;
+  height: 80px;
+  margin: 0.5rem 0;
+}
+
+.trading-view-selector {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0.5rem 0;
+}
+
+.trading-view-chart-container {
+  width: 100%;
+  height: calc(100vh - 350px);
+  min-height: 500px;
+  background: linear-gradient(
+    135deg,
+    rgba(42, 42, 42, 0.3),
+    rgba(36, 36, 36, 0.5)
+  );
+  border: 1px solid rgba(58, 58, 58, 0.3);
+  border-radius: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  padding: 1.5rem;
+  box-sizing: border-box;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.trading-view-chart-container:hover {
+  box-shadow: 0 4px 16px rgba(74, 158, 255, 0.1);
+  border-color: rgba(74, 158, 255, 0.2);
+}
+
+@media (max-width: 1200px) {
+  .trading-view-page-container {
+    width: 96%;
+    padding: 1.25rem;
+  }
+
+  .trading-view-title {
+    font-size: 1.75rem;
+  }
+
+  .trading-view-chart-container {
+    height: calc(100vh - 320px);
+    min-height: 450px;
+  }
+}
+
+@media (max-width: 768px) {
+  .trading-view-page-container {
+    width: 98%;
+    padding: 1rem;
+    gap: 0.75rem;
+  }
+
+  .trading-view-title {
+    font-size: 1.5rem;
+  }
+
+  .trading-view-ticker-tape {
+    height: 60px;
+  }
+
+  .trading-view-chart-container {
+    height: calc(100vh - 280px);
+    min-height: 400px;
+    padding: 1rem;
+  }
+}
+
+/* Stock Profile TradingView Widgets Section */
+.stock-tradingview-widgets-section {
+  width: 100%;
+  margin: 0;
+  padding: 1rem;
+  background: linear-gradient(
+    135deg,
+    rgba(42, 42, 42, 0.3),
+    rgba(36, 36, 36, 0.5)
+  );
+  border: 1px solid rgba(58, 58, 58, 0.3);
+  border-radius: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  box-sizing: border-box;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.stock-tradingview-widgets-section:hover {
+  box-shadow: 0 4px 16px rgba(74, 158, 255, 0.1);
+  border-color: rgba(74, 158, 255, 0.2);
+}
+
+.stock-tradingview-widgets-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  letter-spacing: -0.025em;
+  margin-bottom: 0.25rem;
+  text-align: left;
+}
+
+.stock-tradingview-widgets-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  width: 100%;
+}
+
+.technical-indicator-widget-container,
+.fundamental-data-widget-container {
+  background: linear-gradient(
+    135deg,
+    rgba(42, 42, 42, 0.6),
+    rgba(36, 36, 36, 0.8)
+  );
+  border: 1px solid rgba(58, 58, 58, 0.5);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  border-radius: 1rem;
+  padding: 1rem;
+  min-height: 550px;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.technical-indicator-widget-container:hover,
+.fundamental-data-widget-container:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(74, 158, 255, 0.15);
+  border-color: rgba(74, 158, 255, 0.3);
+}
+
+/* Responsive layout for Stock Profile TradingView widgets */
+@media (max-width: 1200px) {
+  .stock-profile-page {
+    width: 96%;
+    gap: 0.875rem;
+  }
+
+  .stock-tradingview-widgets-section {
+    padding: 1rem;
+    gap: 0.875rem;
+  }
+
+  .stock-tradingview-widgets-container {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .technical-indicator-widget-container,
+  .fundamental-data-widget-container {
+    padding: 0.875rem;
+    min-height: 500px;
+  }
+}
+
+@media (max-width: 768px) {
+  .stock-profile-page {
+    width: 98%;
+    gap: 0.75rem;
+  }
+
+  .stock-tradingview-widgets-section {
+    width: 100%;
+    padding: 0.75rem;
+    gap: 0.75rem;
+  }
+
+  .stock-tradingview-widgets-title {
+    font-size: 1.25rem;
+  }
+
+  .stock-tradingview-widgets-container {
+    gap: 0.75rem;
+  }
+
+  .technical-indicator-widget-container,
+  .fundamental-data-widget-container {
+    padding: 0.75rem;
+    min-height: 450px;
+  }
+
+  .main-content {
+    grid-template-rows: auto auto auto auto auto;
+  }
 }
 
 /* Sidebar Toggle Button */
@@ -993,7 +1217,7 @@ body {
 .market-overview-content-container {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 2rem;
   width: 100%;
   padding: 1rem;
   overflow-y: auto;
@@ -1002,14 +1226,55 @@ body {
   align-items: center;
 }
 
+/* Market Overview Section Containers */
+.market-indices-section {
+  width: 95%;
+  margin: 0 auto;
+  padding: 1.5rem;
+  background: linear-gradient(
+    135deg,
+    rgba(42, 42, 42, 0.3),
+    rgba(36, 36, 36, 0.5)
+  );
+  border: 1px solid rgba(58, 58, 58, 0.3);
+  border-radius: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.market-indices-section:hover {
+  box-shadow: 0 4px 16px rgba(74, 158, 255, 0.1);
+  border-color: rgba(74, 158, 255, 0.2);
+}
+
+.market-summary-section {
+  width: 95%;
+  margin: 0 auto;
+  padding: 1.5rem;
+  background: linear-gradient(
+    135deg,
+    rgba(42, 42, 42, 0.3),
+    rgba(36, 36, 36, 0.5)
+  );
+  border: 1px solid rgba(58, 58, 58, 0.3);
+  border-radius: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.market-summary-section:hover {
+  box-shadow: 0 4px 16px rgba(74, 158, 255, 0.1);
+  border-color: rgba(74, 158, 255, 0.2);
+}
+
 .market-overview-title {
   font-size: 2rem;
   font-weight: 700;
   color: var(--color-text-primary);
   letter-spacing: -0.025em;
-  margin-bottom: 0.5rem;
-  text-align: center;
-  width: 95%;
+  margin-bottom: 1rem;
+  text-align: left;
+  width: 100%;
 }
 
 .market-charts-container {
@@ -1080,22 +1345,141 @@ body {
 .market-summary-inner-container {
   grid-column: 1;
   grid-row: 1;
+  overflow-y: auto;
 }
 
 .biggest-gainers-inner-container {
   width: 100%;
   grid-column: 2;
   grid-row: 1;
+  overflow-y: auto;
 }
 
 .biggest-losers-inner-container {
   grid-column: 3;
   grid-row: 1;
+  overflow-y: auto;
 }
 
 .most-active-inner-container {
   grid-column: 4;
   grid-row: 1;
+  overflow-y: auto;
+}
+
+.economics-calendar-inner-container {
+
+}
+
+/* TradingView Widgets Section */
+.tradingview-widgets-section {
+  width: 95%;
+  margin: 0 auto;
+  padding: 1.5rem;
+  background: linear-gradient(
+    135deg,
+    rgba(42, 42, 42, 0.3),
+    rgba(36, 36, 36, 0.5)
+  );
+  border: 1px solid rgba(58, 58, 58, 0.3);
+  border-radius: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.tradingview-widgets-section:hover {
+  box-shadow: 0 4px 16px rgba(74, 158, 255, 0.1);
+  border-color: rgba(74, 158, 255, 0.2);
+}
+
+.tradingview-widgets-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  letter-spacing: -0.025em;
+  margin-bottom: 0.5rem;
+  text-align: left;
+}
+
+.tradingview-widgets-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  width: 100%;
+}
+
+.market-data-widget-container,
+.economic-calendar-widget-container {
+  background: linear-gradient(
+    135deg,
+    rgba(42, 42, 42, 0.6),
+    rgba(36, 36, 36, 0.8)
+  );
+  border: 1px solid rgba(58, 58, 58, 0.5);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  min-height: 650px;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.market-data-widget-container:hover,
+.economic-calendar-widget-container:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(74, 158, 255, 0.15);
+  border-color: rgba(74, 158, 255, 0.3);
+}
+
+/* Responsive layout for TradingView widgets */
+@media (max-width: 1200px) {
+  .tradingview-widgets-container {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .market-data-widget-container,
+  .economic-calendar-widget-container {
+    min-height: 600px;
+  }
+
+  .market-indices-section,
+  .market-summary-section,
+  .tradingview-widgets-section {
+    width: 96%;
+    padding: 1.25rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .tradingview-widgets-section {
+    width: 98%;
+    padding: 1rem;
+  }
+
+  .tradingview-widgets-title {
+    font-size: 1.25rem;
+  }
+
+  .market-data-widget-container,
+  .economic-calendar-widget-container {
+    padding: 1rem;
+    min-height: 550px;
+  }
+
+  .market-indices-section,
+  .market-summary-section {
+    width: 98%;
+    padding: 1rem;
+  }
+
+  .market-overview-title {
+    font-size: 1.5rem;
+  }
 }
 
 /* Market Summary Compact Styling */
@@ -1112,7 +1496,6 @@ body {
   width: 100%;
   height: 100%;
   max-height: 600px;
-  overflow: hidden;
   display: flex;
   flex-direction: column;
 }
